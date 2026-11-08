@@ -35,20 +35,28 @@ const MenuItem = ({
       alignItems="center"
       paddingBlock={2}
       paddingInline={3}
-      cursor={"pointer"}
+      mx={2}
+      borderRadius="lg"
+      cursor="pointer"
       gap={2}
+      position="relative"
       onClick={() => {
         void handleClick();
       }}
-      color={active ? "brand.accentOrange" : "white"}
+      color={active ? "sidebar.activeFg" : "sidebar.fg"}
+      bg={active ? "sidebar.activeBg" : "transparent"}
+      borderLeftWidth={active ? "3px" : "3px"}
+      borderLeftColor={active ? "brand.400" : "transparent"}
       _hover={{
-        bgColor: "gray.600",
-        color: active ? "brand.accentOrange" : "white",
+        bg: active ? "sidebar.activeBg" : "sidebar.hover",
+        color: active ? "sidebar.activeFg" : "sidebar.fg",
       }}
       transition="background-color 0.2s, color 0.2s"
     >
       {icon}
-      <Text fontSize="lg">{label}</Text>
+      <Text fontSize="md" fontWeight={active ? "semibold" : "medium"}>
+        {label}
+      </Text>
     </Flex>
   );
 };

@@ -146,7 +146,7 @@ const Header = ({ connector }: { connector: Connector }) => {
         {/* Operational status only (syncing / error). Active↔Paused toggle is unused on batch. */}
         <Flex ml="auto" gap={2}>
           {status === "S" && (
-            <Button colorPalette="blue" size="xs" variant="solid" disabled>
+            <Button colorPalette="brand" size="xs" variant="solid" disabled>
               <MdSync />
               Syncing
             </Button>

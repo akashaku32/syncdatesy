@@ -317,7 +317,7 @@ const NotificationsTab = () => {
         return (
           <HStack gap={1} flexWrap="wrap">
             {emailList.map((email, idx) => (
-              <Badge key={idx} variant="subtle" colorPalette="purple" size="sm">
+              <Badge key={idx} variant="subtle" colorPalette="brand" size="sm">
                 {email}
               </Badge>
             ))}

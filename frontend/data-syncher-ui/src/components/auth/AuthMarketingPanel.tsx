@@ -36,8 +36,7 @@ export default function AuthMarketingPanel() {
       display="flex"
       flexDirection="column"
       justifyContent="center"
-      bg="brand.800"
-      backgroundImage="linear-gradient(155deg, #0f766e 0%, #0369a1 48%, #14b8a6 100%)"
+      backgroundImage="gradient.hero"
     >
       <Box
         position="absolute"

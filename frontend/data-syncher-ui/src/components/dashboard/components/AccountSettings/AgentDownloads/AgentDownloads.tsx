@@ -97,7 +97,7 @@ const AgentDownloads: React.FC = () => {
                     {pkg.os}
                   </Text>
                   <Badge
-                    colorPalette="purple"
+                    colorPalette="brand"
                     variant="subtle"
                     fontSize="2xs"
                     px={2}

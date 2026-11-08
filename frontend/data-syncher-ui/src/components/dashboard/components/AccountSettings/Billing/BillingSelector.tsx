@@ -27,10 +27,10 @@ const BillingSelector = ({
               key={option.value}
               as="button"
               onClick={() => setSelectedRange([option.value])}
-              bg={isSelected ? "purple.600" : "white"}
-              color={isSelected ? "white" : "purple.600"}
+              bg={isSelected ? "brand.600" : "white"}
+              color={isSelected ? "white" : "brand.600"}
               border="1px solid"
-              borderColor="purple.600"
+              borderColor="brand.600"
               py={1.5}
               px={4}
               borderRadius="md"
@@ -39,7 +39,7 @@ const BillingSelector = ({
               shadow="sm"
               transition="all 0.2s"
               _hover={{
-                bg: isSelected ? "purple.700" : "purple.50",
+                bg: isSelected ? "brand.700" : "brand.50",
               }}
               cursor="pointer"
             >

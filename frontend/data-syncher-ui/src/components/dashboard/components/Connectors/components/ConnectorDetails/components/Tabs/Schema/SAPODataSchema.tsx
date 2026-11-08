@@ -1203,7 +1203,7 @@ const SAPODataSchema = () => {
             <ActionBar.Content>
               <Button
                 variant="solid"
-                colorPalette="purple"
+                colorPalette="brand"
                 size="sm"
                 onClick={() => handleSave()}
                 loading={isSaving || isAssigningTables}

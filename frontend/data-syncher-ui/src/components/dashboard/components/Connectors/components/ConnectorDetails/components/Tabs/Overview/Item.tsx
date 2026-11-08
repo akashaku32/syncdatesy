@@ -131,7 +131,7 @@ const Item = ({
           <Flex gap={1.5} flexWrap="wrap" alignItems="center">
             {batchLabel && (
               <Badge
-                colorPalette="blue"
+                colorPalette="brand"
                 variant="subtle"
                 size="sm"
                 borderRadius="md"
@@ -142,7 +142,7 @@ const Item = ({
             {pipeline_name && (
               <Badge
                 as="button"
-                colorPalette="purple"
+                colorPalette="brand"
                 variant="outline"
                 size="sm"
                 borderRadius="md"

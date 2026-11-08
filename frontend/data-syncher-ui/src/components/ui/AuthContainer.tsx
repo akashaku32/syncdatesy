@@ -16,7 +16,7 @@ export default function AuthContainer({
       as="main"
       {...props}
       p={{ base: 5, md: 10 }}
-      bg="gray.50"
+      bg="bg.canvas"
       justifyContent="center"
       alignItems="center"
       display="flex"

@@ -43,7 +43,7 @@ export default function Layout() {
         boxSizing="border-box"
         overflowY={isSupportRoute ? "hidden" : "auto"}
         height="calc(100vh - 60px)"
-        bg="gray.50"
+        bg="bg.canvas"
         mt={{ base: "60px", md: "0" }}
         transition="all 0.3s ease-in-out"
       >

@@ -1,19 +1,10 @@
 import { useEffect, useState } from "react";
 
-import {
-  Button,
-  Field,
-  Fieldset,
-  Flex,
-  Image,
-  Span,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Button, Field, Fieldset, Span } from "@chakra-ui/react";
 
 import { useNavigate, useSearchParams } from "react-router";
 
-import Logo from "@/assets/logo.svg";
+import { AuthFormCard } from "@/components/auth/AuthFormCard";
 import { PasswordInput } from "@/components/ui/password-input";
 import { toaster } from "@/components/ui/toaster";
 import passwordPolicy from "@/config/password-policy";
@@ -29,7 +20,6 @@ const ResetPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // if not token present in url, show Invalid URL message
     if (!token || !uid) {
       toaster.error({
         title: "Invalid URL",
@@ -47,7 +37,6 @@ const ResetPassword = () => {
     field: "password" | "confirmPassword" | null;
   } | null>(null);
 
-  // Validate password policy on blur
   const handlePasswordBlur = ({
     field,
   }: {
@@ -69,7 +58,6 @@ const ResetPassword = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    // Check if password and confirm password match
     if (password !== confirmPassword) {
       setError({
         message: "Passwords do not match",
@@ -99,6 +87,7 @@ const ResetPassword = () => {
 
     try {
       setIsLoading(true);
+      setHasError(false);
       await AxiosInstance.post(ServerRoutes.auth.resetPassword(), {
         new_password: password,
         token,
@@ -110,8 +99,9 @@ const ResetPassword = () => {
       });
       navigate(`${ClientRoutes.AUTH}/${ClientRoutes.LOGIN}`);
     } catch {
+      setHasError(true);
       toaster.error({
-        title: "Password Reset Failed",
+        title: "Error",
         description:
           "There was an error resetting your password. Please try again.",
       });
@@ -121,44 +111,32 @@ const ResetPassword = () => {
   };
 
   return (
-    <Stack as="form" style={{ width: "100%" }} onSubmit={handleSubmit}>
-      <Flex justifyContent="center" alignItems="center">
-        <Fieldset.Root
-          size="lg"
-          w="100%"
-          justifyContent="center"
-          invalid={hasError}
-        >
-          <Stack gap={4} mb={2}>
-            <Image
-              src={Logo}
-              alt="Logo"
-              width="48px"
-              height="48px"
-              aspectRatio={1}
-            />
-            <Fieldset.Legend fontSize={32} fontWeight="bold">
-              Reset your password
-            </Fieldset.Legend>
-            <Text fontSize="sm" color="gray.500">
-              Already have an account?{" "}
-              <Span
-                color="brand.500"
-                cursor="pointer"
-                onClick={() =>
-                  navigate(`${ClientRoutes.AUTH}/${ClientRoutes.LOGIN}`)
-                }
-              >
-                Sign in
-              </Span>
-            </Text>
-          </Stack>
-          <Fieldset.Content>
+    <form style={{ width: "100%" }} onSubmit={handleSubmit}>
+      <AuthFormCard
+        title="Reset your password"
+        description={
+          <>
+            Choose a strong new password.{" "}
+            <Span
+              color="brand.600"
+              fontWeight="semibold"
+              cursor="pointer"
+              onClick={() =>
+                navigate(`${ClientRoutes.AUTH}/${ClientRoutes.LOGIN}`)
+              }
+            >
+              Sign in
+            </Span>
+          </>
+        }
+      >
+        <Fieldset.Root size="lg" w="100%" invalid={hasError} gap={4}>
+          <Fieldset.Content gap={4}>
             <Field.Root required invalid={error?.field === "password"}>
-              <Field.Label>
-                Password <Field.RequiredIndicator />
-              </Field.Label>
+              <Field.Label>New password</Field.Label>
               <PasswordInput
+                size="lg"
+                borderRadius="lg"
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -167,10 +145,10 @@ const ResetPassword = () => {
               <Field.ErrorText>{error?.message}</Field.ErrorText>
             </Field.Root>
             <Field.Root required invalid={error?.field === "confirmPassword"}>
-              <Field.Label>
-                Confirm Password <Field.RequiredIndicator />
-              </Field.Label>
+              <Field.Label>Confirm password</Field.Label>
               <PasswordInput
+                size="lg"
+                borderRadius="lg"
                 placeholder="Confirm your password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -181,16 +159,17 @@ const ResetPassword = () => {
           </Fieldset.Content>
           <Button
             type="submit"
-            alignSelf="center"
             colorPalette="brand"
-            w="70%"
+            size="lg"
+            w="full"
+            borderRadius="lg"
             loading={isLoading}
           >
-            Submit
+            Update password
           </Button>
         </Fieldset.Root>
-      </Flex>
-    </Stack>
+      </AuthFormCard>
+    </form>
   );
 };
 export default ResetPassword;

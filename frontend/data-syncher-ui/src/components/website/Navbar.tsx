@@ -13,10 +13,10 @@ const Navbar = () => {
   return (
     <Flex
       as="nav"
-      bg="whiteAlpha.900"
+      bg="bg.surface"
       backdropFilter="blur(8px)"
       borderBottomWidth="1px"
-      borderColor="gray.100"
+      borderColor="border.subtle"
       boxShadow="sm"
       position="fixed"
       top={0}
@@ -28,7 +28,12 @@ const Navbar = () => {
       padding={4}
     >
       <AppBrand size="lg" onClick={() => navigate(ClientRoutes.HOME)} />
-      <Box display={{ base: "none", md: "flex" }} gap={6} fontSize="sm" fontWeight="medium">
+      <Box
+        display={{ base: "none", md: "flex" }}
+        gap={6}
+        fontSize="sm"
+        fontWeight="medium"
+      >
         <Link to="/#home">Home</Link>
         <Link to="/#features">Features</Link>
         <Link to="/#about">How it works</Link>
@@ -40,15 +45,16 @@ const Navbar = () => {
           colorPalette="brand"
         >
           <PiUserCircleLight />
-          Login
+          Sign in
         </Button>
         <Button
           onClick={() =>
             navigate(`${ClientRoutes.AUTH}/${ClientRoutes.REGISTER}`)
           }
-          variant="ghost"
+          variant="outline"
+          colorPalette="brand"
         >
-          Sign Up
+          Request access
         </Button>
       </Flex>
     </Flex>

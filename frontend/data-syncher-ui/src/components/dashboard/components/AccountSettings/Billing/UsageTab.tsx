@@ -472,7 +472,7 @@ const UsageTab = () => {
               <Button
                 size="sm"
                 variant="outline"
-                colorPalette="purple"
+                colorPalette="brand"
                 px={4}
                 onClick={() => handleUsageUpdate({})}
               >
@@ -570,7 +570,7 @@ const UsageTab = () => {
                     const checked = selectedConnections.includes(id);
                     return (
                       <Checkbox.Root
-                        colorPalette="purple"
+                        colorPalette="brand"
                         variant="solid"
                         checked={checked}
                         onCheckedChange={(e) => {

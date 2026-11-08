@@ -88,7 +88,12 @@ const SidebarAccordion = ({
     .filter((item) => item.links.length > 0);
 
   return (
-    <Accordion.Root collapsible paddingInline={3} variant="plain">
+    <Accordion.Root
+      collapsible
+      paddingInline={1}
+      variant="plain"
+      color="sidebar.fg"
+    >
       {filteredItems.map(({ title, links, value, icon }, index) => {
         return (
           <Accordion.Item key={index} value={value} mt={2}>

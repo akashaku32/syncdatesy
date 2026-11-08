@@ -71,12 +71,12 @@ export default function HomePage() {
   const navigate = useNavigate();
 
   return (
-    <Box pt={{ base: 20, md: 24 }} pb={16} w="full">
+    <Box pt={{ base: 20, md: 24 }} pb={16} w="full" bg="bg.canvas">
       <Box
         id="home"
-        bgGradient="linear(to-b, brand.50, white)"
+        bgGradient="linear(to-b, brand.50, bg.surface)"
         borderBottomWidth="1px"
-        borderColor="gray.100"
+        borderColor="border.subtle"
         py={{ base: 12, md: 20 }}
       >
         <Container maxW="container.xl">
@@ -108,7 +108,7 @@ export default function HomePage() {
               </Heading>
               <Text
                 fontSize={{ base: "md", md: "lg" }}
-                color="gray.600"
+                color="fg.muted"
                 maxW="xl"
               >
                 {APP_TAGLINE} Orchestrate connectors, migrations, and batch jobs
@@ -132,7 +132,7 @@ export default function HomePage() {
                     navigate(`${ClientRoutes.AUTH}/${ClientRoutes.REGISTER}`)
                   }
                 >
-                  Request trial access
+                  Request access
                 </Button>
               </Stack>
             </Stack>
@@ -140,10 +140,10 @@ export default function HomePage() {
               display={{ base: "none", lg: "block" }}
               borderRadius="2xl"
               p={8}
-              bg="white"
-              boxShadow="0 24px 64px -24px rgba(15,118,110,0.45)"
+              bg="bg.surface"
+              boxShadow="0 24px 64px -24px rgba(15,118,110,0.35)"
               borderWidth="1px"
-              borderColor="brand.100"
+              borderColor="border.subtle"
             >
               <Stack gap={4}>
                 <Text fontWeight="bold" color="brand.700">
@@ -189,8 +189,8 @@ export default function HomePage() {
               p={6}
               borderRadius="xl"
               borderWidth="1px"
-              borderColor="gray.100"
-              bg="white"
+              borderColor="border.subtle"
+              bg="bg.surface"
               _hover={{ borderColor: "brand.200", shadow: "md" }}
               transition="all 0.2s"
             >
@@ -208,7 +208,7 @@ export default function HomePage() {
         </SimpleGrid>
       </Container>
 
-      <Box id="about" bg="gray.50" py={{ base: 14, md: 20 }}>
+      <Box id="about" bg="bg.subtle" py={{ base: 14, md: 20 }}>
         <Container maxW="container.xl">
           <Stack gap={4} textAlign="center" mb={10}>
             <Heading size="2xl">How it works</Heading>
@@ -220,11 +220,11 @@ export default function HomePage() {
             {STEPS.map((s) => (
               <Box
                 key={s.step}
-                bg="white"
+                bg="bg.surface"
                 p={6}
                 borderRadius="xl"
                 borderWidth="1px"
-                borderColor="gray.100"
+                borderColor="border.subtle"
               >
                 <Text fontSize="4xl" fontWeight="bold" color="brand.200" mb={2}>
                   {s.step}
@@ -248,7 +248,7 @@ export default function HomePage() {
             textAlign="center"
             p={{ base: 8, md: 12 }}
             borderRadius="2xl"
-            bgGradient="linear(to-r, brand.600, cyan.500)"
+            backgroundImage="gradient.cta"
             color="white"
           >
             <Heading size="xl">Ready to explore Syncdatesy?</Heading>
@@ -265,7 +265,7 @@ export default function HomePage() {
                 size="lg"
                 bg="white"
                 color="brand.800"
-                _hover={{ bg: "gray.100" }}
+                _hover={{ bg: "bg.subtle" }}
                 onClick={() =>
                   navigate(`${ClientRoutes.AUTH}/${ClientRoutes.LOGIN}`)
                 }

@@ -38,7 +38,7 @@ export default function AuthLayout() {
       templateColumns={gridTemplateColumns}
       templateRows={gridTemplateRows}
       minH="100vh"
-      bg="gray.50"
+      bg="bg.canvas"
     >
       <GridItem
         area="header"
@@ -46,10 +46,9 @@ export default function AuthLayout() {
         display="flex"
         alignItems="center"
         px={{ base: 4, md: 6 }}
-        bg="white"
+        bg="bg.surface"
         borderBottomWidth="1px"
-        borderColor="gray.100"
-        boxShadow="sm"
+        borderColor="border.subtle"
         zIndex={10}
       >
         <AppBrand size="md" nameColor="brand.600" />

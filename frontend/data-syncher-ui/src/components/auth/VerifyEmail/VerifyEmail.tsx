@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
 
 import {
-  Box,
   Button,
   Field,
   Fieldset,
-  Flex,
   HStack,
-  Image,
   Input,
   Span,
   Stack,
@@ -17,7 +14,7 @@ import {
 import { AxiosError } from "axios";
 import { useLocation, useNavigate, useSearchParams } from "react-router";
 
-import Logo from "@/assets/logo.svg";
+import { AuthFormCard } from "@/components/auth/AuthFormCard";
 import { toaster } from "@/components/ui/toaster";
 import ClientRoutes from "@/constants/client-routes";
 import ServerRoutes from "@/constants/server-routes";
@@ -59,7 +56,6 @@ const VerifyEmail = () => {
     const newOtpValues = [...otpValues];
 
     if (val.length > 1) {
-      // Handle paste
       const pastedData = val.slice(0, 6).split("");
       const updatedValues = new Array(6).fill("");
       pastedData.forEach((char, i) => {
@@ -101,8 +97,8 @@ const VerifyEmail = () => {
       return;
     }
 
-    setSubmitting(true);
     try {
+      setSubmitting(true);
       await AxiosInstance.post(ServerRoutes.auth.verifyEmail(), {
         email,
         otp,
@@ -114,14 +110,12 @@ const VerifyEmail = () => {
       });
       navigate(`${ClientRoutes.AUTH}/${ClientRoutes.LOGIN}`);
     } catch (err) {
-      const error = err as AxiosError<{ error?: string; message?: string }>;
-      const errorMessage =
-        error.response?.data?.error ||
-        error.response?.data?.message ||
-        "Verification failed. Please try again.";
+      const error = err as AxiosError<{ error?: string }>;
       toaster.error({
         title: "Verification failed",
-        description: errorMessage,
+        description:
+          error.response?.data?.error ||
+          "Invalid or expired verification code.",
       });
     } finally {
       setSubmitting(false);
@@ -129,24 +123,20 @@ const VerifyEmail = () => {
   };
 
   const onResendOtp = async () => {
-    if (cooldown > 0) return;
-
-    setResending(true);
     try {
+      setResending(true);
       await AxiosInstance.post(ServerRoutes.auth.resendOtp(), { email });
       toaster.success({
-        title: "OTP Resent",
-        description: "A new verification code has been sent to your email.",
+        title: "Code sent",
+        description: "Check your inbox for a new verification code.",
       });
       setCooldown(60);
     } catch (err) {
-      const error = err as AxiosError<{ error?: string; message?: string }>;
+      const error = err as AxiosError<{ error?: string }>;
       const errorMessage =
-        error.response?.data?.error ||
-        error.response?.data?.message ||
-        "Failed to resend OTP. Please try again.";
+        error.response?.data?.error || "Failed to resend verification code.";
       toaster.error({
-        title: "Resend failed",
+        title: "Unable to resend",
         description: errorMessage,
       });
       if (error.response?.status === 429) {
@@ -158,40 +148,20 @@ const VerifyEmail = () => {
   };
 
   return (
-    <Flex direction="column" w="100%" h="100%">
-      <form onSubmit={onVerify} style={{ width: "100%" }}>
-        <Stack gap={6}>
-          <Fieldset.Root size="md" gap={4}>
-            <Stack gap={4} mb={2} align="center">
-              <Box bg="brand.50" borderRadius="full" p={4} mb={2}>
-                <Image
-                  src={Logo}
-                  alt="Logo"
-                  width="40px"
-                  height="40px"
-                  aspectRatio={1}
-                />
-              </Box>
-              <Fieldset.Legend
-                fontSize="28px"
-                fontWeight="bold"
-                textAlign="center"
-              >
-                Verify Your Email
-              </Fieldset.Legend>
-              <Text
-                fontSize="md"
-                color="gray.600"
-                textAlign="center"
-                maxW="400px"
-              >
-                Please enter the verification code we sent to{" "}
-                <Span fontWeight="bold">{email}</Span>
-              </Text>
-            </Stack>
-
+    <form onSubmit={onVerify} style={{ width: "100%" }}>
+      <AuthFormCard
+        title="Verify your email"
+        description={
+          <>
+            Enter the 6-digit code sent to{" "}
+            <Span fontWeight="bold">{email}</Span>
+          </>
+        }
+      >
+        <Stack gap={5}>
+          <Fieldset.Root size="md">
             <Field.Root required>
-              <HStack gap={3} justify="center" mt={4} mb={6} w="full">
+              <HStack gap={2} justify="center" w="full">
                 {otpValues.map((digit, idx) => (
                   <Input
                     key={idx}
@@ -199,19 +169,18 @@ const VerifyEmail = () => {
                     value={digit}
                     onChange={(e) => handleOtpChange(e.target.value, idx)}
                     onKeyDown={(e) => handleKeyDown(e, idx)}
-                    width="54px"
-                    height="64px"
+                    width="48px"
+                    height="56px"
                     textAlign="center"
-                    fontSize="2xl"
+                    fontSize="xl"
                     fontWeight="bold"
                     borderRadius="lg"
-                    bg="white"
-                    border="1px solid"
-                    borderColor="gray.200"
+                    bg="bg.surface"
+                    borderColor="border.subtle"
                     _focus={{
                       borderColor: "brand.500",
-                      ring: "1px",
-                      ringColor: "brand.500",
+                      outline: "2px solid",
+                      outlineColor: "brand.200",
                     }}
                   />
                 ))}
@@ -223,21 +192,21 @@ const VerifyEmail = () => {
             type="submit"
             colorPalette="brand"
             size="lg"
-            height="56px"
-            fontSize="lg"
+            w="full"
+            borderRadius="lg"
             loading={submitting}
           >
             Confirm
           </Button>
 
-          <Text fontSize="sm" textAlign="center" color="gray.500">
-            Didn't receive the code?{" "}
+          <Text fontSize="sm" textAlign="center" color="fg.muted">
+            Didn&apos;t receive the code?{" "}
             <Button
               type="button"
               variant="ghost"
               size="sm"
               p={0}
-              color="brand.500"
+              color="brand.600"
               fontWeight="semibold"
               disabled={cooldown > 0 || resending}
               loading={resending}
@@ -247,10 +216,10 @@ const VerifyEmail = () => {
             </Button>
           </Text>
 
-          <Text fontSize="sm" textAlign="center" color="gray.500">
+          <Text fontSize="sm" textAlign="center" color="fg.muted">
             Back to{" "}
             <Span
-              color="brand.500"
+              color="brand.600"
               cursor="pointer"
               fontWeight="semibold"
               onClick={() =>
@@ -261,8 +230,8 @@ const VerifyEmail = () => {
             </Span>
           </Text>
         </Stack>
-      </form>
-    </Flex>
+      </AuthFormCard>
+    </form>
   );
 };
 

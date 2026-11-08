@@ -130,7 +130,7 @@ const PaymentPage = ({
           Cancel
         </Button>
         <Button
-          colorPalette="purple"
+          colorPalette="brand"
           size="sm"
           onClick={handlePay}
           loading={processing}

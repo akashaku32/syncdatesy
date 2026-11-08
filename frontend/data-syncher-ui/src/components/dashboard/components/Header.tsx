@@ -8,6 +8,7 @@ import {
   Menu,
   Portal,
   useBreakpointValue,
+  useToken,
 } from "@chakra-ui/react";
 
 import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
@@ -36,12 +37,12 @@ const Header = ({
   } = useAuth();
   const [showSidebar, setShowSidebar] = useState(false);
   const navigate = useNavigate();
+  const [iconMuted] = useToken("colors", ["fg.muted"]);
 
   return (
     <GridItem
       area="header"
-      color="white"
-      backgroundColor="white"
+      bg="bg.surface"
       position="fixed"
       top={0}
       left={sidebarDisplay === "block" ? sidebarWidth : "0"}
@@ -51,7 +52,8 @@ const Header = ({
       paddingInline={6}
       display="flex"
       alignItems="center"
-      boxShadow={"0 2px 4px rgba(0, 0, 0, 0.1)"}
+      borderBottomWidth="1px"
+      borderColor="border.subtle"
     >
       {showSidebar && (
         <SidebarMobile
@@ -67,7 +69,7 @@ const Header = ({
         onClick={() => onSidebarToggle()}
         borderRadius="md"
         _hover={{
-          bg: "gray.100",
+          bg: "bg.subtle",
         }}
         transition="all 0.2s ease-in-out"
       >
@@ -88,7 +90,7 @@ const Header = ({
             }
             transition="all 0.3s ease-in-out"
           >
-            <GoSidebarExpand size={24} color="gray" />
+            <GoSidebarExpand size={24} color={iconMuted} />
           </Box>
           {/* Expand Icon */}
           <Box
@@ -101,7 +103,7 @@ const Header = ({
             }
             transition="all 0.3s ease-in-out"
           >
-            <GoSidebarCollapse size={24} color="gray" />
+            <GoSidebarCollapse size={24} color={iconMuted} />
           </Box>
         </Box>
       </Flex>
@@ -112,7 +114,7 @@ const Header = ({
         cursor="pointer"
         onClick={() => setShowSidebar(true)}
       >
-        <RxHamburgerMenu size={24} color="gray" />
+        <RxHamburgerMenu size={24} color={iconMuted} />
       </Flex>
       <Flex
         marginLeft="auto"
@@ -121,7 +123,7 @@ const Header = ({
       >
         <Menu.Root positioning={{ placement: "bottom-end" }}>
           <Menu.Trigger rounded="full">
-            <Avatar.Root colorPalette="blue" cursor="pointer">
+            <Avatar.Root colorPalette="brand" cursor="pointer">
               <Avatar.Fallback name={user?.first_name} />
             </Avatar.Root>
           </Menu.Trigger>

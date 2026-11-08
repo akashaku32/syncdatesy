@@ -41,7 +41,7 @@ const Billing = () => {
             as="button"
             fontSize="md"
             fontWeight={pageTab === tab.id ? "700" : "500"}
-            color={pageTab === tab.id ? "purple.600" : "gray.600"}
+            color={pageTab === tab.id ? "brand.600" : "fg.muted"}
             position="relative"
             onClick={() => setPageTab(tab.id as "billing" | "usage")}
           >

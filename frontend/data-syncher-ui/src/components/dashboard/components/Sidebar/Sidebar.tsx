@@ -105,13 +105,14 @@ const Sidebar = ({
       height="100vh"
       overflowY="auto"
       zIndex="1000"
-      color="white"
-      //transition={"width 0.2s ease-in-out"}
+      color="sidebar.fg"
+      borderRightWidth="1px"
+      borderColor="sidebar.border"
     >
       <Flex justifyContent="flex-start" alignItems="center" gap={2} p={2}>
         <AppBrand
           size="sm"
-          nameColor="white"
+          nameColor="sidebar.fg"
           onClick={() => navigate(ClientRoutes.CONNECTORS.ROOT)}
         />
       </Flex>
@@ -131,7 +132,7 @@ const Sidebar = ({
             ml={2}
           />
           <Box>
-            <Text fontSize="xl" fontWeight="semibold">
+            <Text fontSize="lg" fontWeight="semibold" color="sidebar.activeFg">
               {user?.company?.cmp_name}
             </Text>
           </Box>
