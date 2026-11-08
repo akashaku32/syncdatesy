@@ -37,6 +37,9 @@ const theme = defineConfig({
       color: { _light: "gray.800", _dark: "white" },
       fontFamily: "'Plus Jakarta Sans', sans-serif",
     },
+    "[id]": {
+      scrollMarginTop: "5.5rem",
+    },
   },
   cssVarsPrefix: "ck",
   theme: {
@@ -94,9 +97,13 @@ const theme = defineConfig({
           value: { _light: "gray.200", _dark: "gray.800" },
         },
         bg: {
-          canvas: { value: "#f6fafb" },
+          canvas: { value: "#f2f6f5" },
           surface: { value: "#ffffff" },
           subtle: { value: "{colors.brand.50}" },
+          auth: {
+            value:
+              "linear-gradient(180deg, #f8fbfa 0%, #f0f5f4 45%, #eef4f8 100%)",
+          },
         },
         border: {
           subtle: { value: "{colors.gray.100}" },
@@ -115,7 +122,7 @@ const theme = defineConfig({
         gradient: {
           hero: {
             value:
-              "linear-gradient(155deg, #0f766e 0%, #0369a1 48%, #14b8a6 100%)",
+              "linear-gradient(165deg, #0b1324 0%, #0f3d3a 28%, #0d9488 58%, #115e59 100%)",
           },
           cta: {
             value:

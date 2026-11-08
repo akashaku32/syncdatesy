@@ -1,0 +1,46 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [main, "feature/**"]
+    paths:
+      - "frontend/data-syncher-ui/**"
+      - ".github/workflows/frontend-ci.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "frontend/data-syncher-ui/**"
+      - ".github/workflows/frontend-ci.yml"
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: frontend/data-syncher-ui
+
+jobs:
+  lint-and-build:
+    name: Lint, typecheck, and build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/data-syncher-ui/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        env:
+          CI: true
+        run: npm run build

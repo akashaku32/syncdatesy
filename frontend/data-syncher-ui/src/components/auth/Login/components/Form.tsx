@@ -167,6 +167,7 @@ export default function Form() {
   return (
     <form style={{ width: "100%" }} onSubmit={handleSubmit} autoComplete="off">
       <AuthFormCard
+        eyebrow="Sign in"
         title="Welcome back"
         description={
           <>
@@ -175,11 +176,14 @@ export default function Form() {
               color="brand.600"
               fontWeight="semibold"
               cursor="pointer"
+              textDecoration="underline"
+              textUnderlineOffset="2px"
+              _hover={{ color: "brand.700" }}
               onClick={() =>
                 navigate(`${ClientRoutes.AUTH}/${ClientRoutes.REGISTER}`)
               }
             >
-              Request trial access
+              Request access
             </Span>
           </>
         }
@@ -253,6 +257,9 @@ export default function Form() {
             w="full"
             borderRadius="lg"
             loading={isLoading}
+            mt={1}
+            boxShadow="0 8px 20px -6px rgba(13, 148, 136, 0.45)"
+            _hover={{ boxShadow: "0 10px 24px -6px rgba(13, 148, 136, 0.5)" }}
           >
             Sign in
           </Button>

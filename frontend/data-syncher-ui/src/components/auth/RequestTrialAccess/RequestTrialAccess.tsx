@@ -193,7 +193,8 @@ const RequestTrialAccess = () => {
   return (
     <form onSubmit={onSubmit} autoComplete="off" style={{ width: "100%" }}>
       <AuthFormCard
-        title="Request trial access"
+        eyebrow="Get started"
+        title="Request access"
         description={
           <>
             Already have an account?{" "}

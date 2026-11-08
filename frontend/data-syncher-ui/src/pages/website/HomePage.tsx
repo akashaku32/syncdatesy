@@ -1,274 +1,216 @@
+import { useEffect } from "react";
+
 import {
   Box,
   Button,
   Container,
   Grid,
   Heading,
-  SimpleGrid,
+  Image,
   Stack,
   Text,
 } from "@chakra-ui/react";
 
-import {
-  FiArrowRight,
-  FiCloud,
-  FiGitBranch,
-  FiShield,
-  FiZap,
-} from "react-icons/fi";
+import { FiArrowRight } from "react-icons/fi";
 
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
+import LogoWhite from "@/assets/images/logo-white.svg";
+import ConnectorLogoStrip from "@/components/website/ConnectorLogoStrip";
+import HomeFeaturesSection from "@/components/website/HomeFeaturesSection";
+import HomeHeroVisual from "@/components/website/HomeHeroVisual";
+import HomeHowItWorksSection from "@/components/website/HomeHowItWorksSection";
 import { APP_NAME, APP_TAGLINE } from "@/constants/branding";
+import { CTA_GRADIENT, HERO_GRADIENT } from "@/constants/marketing-visual";
 import ClientRoutes from "@/constants/client-routes";
-
-const FEATURES = [
-  {
-    icon: FiCloud,
-    title: "Unified connectors",
-    description:
-      "Move data between cloud warehouses, CRMs, ERPs, and file stores without bespoke scripts for every pair.",
-  },
-  {
-    icon: FiGitBranch,
-    title: "Pipeline orchestration",
-    description:
-      "Design batch and incremental flows, monitor runs, and resume safely when something needs attention.",
-  },
-  {
-    icon: FiZap,
-    title: "Migration engine",
-    description:
-      "A dedicated migration-function tier handles heavy extract/load work while Django and FastAPI stay responsive.",
-  },
-  {
-    icon: FiShield,
-    title: "Proxy & security",
-    description:
-      "SAP OData and on-prem sources reach the cloud through the proxy agent hub—with mTLS and tenant-scoped access.",
-  },
-];
-
-const STEPS = [
-  {
-    step: "01",
-    title: "Connect sources & destinations",
-    body: "Configure credentials once; Syncdatesy stores them securely for your organization.",
-  },
-  {
-    step: "02",
-    title: "Map schemas & schedule",
-    body: "Choose tables, transforms, and when pipelines should run—or chain them in the scheduler UI.",
-  },
-  {
-    step: "03",
-    title: "Observe & iterate",
-    body: "Track progress, activity logs, and failures; adjust mappings without rebuilding the whole stack.",
-  },
-];
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const state = location.state as { scrollTo?: string } | null;
+    const targetId = state?.scrollTo || location.hash.replace("#", "");
+    if (!targetId) return;
+
+    const timer = window.setTimeout(() => {
+      document.getElementById(targetId)?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 80);
+
+    return () => window.clearTimeout(timer);
+  }, [location.hash, location.state]);
+
+  const goLogin = () =>
+    navigate(`${ClientRoutes.AUTH}/${ClientRoutes.LOGIN}`);
+  const goRegister = () =>
+    navigate(`${ClientRoutes.AUTH}/${ClientRoutes.REGISTER}`);
 
   return (
-    <Box pt={{ base: 20, md: 24 }} pb={16} w="full" bg="bg.canvas">
+    <Box w="full" bg="bg.canvas" scrollMarginTop="5rem">
       <Box
         id="home"
-        bgGradient="linear(to-b, brand.50, bg.surface)"
-        borderBottomWidth="1px"
-        borderColor="border.subtle"
-        py={{ base: 12, md: 20 }}
+        position="relative"
+        overflow="hidden"
+        pt={{ base: 24, md: 28 }}
+        pb={{ base: 16, md: 20 }}
+        color="white"
+        bg="navy.950"
+        backgroundImage={HERO_GRADIENT}
       >
-        <Container maxW="container.xl">
+        <Box
+          aria-hidden
+          position="absolute"
+          top="-15%"
+          right="5%"
+          w="480px"
+          h="480px"
+          borderRadius="full"
+          bg="rgba(45, 212, 191, 0.2)"
+          filter="blur(80px)"
+        />
+        <Box
+          aria-hidden
+          position="absolute"
+          bottom="-20%"
+          left="-10%"
+          w="400px"
+          h="400px"
+          borderRadius="full"
+          bg="rgba(14, 165, 233, 0.1)"
+          filter="blur(72px)"
+        />
+        <Image
+          aria-hidden
+          src={LogoWhite}
+          alt=""
+          position="absolute"
+          right={{ base: "-20%", lg: "8%" }}
+          bottom={{ base: "-10%", lg: "5%" }}
+          w={{ base: "280px", lg: "360px" }}
+          opacity={0.12}
+          pointerEvents="none"
+        />
+
+        <Container maxW="container.xl" position="relative" zIndex={1}>
           <Grid
-            templateColumns={{ base: "1fr", lg: "1.2fr 1fr" }}
-            gap={10}
+            templateColumns={{ base: "1fr", lg: "1.05fr 1fr" }}
+            gap={{ base: 12, lg: 16 }}
             alignItems="center"
           >
             <Stack gap={6}>
               <Text
-                color="brand.700"
-                fontWeight="semibold"
-                fontSize="sm"
-                letterSpacing="wide"
+                fontSize="xs"
+                fontWeight="bold"
+                letterSpacing="0.14em"
                 textTransform="uppercase"
+                color="brand.200"
               >
                 Built for modern data teams
               </Text>
               <Heading
                 as="h1"
-                fontSize={{ base: "3xl", md: "5xl" }}
-                lineHeight="shorter"
+                fontSize={{ base: "3xl", md: "4.5xl", lg: "5xl" }}
+                lineHeight="1.08"
+                letterSpacing="-0.03em"
+                fontWeight="bold"
               >
-                {APP_NAME} keeps your data{" "}
-                <Box as="span" color="brand.600">
-                  in sync
+                Sync once.{" "}
+                <Box as="span" color="brand.300">
+                  Trust always.
                 </Box>
-                , end to end
               </Heading>
               <Text
                 fontSize={{ base: "md", md: "lg" }}
-                color="fg.muted"
+                color="whiteAlpha.900"
                 maxW="xl"
+                lineHeight="tall"
               >
-                {APP_TAGLINE} Orchestrate connectors, migrations, and batch jobs
-                from a single workspace backed by the Syncdatesy platform.
+                {APP_TAGLINE} Orchestrate {APP_NAME} connectors, migrations,
+                and batch jobs from one control plane.
               </Text>
               <Stack direction={{ base: "column", sm: "row" }} gap={3}>
                 <Button
                   size="lg"
                   colorPalette="brand"
-                  onClick={() =>
-                    navigate(`${ClientRoutes.AUTH}/${ClientRoutes.LOGIN}`)
-                  }
+                  onClick={goLogin}
+                  boxShadow="0 12px 28px -8px rgba(13, 148, 136, 0.55)"
                 >
                   Sign in <FiArrowRight />
                 </Button>
                 <Button
                   size="lg"
                   variant="outline"
-                  colorPalette="brand"
-                  onClick={() =>
-                    navigate(`${ClientRoutes.AUTH}/${ClientRoutes.REGISTER}`)
-                  }
+                  borderColor="whiteAlpha.500"
+                  color="white"
+                  _hover={{ bg: "whiteAlpha.150" }}
+                  onClick={goRegister}
                 >
                   Request access
                 </Button>
               </Stack>
             </Stack>
-            <Box
-              display={{ base: "none", lg: "block" }}
-              borderRadius="2xl"
-              p={8}
-              bg="bg.surface"
-              boxShadow="0 24px 64px -24px rgba(15,118,110,0.35)"
-              borderWidth="1px"
-              borderColor="border.subtle"
-            >
-              <Stack gap={4}>
-                <Text fontWeight="bold" color="brand.700">
-                  What you get
-                </Text>
-                {FEATURES.slice(0, 3).map((f) => (
-                  <Stack
-                    key={f.title}
-                    direction="row"
-                    gap={3}
-                    align="flex-start"
-                  >
-                    <Box color="brand.500" mt={1}>
-                      <f.icon size={22} />
-                    </Box>
-                    <Box>
-                      <Text fontWeight="semibold">{f.title}</Text>
-                      <Text fontSize="sm" color="gray.600">
-                        {f.description}
-                      </Text>
-                    </Box>
-                  </Stack>
-                ))}
-              </Stack>
-            </Box>
+            <HomeHeroVisual />
           </Grid>
         </Container>
       </Box>
 
-      <Container maxW="container.xl" py={{ base: 14, md: 20 }} id="features">
-        <Stack gap={4} textAlign="center" mb={12}>
-          <Heading size="2xl">Platform capabilities</Heading>
-          <Text color="gray.600" maxW="2xl" mx="auto">
-            Syncdatesy bundles the customer UI, API adapter, migration services,
-            and Kubernetes tooling in one monorepo—so product and ops stay
-            aligned.
-          </Text>
-        </Stack>
-        <SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
-          {FEATURES.map((f) => (
-            <Box
-              key={f.title}
-              p={6}
-              borderRadius="xl"
-              borderWidth="1px"
-              borderColor="border.subtle"
-              bg="bg.surface"
-              _hover={{ borderColor: "brand.200", shadow: "md" }}
-              transition="all 0.2s"
-            >
-              <Box color="brand.500" mb={3}>
-                <f.icon size={28} />
-              </Box>
-              <Heading size="md" mb={2}>
-                {f.title}
-              </Heading>
-              <Text color="gray.600" fontSize="sm">
-                {f.description}
-              </Text>
-            </Box>
-          ))}
-        </SimpleGrid>
-      </Container>
+      <ConnectorLogoStrip />
 
-      <Box id="about" bg="bg.subtle" py={{ base: 14, md: 20 }}>
-        <Container maxW="container.xl">
-          <Stack gap={4} textAlign="center" mb={10}>
-            <Heading size="2xl">How it works</Heading>
-            <Text color="gray.600">
-              Three steps from connection to continuous sync
-            </Text>
-          </Stack>
-          <SimpleGrid columns={{ base: 1, md: 3 }} gap={6}>
-            {STEPS.map((s) => (
-              <Box
-                key={s.step}
-                bg="bg.surface"
-                p={6}
-                borderRadius="xl"
-                borderWidth="1px"
-                borderColor="border.subtle"
-              >
-                <Text fontSize="4xl" fontWeight="bold" color="brand.200" mb={2}>
-                  {s.step}
-                </Text>
-                <Heading size="md" mb={2}>
-                  {s.title}
-                </Heading>
-                <Text fontSize="sm" color="gray.600">
-                  {s.body}
-                </Text>
-              </Box>
-            ))}
-          </SimpleGrid>
-        </Container>
-      </Box>
+      <HomeFeaturesSection />
 
-      <Box id="contact" py={{ base: 14, md: 16 }}>
+      <HomeHowItWorksSection />
+
+      <Box
+        id="contact"
+        py={{ base: 14, md: 18 }}
+        scrollMarginTop="5.5rem"
+      >
         <Container maxW="container.lg">
           <Stack
-            gap={4}
+            gap={5}
             textAlign="center"
-            p={{ base: 8, md: 12 }}
+            p={{ base: 8, md: 14 }}
             borderRadius="2xl"
-            backgroundImage="gradient.cta"
             color="white"
+            position="relative"
+            overflow="hidden"
+            backgroundImage={CTA_GRADIENT}
+            boxShadow="0 24px 48px -20px rgba(13, 148, 136, 0.4)"
           >
-            <Heading size="xl">Ready to explore Syncdatesy?</Heading>
-            <Text opacity={0.95}>
-              Sign in with your organization account or request trial access for
-              your team.
-            </Text>
+            <Box
+              aria-hidden
+              position="absolute"
+              inset={0}
+              backgroundImage={`url("${LogoWhite}")`}
+              backgroundRepeat="no-repeat"
+              backgroundPosition="right -40px bottom -60px"
+              backgroundSize="320px"
+              opacity={0.15}
+            />
+            <Stack gap={2} position="relative">
+              <Heading size="xl" letterSpacing="-0.02em">
+                Ready to explore Syncdatesy?
+              </Heading>
+              <Text color="whiteAlpha.900" maxW="lg" mx="auto">
+                Sign in with your organization account or request access for
+                your team.
+              </Text>
+            </Stack>
             <Stack
               direction={{ base: "column", sm: "row" }}
               gap={3}
               justify="center"
+              position="relative"
             >
               <Button
                 size="lg"
                 bg="white"
                 color="brand.800"
-                _hover={{ bg: "bg.subtle" }}
-                onClick={() =>
-                  navigate(`${ClientRoutes.AUTH}/${ClientRoutes.LOGIN}`)
-                }
+                _hover={{ bg: "brand.50" }}
+                onClick={goLogin}
               >
                 Sign in
               </Button>
@@ -278,9 +220,7 @@ export default function HomePage() {
                 borderColor="whiteAlpha.700"
                 color="white"
                 _hover={{ bg: "whiteAlpha.200" }}
-                onClick={() =>
-                  navigate(`${ClientRoutes.AUTH}/${ClientRoutes.REGISTER}`)
-                }
+                onClick={goRegister}
               >
                 Request access
               </Button>

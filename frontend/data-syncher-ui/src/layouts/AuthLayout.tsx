@@ -1,6 +1,6 @@
-import { Grid, GridItem, useBreakpointValue } from "@chakra-ui/react";
+import { Box, Flex, Grid, GridItem, Link } from "@chakra-ui/react";
 
-import { Link, Navigate, Outlet } from "react-router";
+import { Link as RouterLink, Navigate, Outlet } from "react-router";
 
 import AuthMarketingPanel from "@/components/auth/AuthMarketingPanel";
 import { AppBrand } from "@/components/branding/AppBrand";
@@ -13,62 +13,76 @@ export default function AuthLayout() {
     authState: { isAuthenticated },
   } = useAuth();
 
-  const gridTemplateAreas = useBreakpointValue({
-    base: `"header" "main"`,
-    md: `"header header" "banner main"`,
-  });
-
-  const gridTemplateColumns = useBreakpointValue({
-    base: "1fr",
-    md: "1.05fr 1fr",
-  });
-
-  const gridTemplateRows = useBreakpointValue({
-    base: "auto 1fr",
-    md: "72px 1fr",
-  });
-
   if (isAuthenticated) {
     return <Navigate to={ClientRoutes.DASHBOARD} replace />;
   }
 
   return (
     <Grid
-      templateAreas={gridTemplateAreas}
-      templateColumns={gridTemplateColumns}
-      templateRows={gridTemplateRows}
-      minH="100vh"
+      templateAreas={{ base: `"header" "main"`, md: `"banner main"` }}
+      templateColumns={{ base: "1fr", md: "minmax(380px, 1.05fr) minmax(400px, 1fr)" }}
+      minH="100dvh"
       bg="bg.canvas"
     >
       <GridItem
         area="header"
         as="header"
-        display="flex"
+        display={{ base: "flex", md: "none" }}
         alignItems="center"
-        px={{ base: 4, md: 6 }}
+        px={4}
+        py={3}
         bg="bg.surface"
         borderBottomWidth="1px"
         borderColor="border.subtle"
         zIndex={10}
       >
-        <AppBrand size="md" nameColor="brand.600" />
+        <AppBrand size="sm" nameColor="brand.700" />
         <Link
-          to={ClientRoutes.HOME}
-          style={{
-            marginLeft: "auto",
-            fontSize: "0.875rem",
-            fontWeight: 600,
-            color: "var(--ck-colors-brand-600)",
-          }}
+          asChild
+          ml="auto"
+          fontSize="sm"
+          fontWeight="semibold"
+          color="brand.600"
+          _hover={{ color: "brand.700", textDecoration: "none" }}
         >
-          ← Back to home
+          <RouterLink to={ClientRoutes.HOME}>← Back to home</RouterLink>
         </Link>
       </GridItem>
-      <GridItem area="banner" display={{ base: "none", md: "block" }} minH={0}>
+
+      <GridItem
+        area="banner"
+        display={{ base: "none", md: "block" }}
+        minH="100dvh"
+        position="sticky"
+        top={0}
+        alignSelf="start"
+      >
         <AuthMarketingPanel />
       </GridItem>
+
       <AuthContainer>
-        <Outlet />
+        <Flex
+          w="full"
+          maxW="520px"
+          mx="auto"
+          justify="flex-end"
+          mb={4}
+          px={2}
+          display={{ base: "none", md: "flex" }}
+        >
+          <Link
+            asChild
+            fontSize="sm"
+            fontWeight="semibold"
+            color="brand.600"
+            _hover={{ color: "brand.700", textDecoration: "none" }}
+          >
+            <RouterLink to={ClientRoutes.HOME}>← Back to home</RouterLink>
+          </Link>
+        </Flex>
+        <Box w="full" maxW="440px" mx="auto">
+          <Outlet />
+        </Box>
       </AuthContainer>
     </Grid>
   );

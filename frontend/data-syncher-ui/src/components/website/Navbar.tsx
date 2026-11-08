@@ -2,9 +2,10 @@ import { Box, Button, Flex } from "@chakra-ui/react";
 
 import { PiUserCircleLight } from "react-icons/pi";
 
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 
 import { AppBrand } from "@/components/branding/AppBrand";
+import HomeSectionLink from "@/components/website/HomeSectionLink";
 import ClientRoutes from "@/constants/client-routes";
 
 const Navbar = () => {
@@ -34,10 +35,10 @@ const Navbar = () => {
         fontSize="sm"
         fontWeight="medium"
       >
-        <Link to="/#home">Home</Link>
-        <Link to="/#features">Features</Link>
-        <Link to="/#about">How it works</Link>
-        <Link to="/#contact">Get started</Link>
+        <HomeSectionLink sectionId="home">Home</HomeSectionLink>
+        <HomeSectionLink sectionId="features">Features</HomeSectionLink>
+        <HomeSectionLink sectionId="about">How it works</HomeSectionLink>
+        <HomeSectionLink sectionId="contact">Get started</HomeSectionLink>
       </Box>
       <Flex gap={4}>
         <Button

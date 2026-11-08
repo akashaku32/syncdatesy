@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-import { GridItem, GridItemProps } from "@chakra-ui/react";
+import { Box, GridItem, GridItemProps } from "@chakra-ui/react";
 
 type AuthContainerProps = GridItemProps & {
   children: ReactNode;
@@ -15,15 +15,31 @@ export default function AuthContainer({
       area="main"
       as="main"
       {...props}
-      p={{ base: 5, md: 10 }}
-      bg="bg.canvas"
-      justifyContent="center"
-      alignItems="center"
-      display="flex"
+      position="relative"
       overflowY="auto"
-      minH={0}
+      minH={{ base: "auto", md: "100dvh" }}
+      display="flex"
+      flexDirection="column"
+      justifyContent={{ base: "flex-start", md: "center" }}
+      alignItems="center"
+      px={{ base: 4, md: 10, lg: 14 }}
+      py={{ base: 6, md: 10 }}
+      bg="bg.auth"
     >
-      {children}
+      <Box
+        aria-hidden
+        position="absolute"
+        top={0}
+        right={0}
+        w="70%"
+        h="50%"
+        pointerEvents="none"
+        opacity={0.5}
+        bgGradient="radial(circle at 100% 0%, brand.100, transparent 65%)"
+      />
+      <Box position="relative" zIndex={1} w="full" display="flex" flexDirection="column" alignItems="stretch">
+        {children}
+      </Box>
     </GridItem>
   );
 }
