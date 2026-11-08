@@ -1,10 +1,10 @@
-import { Box, Button, Flex, Image, Text } from "@chakra-ui/react";
+import { Box, Button, Flex } from "@chakra-ui/react";
 
 import { PiUserCircleLight } from "react-icons/pi";
 
 import { Link, useNavigate } from "react-router";
 
-import Logo from "@/assets/logo.svg";
+import { AppBrand } from "@/components/branding/AppBrand";
 import ClientRoutes from "@/constants/client-routes";
 
 const Navbar = () => {
@@ -24,21 +24,10 @@ const Navbar = () => {
       alignItems="center"
       padding={4}
     >
-      <Flex justifyContent={"center"} alignItems="center" gap={2}>
-        <Image
-          src={Logo}
-          alt="Logo"
-          width={{ base: "40px", md: "50px" }}
-          height={{ base: "40px", md: "50px" }}
-          onClick={() => navigate(ClientRoutes.HOME)}
-          cursor="pointer"
-          transition="transform 0.2s"
-          _hover={{ transform: "scale(1.05)" }}
-        />
-        <Text fontSize="2xl" fontWeight="semibold" color="brand.500">
-          Datasyncher
-        </Text>
-      </Flex>
+      <AppBrand
+        size="lg"
+        onClick={() => navigate(ClientRoutes.HOME)}
+      />
       <Box display="flex" gap={4}>
         <Link to="#home">Home</Link>
         <Link to="#features">Features</Link>

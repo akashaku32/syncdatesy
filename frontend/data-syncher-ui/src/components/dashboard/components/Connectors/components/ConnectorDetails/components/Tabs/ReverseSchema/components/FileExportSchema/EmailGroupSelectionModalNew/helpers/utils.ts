@@ -77,7 +77,7 @@ export const renderTemplateText = (
   const conn =
     connectionName ||
     (destinationName ? `${destinationName} Connection` : "Source Connection");
-  const comp = companyName || "Datasyncher";
+  const comp = companyName || "Syncdatesy";
   const source = sourceDisplayName || "Source Data";
 
   return template

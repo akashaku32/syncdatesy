@@ -15,7 +15,7 @@ import { PiFlowArrowBold } from "react-icons/pi";
 import { useLocation, useNavigate } from "react-router";
 
 import CustomerIcon from "@/assets/images/customer-icon.svg";
-import Logo from "@/assets/images/logo.svg";
+import { AppBrand } from "@/components/branding/AppBrand";
 import ClientRoutes from "@/constants/client-routes";
 import useAuth from "@/context/Auth/useAuth";
 import usePermissions from "@/hooks/usePermissions";
@@ -96,7 +96,7 @@ const Sidebar = ({
     <GridItem
       paddingBlock={4}
       area="sidebar"
-      bg="#2A2D3E"
+      bg="sidebar.bg"
       display={sidebarDisplay}
       position="fixed"
       top={0}
@@ -109,25 +109,16 @@ const Sidebar = ({
       //transition={"width 0.2s ease-in-out"}
     >
       <Flex justifyContent="flex-start" alignItems="center" gap={2} p={2}>
-        <Image
-          src={Logo}
-          alt="Logo"
-          width={{ base: "40px", md: "30px" }}
-          height={{ base: "40px", md: "30px" }}
-          cursor="pointer"
-          transition="transform 0.2s"
-          _hover={{ transform: "scale(1.05)" }}
-          style={{ fill: "white" }}
+        <AppBrand
+          size="sm"
+          nameColor="white"
           onClick={() => navigate(ClientRoutes.CONNECTORS.ROOT)}
         />
-        <Text fontSize="2xl" fontWeight="semibold">
-          Datasyncher
-        </Text>
       </Flex>
       <Flex marginBlock={8}>
         <Flex
           borderLeft="3px solid"
-          borderColor="brand.accentOrange"
+          borderColor="sidebar.border"
           alignItems="center"
           gap={4}
           h="50px"

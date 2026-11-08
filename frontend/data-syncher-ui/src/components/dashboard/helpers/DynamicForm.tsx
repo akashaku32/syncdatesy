@@ -457,7 +457,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
             ""
           }
           isEditMode={mode === "edit"}
-          agentName="Datasyncher Agent"
+          agentName="Syncdatesy Agent"
           onValidate={validateRequiredFieldsBeforeAgentGen}
           onChange={(agentUuid) => {
             isDirtyRef.current = true;

@@ -35,7 +35,7 @@ const ProxyAgentGenerator: React.FC<ProxyAgentGeneratorProps> = ({
   connectorId,
   connectorName,
   isEditMode = false,
-  agentName = "Datasyncher Agent",
+  agentName = "Syncdatesy Agent",
   agentDownloadUrl = defaultDownloadRoute,
   onChange,
   disabled = false,
@@ -68,7 +68,7 @@ const ProxyAgentGenerator: React.FC<ProxyAgentGeneratorProps> = ({
       const response = await AxiosInstance.post<Blob>(
         ServerRoutes.proxyAgent.generate(),
         {
-          agent_name: agentName || "Datasyncher Agent",
+          agent_name: agentName || "Syncdatesy Agent",
         },
         {
           responseType: "blob",

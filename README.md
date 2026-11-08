@@ -1,173 +1,139 @@
-# syncdatesy (DataSyncher monorepo)
+# Syncdatesy
 
-Monorepo for **batch GKE** deployments: Django/DRF, FastAPI/Celery, **migration-function** connectors, **SAP proxy agent** hub, React UI, ODATA on-prem agent reference code, and Kubernetes manifests. This folder is the working copy used for **GCP batch** (`datasyncher-batch`) rollouts and local development—not a single deployable artifact by itself; images and secrets live in cluster/GCR.
+**Syncdatesy** is a monorepo for the DataSyncher data integration platform: connectors, pipelines, scheduling, SAP proxy agents, and the customer web UI. This repository is the canonical **akashaku32/syncdatesy** workspace—organized for local development and **GCP batch** (`datasyncher-batch`) rollouts.
 
-**Git remote:** [github.com/akashaku32/syncdatesy](https://github.com/akashaku32/syncdatesy.git)  
-**Default branch:** `main`
-
----
-
-## Repository layout
-
-| Path | Role |
-|------|------|
-| [`syncdatesy-adapter/`](syncdatesy-adapter/) | Backend: Django (`apps/elttool`), FastAPI + Celery (`backend/fast-api`), connectors (`backend/migration-function`), shared connectors lib, **SAP proxy agent** (`backend/sap_proxy_agent`), K8s manifests (`k8s/`), Cloud Build configs (`backend/cloudbuild/`) |
-| [`frontend/data-syncher-ui/`](frontend/data-syncher-ui/) | Customer React SPA (Vite)—calls DRF via `queryOptions` + axios |
-| [`frontend/`](frontend/) | Docker/nginx wrappers for batch frontend image build |
-| [`odata-agent/`](odata-agent/) | Reference / legacy ODATA proxy agent (client + server patterns) |
-| [`docs/`](docs/) | Cross-repo docs index and security notes at workspace root |
-| [`scripts/`](scripts/) | Rollout helpers, cluster scripts at workspace level |
-| [`sap_demo_files/`](sap_demo_files/) | SAP mapping / demo artifacts |
-| [`.cursor/`](.cursor/) | Cursor rules (optional; policy is in [`AGENTS.md`](AGENTS.md)) |
-
-**Agent guides (mandatory for code changes):**
-
-- Workspace: [`AGENTS.md`](AGENTS.md)
-- Adapter: [`syncdatesy-adapter/AGENTS.md`](syncdatesy-adapter/AGENTS.md)
-- UI: [`frontend/data-syncher-ui/AGENTS.md`](frontend/data-syncher-ui/AGENTS.md)
-
-**Kubernetes:** start at [`syncdatesy-adapter/k8s/README.md`](syncdatesy-adapter/k8s/README.md). Batch-specific rollout: [`syncdatesy-adapter/k8s/batch-cluster/`](syncdatesy-adapter/k8s/batch-cluster/).
-
-**SAP proxy agent:** [`syncdatesy-adapter/docs/operations/proxy-agent/ARCHITECTURE.md`](syncdatesy-adapter/docs/operations/proxy-agent/ARCHITECTURE.md), hub ops [`HUB.md`](syncdatesy-adapter/docs/operations/proxy-agent/HUB.md), DNS/TLS [`DNS-AND-TLS.md`](syncdatesy-adapter/docs/operations/proxy-agent/DNS-AND-TLS.md).
+| | |
+|---|---|
+| **Remote** | [github.com/akashaku32/syncdatesy](https://github.com/akashaku32/syncdatesy.git) |
+| **Default branch** | `main` |
+| **Batch UI** | https://gcp.datasyncher.com (when deployed) |
 
 ---
 
-## Git branches
+## What’s in this repo
 
-Long-lived integration:
-
-| Branch | Purpose |
-|--------|---------|
-| `main` | Full monorepo snapshot (no secrets); integration baseline |
-
-Feature branches (created from `main` for parallel work—they start identical to `main` until you commit on them):
-
-| Branch | Suggested focus |
-|--------|-----------------|
-| `feature/sap-proxy-agent-hub` | Hub, unary, gateway, gRPC/mTLS, `channel_factory`, network policies |
-| `feature/migration-function-connectors` | FastAPI connector routes, SAP OData proxy tests, authorization |
-| `feature/frontend-data-syncher-ui` | React SPA, proxy agent UI, connection flows |
-| `feature/batch-kubernetes-deploy` | `k8s/`, rollouts (`rollout-*-batch.ps1`), ingress, secrets **examples** |
-| `feature/netsuite-connectors` | NetSuite ODBC / migration-function NetSuite routers |
-| `feature/odata-agent` | `odata-agent/` tree and parity with `sap_proxy_agent` |
-| `feature/databricks-dynamics-load` | Databricks Dynamics load, Spark job client, docs |
-
-```powershell
-git fetch origin
-git switch feature/sap-proxy-agent-hub
+```mermaid
+flowchart TB
+  subgraph clients [Clients]
+    UI[Syncdatesy SPA]
+    Agent[odata-agent / on-prem agent]
+  end
+  subgraph platform [syncdatesy-adapter]
+    Django[Django DRF]
+    FastAPI[FastAPI + Celery]
+    MF[migration-function]
+    Hub[sap_proxy_agent hub]
+  end
+  subgraph ops [Operations]
+    K8s[k8s manifests]
+    Scripts[scripts/rollout]
+  end
+  UI --> Django
+  Django --> FastAPI
+  FastAPI --> MF
+  MF --> Hub
+  Agent --> Hub
+  K8s --> platform
+  Scripts --> K8s
 ```
 
----
+| Path | Purpose |
+|------|---------|
+| [`syncdatesy-adapter/`](syncdatesy-adapter/) | Backend: Django, FastAPI/Celery, `migration-function`, `sap_proxy_agent`, **k8s**, Cloud Build |
+| [`frontend/data-syncher-ui/`](frontend/data-syncher-ui/) | **Syncdatesy** React UI (Vite, Chakra)—see [UI README](frontend/data-syncher-ui/README.md) |
+| [`frontend/`](frontend/) | Docker/nginx image wrapper for batch frontend |
+| [`odata-agent/`](odata-agent/) | Reference ODATA on-prem proxy agent |
+| [`docs/`](docs/) | Architecture, security, cross-cutting docs |
+| [`scripts/`](scripts/) | Workspace rollout helpers → [`scripts/rollout/`](scripts/rollout/) |
 
-## What is committed vs excluded
-
-This repo is intended to be **safe to publish** (private GitHub still benefits from not storing credentials in history).
-
-**Included:** application source, k8s **manifests** and **example** secret YAML (`secrets.example.yaml`), Cloud Build YAML, docs, tests, generated gRPC stubs where checked in, UI source.
-
-**Excluded via [`.gitignore`](.gitignore) (do not force-add):**
-
-- `.env`, `*.key`, `*.pem`, live `secrets.yaml`, `k8s/secrets/`, `*_LOCAL_*` secret files
-- SAP/ODATA agent runtime configs: `config.json`, `config.batch.hub.json`, `odata-agent/**/keys/config.json`
-- `spectra-sf-jwt/`, GCP key JSON, nested git backups (`**/.git.nested-backup/`)
-- `node_modules/`, `venv/`, `__pycache__/`, local logs
-
-### Restore secrets locally
-
-1. **Batch cluster:** copy [`syncdatesy-adapter/k8s/batch-cluster/secrets/secrets.example.yaml`](syncdatesy-adapter/k8s/batch-cluster/secrets/secrets.example.yaml) → `secrets.local.yaml` (gitignored), fill from your secret manager, then apply per [`k8s/batch-cluster/`](syncdatesy-adapter/k8s/batch-cluster/) docs.
-2. **Django / services:** copy [`syncdatesy-adapter/.env.example`](syncdatesy-adapter/.env.example) → `.env` in the adapter tree.
-3. **ODATA reference agent:** see [`odata-agent/README.md`](odata-agent/README.md) (`config.example.json` → `config.json`).
-4. **Security overview:** [`docs/security/secrets-and-settings.md`](docs/security/secrets-and-settings.md).
-
-If AWS (or other) credentials were ever stored in a local `secrets.yaml` that left this machine, **rotate or disable those keys in the cloud console**—they must not be assumed confidential.
+**Agent guides:** [`AGENTS.md`](AGENTS.md) · [`syncdatesy-adapter/AGENTS.md`](syncdatesy-adapter/AGENTS.md) · [`frontend/data-syncher-ui/AGENTS.md`](frontend/data-syncher-ui/AGENTS.md)
 
 ---
 
-## SAP proxy agent (batch) — platform → hub
-
-High-level flow for **proxy** SAP OData connections:
-
-1. **UI / Django** triggers connection test → **migration-function** (`test_sap_odata_connection` with `connection_method=proxy`).
-2. **migration-function** opens mTLS gRPC to **sap-proxy-agent-hub** (`Datasynchor.TestSapConnection`), using env from deployment + mounted `sap-proxy-agent-hub-mtls`.
-3. **Hub** forwards to the **on-premises agent** registered by `proxy_agent` id (`cust_id`). If no agent session: gRPC `UNAVAILABLE` with details like *Agent for customer … is not connected*.
-4. Friendly errors: [`backend/migration-function/services/sap/proxy.py`](syncdatesy-adapter/backend/migration-function/services/sap/proxy.py) (`format_proxy_error_msg`).
-5. TLS peer name: [`backend/sap_proxy_agent/client/channel_factory.py`](syncdatesy-adapter/backend/sap_proxy_agent/client/channel_factory.py) maps in-cluster Service DNS `sap-proxy-agent-hub-svc…` → cert SAN **`sap-proxy-agent-hub`**.
-
-**Batch deployment env (migration-function):**
-
-| Variable | Typical value |
-|----------|----------------|
-| `PROXY_AGENT_SERVER_HOST` | `sap-proxy-agent-hub-svc.default.svc.cluster.local` |
-| `PROXY_AGENT_SERVER_PORT` | `50051` |
-| `PROXY_AGENT_HUB_MTLS_DIR` | `/etc/sap-proxy-agent-hub-client/mtls` |
-| `PROXY_AGENT_HUB_SSL_TARGET_NAME` | Optional; e.g. `agent-hub.gcp.datasyncher.com` when dialing LB IP |
-
-**Rollout migration-function image (batch):**
-
-```powershell
-cd syncdatesy-adapter
-.\k8s\batch-cluster\rollout-migration-function-batch.ps1 -Build
-```
-
-Context: `gke_datasyncher-batch_us-central1_datasyncher-batch-cluster`  
-Image: `gcr.io/datasyncher-batch/datasyncher-migration-function:batch`
-
----
-
-## Development quick start
+## Quick start
 
 ### Prerequisites
 
-- Python 3.10+, Node 18+ (UI), Docker (images), `gcloud` + `kubectl` (batch), `gh` (optional)
+Python 3.10+, Node 18+, Docker (optional), `gcloud` + `kubectl` (batch), `gh` (GitHub).
 
-### Backend (adapter)
+### Backend
 
 ```powershell
 cd syncdatesy-adapter
-# See syncdatesy-adapter/AGENTS.md for tests:
+# Tests — see syncdatesy-adapter/AGENTS.md
 python manage.py test apps.elttool.tests
-cd backend/migration-function; pytest tests/ -q
+cd backend\migration-function; pytest tests/ -q
 ```
 
-### Frontend
+### Frontend (Syncdatesy UI)
 
 ```powershell
-cd frontend/data-syncher-ui
+cd frontend\data-syncher-ui
 npm ci
-npm run lint
-npm run build
+npm run dev
 ```
 
-### Security checks (before PR)
+Branding lives in `src/constants/branding.ts` and `src/theme/theme.ts` (teal/sky palette, new logo).
 
-- Adapter: `pre-commit run` from `syncdatesy-adapter`
-- UI: `npm run audit:deps`
+### Secrets (never commit)
 
----
+| Need | Action |
+|------|--------|
+| Batch cluster | Copy `syncdatesy-adapter/k8s/batch-cluster/secrets/secrets.example.yaml` → `secrets.local.yaml` |
+| Django / services | Copy `syncdatesy-adapter/.env.example` → `.env` |
+| ODATA reference agent | Copy `odata-agent/**/config.example.json` → `config.json` |
 
-## Batch GKE workloads (reference)
-
-| Deployment | Image tag (batch) | Notes |
-|------------|-------------------|--------|
-| `django`, `fastapi`, `frontend` | `:batch` / project registry | App pool |
-| `migration-function` | `datasyncher-migration-function:batch` | Connector HTTP, SAP proxy gRPC client |
-| `sap-proxy-agent-hub` | `datasyncher-sap-proxy-agent-hub:batch` | Agent mTLS `:50051`, keep **replicas: 1** until shared registry |
-| `sap-proxy-agent-unary` | `datasyncher-sap-proxy-agent-unary:batch` | Bootstrap token validation |
-| `proxy-agent-gateway` | HTTPS progress fallback | See proxy-agent docs |
-
-Network policies: [`syncdatesy-adapter/k8s/network-policies/`](syncdatesy-adapter/k8s/network-policies/) (e.g. `allow-migration-function-to-sap-proxy-agent-hub`).
+Details: [`docs/security/secrets-and-settings.md`](docs/security/secrets-and-settings.md). **Rotate** any credentials that ever lived only in local secret files you deleted.
 
 ---
 
-## Contributing / workflow
+## Git workflow
 
-1. Branch from `main` or an existing `feature/*` branch.
-2. Follow [`AGENTS.md`](AGENTS.md)—minimal diffs, no secrets in source, tenant-scoped connections on backend.
-3. Run lint/tests for touched trees.
-4. Open PR to `main`; batch images via Cloud Build under `backend/cloudbuild/batch/`.
+| Branch | Use |
+|--------|-----|
+| `main` | Integration; safe-to-clone snapshot (no secrets) |
+| `feature/sap-proxy-agent-hub` | Hub, mTLS, gateway |
+| `feature/migration-function-connectors` | Connector routes & tests |
+| `feature/frontend-data-syncher-ui` | SPA, UX, branding |
+| `feature/batch-kubernetes-deploy` | k8s, rollouts, ingress examples |
+| `feature/netsuite-connectors` | NetSuite paths |
+| `feature/odata-agent` | `odata-agent/` parity |
+| `feature/databricks-dynamics-load` | Databricks / Dynamics load |
+
+```powershell
+git fetch origin
+git switch feature/frontend-data-syncher-ui
+```
 
 ---
 
-## License and ownership
+## Batch cluster (reference)
 
-Proprietary DataSyncher / Spectra work product. Do not commit customer credentials or production Secret manifests. For access to GCR and batch cluster credentials, use your team’s secret store—not this repository.
+- **Context:** `gke_datasyncher-batch_us-central1_datasyncher-batch-cluster`
+- **K8s entry:** [`syncdatesy-adapter/k8s/README.md`](syncdatesy-adapter/k8s/README.md)
+- **Rollout scripts:** [`scripts/rollout/README.md`](scripts/rollout/README.md) or adapter `k8s/batch-cluster/rollout-*-batch.ps1`
+
+**SAP proxy (high level):** UI → migration-function (mTLS) → `sap-proxy-agent-hub` → on-prem agent. Architecture: [`syncdatesy-adapter/docs/operations/proxy-agent/ARCHITECTURE.md`](syncdatesy-adapter/docs/operations/proxy-agent/ARCHITECTURE.md).
+
+---
+
+## Security & quality
+
+- Policies: [`docs/security/`](docs/security/)
+- Before PR: `pre-commit run` in `syncdatesy-adapter`; `npm run lint` + `npm run audit:deps` in UI
+- No `.env`, `*.key`, live `secrets.yaml`, or agent `config.json` in git—see [`.gitignore`](.gitignore)
+
+---
+
+## Contributing
+
+1. Branch from `main` or the matching `feature/*` branch.
+2. Minimal diffs; follow [`AGENTS.md`](AGENTS.md).
+3. Run checks for trees you touch.
+4. Open PR to `main` on GitHub.
+
+---
+
+## License
+
+Proprietary DataSyncher / Spectra work product. Credentials and production Secret manifests belong in your secret store—not this repository.

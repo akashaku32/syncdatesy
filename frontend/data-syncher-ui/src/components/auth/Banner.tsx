@@ -1,12 +1,14 @@
 import { GridItem, Text } from "@chakra-ui/react";
 
 import LogoWhite from "@/assets/images/logo-white.svg";
+import { APP_NAME, APP_TAGLINE } from "@/constants/branding";
 
 const Banner = () => {
   return (
     <GridItem
       area="banner"
-      background="brand.500"
+      bg="brand.700"
+      backgroundImage="linear-gradient(145deg, #0f766e 0%, #0284c7 55%, #14b8a6 100%)"
       backgroundImage={`url("${LogoWhite}"), url("${LogoWhite}")`}
       backgroundRepeat="no-repeat, no-repeat"
       backgroundPosition="top left, calc(100% - -10px) calc(100% - 20px)"
@@ -21,13 +23,9 @@ const Banner = () => {
       display={{ base: "none", md: "flex" }}
     >
       <Text fontWeight="bold" fontSize="4xl">
-        Welcome to Datasyncher
+        Welcome to {APP_NAME}
       </Text>
-      <Text>
-        Managing and syncing data across platforms has never been easier.
-        Datasyncher simplifies your data migration, ETL processes, and real-time
-        synchronization so your business can focus on what truly matters.
-      </Text>
+      <Text maxW="lg">{APP_TAGLINE}</Text>
     </GridItem>
   );
 };

@@ -59,7 +59,7 @@ const AgentDownloads: React.FC = () => {
           { label: "Agent Downloads" },
         ]}
         title="Agent downloads"
-        subtitle="Download the Datasyncher agent to route connections through your own network."
+        subtitle="Download the Syncdatesy agent to route connections through your own network."
       />
 
       <VStack gap={4} align="stretch" maxW="2xl" mt={2}>
