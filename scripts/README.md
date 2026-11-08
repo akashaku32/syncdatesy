@@ -40,6 +40,6 @@ See [rollout/README.md](rollout/README.md) for all services, flags, and safety n
 
 ## Related paths
 
-- Low-level rollout logic: `Datasyncher-React-Adapter/k8s/batch-cluster/rollout-*-batch.ps1`
-- K8s manifests: `Datasyncher-React-Adapter/k8s/deployments/`
-- Detailed Cloud Build steps: `Datasyncher-React-Adapter/k8s/batch-cluster/ROLLOUT-BATCH-CLOUDBUILD.md`
+- Low-level rollout logic: `syncdatesy-adapter/k8s/batch-cluster/rollout-*-batch.ps1`
+- K8s manifests: `syncdatesy-adapter/k8s/deployments/`
+- Detailed Cloud Build steps: `syncdatesy-adapter/k8s/batch-cluster/ROLLOUT-BATCH-CLOUDBUILD.md`

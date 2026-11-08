@@ -1,6 +1,6 @@
 # ODATA proxy agent (reference)
 
-Legacy on-premises ODATA agent used as a reference for [`Datasyncher-React-Adapter/backend/sap_proxy_agent`](../Datasyncher-React-Adapter/backend/sap_proxy_agent).
+Legacy on-premises ODATA agent used as a reference for [`syncdatesy-adapter/backend/sap_proxy_agent`](../syncdatesy-adapter/backend/sap_proxy_agent).
 
 ## Local configuration
 
@@ -15,7 +15,7 @@ Generate or restore mTLS material under `keys/` and `server/mtls/` from your tea
 
 ## Smoke test (adapter)
 
-From `Datasyncher-React-Adapter`:
+From `syncdatesy-adapter`:
 
 ```powershell
 .\backend\sap_proxy_agent\scripts\local_proxy_agent_smoke.ps1

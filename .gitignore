@@ -52,7 +52,7 @@ Thumbs.db
 # Nested repo metadata (monorepo tracks files directly; do not publish old .git dirs)
 **/.git.nested-backup/
 **/.git.datasyncher-adapter-only/
-Datasyncher-React-Adapter/.git/
+syncdatesy-adapter/.git/
 
 # ODATA agent local keys/certs (use examples only)
 odata-agent/**/keys/**/*.crt

@@ -4,7 +4,7 @@
 
 **Transport default:** `grpc_with_https_fallback` — try gRPC first, then HTTPS + mTLS + HMAC.
 
-**Ops / deploy:** [`Datasyncher-React-Adapter/docs/operations/proxy-agent/`](../../Datasyncher-React-Adapter/docs/operations/proxy-agent/) · Agent README: [README-AGENT.md](../../Datasyncher-React-Adapter/docs/operations/proxy-agent/README-AGENT.md)
+**Ops / deploy:** [`syncdatesy-adapter/docs/operations/proxy-agent/`](../../syncdatesy-adapter/docs/operations/proxy-agent/) · Agent README: [README-AGENT.md](../../syncdatesy-adapter/docs/operations/proxy-agent/README-AGENT.md)
 
 ## Why a dedicated host
 
@@ -117,5 +117,5 @@ Hub implements `ReportProgress` and relays to the same Django ingest (`X-INTERNA
 - [service-auth.md](./service-auth.md) — internal key contract
 - [kubernetes.md](./kubernetes.md) — pod / NetworkPolicy hardening
 - [field-encryption.md](./field-encryption.md) — AES-GCM field crypto
-- Ops: [proxy-agent gateway](../../Datasyncher-React-Adapter/docs/operations/proxy-agent/GATEWAY.md)
-- DNS steps: [DNS and TLS](../../Datasyncher-React-Adapter/docs/operations/proxy-agent/DNS-AND-TLS.md)
+- Ops: [proxy-agent gateway](../../syncdatesy-adapter/docs/operations/proxy-agent/GATEWAY.md)
+- DNS steps: [DNS and TLS](../../syncdatesy-adapter/docs/operations/proxy-agent/DNS-AND-TLS.md)

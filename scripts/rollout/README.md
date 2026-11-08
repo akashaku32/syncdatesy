@@ -10,15 +10,15 @@ Simple one-command deploys for the **datasyncher-batch** GKE cluster. Each scrip
 
 Rolling out code to the batch cluster used to mean running long `gcloud builds submit` and `kubectl` commands from memory, or digging into `k8s/batch-cluster/`. These wrappers give you a **single command per service** from your local workspace — no need to remember image names, deployment lists, or build config paths.
 
-They delegate to the battle-tested scripts in `Datasyncher-React-Adapter/k8s/batch-cluster/` (guards, multi-deployment restarts, env updates).
+They delegate to the battle-tested scripts in `syncdatesy-adapter/k8s/batch-cluster/` (guards, multi-deployment restarts, env updates).
 
 ## Scripts
 
 | Script | What it deploys | Local source |
 |--------|-----------------|--------------|
-| `rollout_django` | django, celery-worker-django, celery-beat-django, apscheduler | `Datasyncher-React-Adapter/` (Django app) |
-| `rollout_fastapi` | fastapi, celery-worker-control, celery-worker-control-reconcile, celery-beat-migration | `Datasyncher-React-Adapter/backend/fast-api/` |
-| `rollout_migration_function` | migration-function | `Datasyncher-React-Adapter/backend/migration-function/` |
+| `rollout_django` | django, celery-worker-django, celery-beat-django, apscheduler | `syncdatesy-adapter/` (Django app) |
+| `rollout_fastapi` | fastapi, celery-worker-control, celery-worker-control-reconcile, celery-beat-migration | `syncdatesy-adapter/backend/fast-api/` |
+| `rollout_migration_function` | migration-function | `syncdatesy-adapter/backend/migration-function/` |
 | `rollout_frontend` | frontend | `frontend/data-syncher-ui/` |
 | `rollout_all` | All four groups, in safe order | Entire workspace |
 

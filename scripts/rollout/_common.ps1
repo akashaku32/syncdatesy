@@ -1,6 +1,6 @@
 # Shared paths and helpers for workspace rollout scripts.
 $Script:WorkspaceRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
-$Script:AdapterRoot = Join-Path $WorkspaceRoot "Datasyncher-React-Adapter"
+$Script:AdapterRoot = Join-Path $WorkspaceRoot "syncdatesy-adapter"
 $Script:FrontendRoot = Join-Path $WorkspaceRoot "frontend\data-syncher-ui"
 $Script:BatchClusterDir = Join-Path $AdapterRoot "k8s\batch-cluster"
 

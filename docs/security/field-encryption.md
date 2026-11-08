@@ -11,7 +11,7 @@
 
 ### Library
 
-File: `Datasyncher-React-Adapter/apps/utils/encryption.py`
+File: `syncdatesy-adapter/apps/utils/encryption.py`
 
 - AES-GCM with PBKDF2-derived material.
 - `encrypt_sensitive` / `decrypt_sensitive`.
@@ -37,7 +37,7 @@ File: `apps/elttool/migrations/0123_reencrypt_credentials_master_key.py`
 2. Set `FIELD_ENCRYPTION_KEY` (and bump `FIELD_ENCRYPTION_KEY_VERSION` when rotating).
 3. Add the same vars to k8s Secret / ExternalSecret templates for Django (and any worker that decrypts).
 4. Run migrations so `0123` executes with the key present.
-5. Follow [`SECRET_ROTATION.md`](../../Datasyncher-React-Adapter/docs/operations/SECRET_ROTATION.md) for later rotations.
+5. Follow [`SECRET_ROTATION.md`](../../syncdatesy-adapter/docs/operations/SECRET_ROTATION.md) for later rotations.
 
 ## Gaps
 

@@ -22,11 +22,11 @@ Canonical security docs for the monorepo (Django/DRF, FastAPI, migration-functio
 
 | Topic | Location |
 |-------|----------|
-| Secret rotation checklist | [`Datasyncher-React-Adapter/docs/operations/SECRET_ROTATION.md`](../../Datasyncher-React-Adapter/docs/operations/SECRET_ROTATION.md) |
-| Proxy agent gateway ops / DNS | [`Datasyncher-React-Adapter/docs/operations/proxy-agent/`](../../Datasyncher-React-Adapter/docs/operations/proxy-agent/) |
-| RBAC (product roles) | [`Datasyncher-React-Adapter/docs/rbac/`](../../Datasyncher-React-Adapter/docs/rbac/) |
-| K8s secrets hygiene | [`Datasyncher-React-Adapter/k8s/secrets/README.md`](../../Datasyncher-React-Adapter/k8s/secrets/README.md) |
-| Pod hardening notes | [`Datasyncher-React-Adapter/k8s/deployments/README-HARDENING.md`](../../Datasyncher-React-Adapter/k8s/deployments/README-HARDENING.md) |
+| Secret rotation checklist | [`syncdatesy-adapter/docs/operations/SECRET_ROTATION.md`](../../syncdatesy-adapter/docs/operations/SECRET_ROTATION.md) |
+| Proxy agent gateway ops / DNS | [`syncdatesy-adapter/docs/operations/proxy-agent/`](../../syncdatesy-adapter/docs/operations/proxy-agent/) |
+| RBAC (product roles) | [`syncdatesy-adapter/docs/rbac/`](../../syncdatesy-adapter/docs/rbac/) |
+| K8s secrets hygiene | [`syncdatesy-adapter/k8s/secrets/README.md`](../../syncdatesy-adapter/k8s/secrets/README.md) |
+| Pod hardening notes | [`syncdatesy-adapter/k8s/deployments/README-HARDENING.md`](../../syncdatesy-adapter/k8s/deployments/README-HARDENING.md) |
 | Agent coding rules | [`AGENTS.md`](../../AGENTS.md) (root) + per-repo `AGENTS.md` |
 
 ## Status legend

@@ -11,7 +11,7 @@ Monorepo for **batch GKE** deployments: Django/DRF, FastAPI/Celery, **migration-
 
 | Path | Role |
 |------|------|
-| [`Datasyncher-React-Adapter/`](Datasyncher-React-Adapter/) | Backend: Django (`apps/elttool`), FastAPI + Celery (`backend/fast-api`), connectors (`backend/migration-function`), shared connectors lib, **SAP proxy agent** (`backend/sap_proxy_agent`), K8s manifests (`k8s/`), Cloud Build configs (`backend/cloudbuild/`) |
+| [`syncdatesy-adapter/`](syncdatesy-adapter/) | Backend: Django (`apps/elttool`), FastAPI + Celery (`backend/fast-api`), connectors (`backend/migration-function`), shared connectors lib, **SAP proxy agent** (`backend/sap_proxy_agent`), K8s manifests (`k8s/`), Cloud Build configs (`backend/cloudbuild/`) |
 | [`frontend/data-syncher-ui/`](frontend/data-syncher-ui/) | Customer React SPA (Vite)—calls DRF via `queryOptions` + axios |
 | [`frontend/`](frontend/) | Docker/nginx wrappers for batch frontend image build |
 | [`odata-agent/`](odata-agent/) | Reference / legacy ODATA proxy agent (client + server patterns) |
@@ -23,12 +23,12 @@ Monorepo for **batch GKE** deployments: Django/DRF, FastAPI/Celery, **migration-
 **Agent guides (mandatory for code changes):**
 
 - Workspace: [`AGENTS.md`](AGENTS.md)
-- Adapter: [`Datasyncher-React-Adapter/AGENTS.md`](Datasyncher-React-Adapter/AGENTS.md)
+- Adapter: [`syncdatesy-adapter/AGENTS.md`](syncdatesy-adapter/AGENTS.md)
 - UI: [`frontend/data-syncher-ui/AGENTS.md`](frontend/data-syncher-ui/AGENTS.md)
 
-**Kubernetes:** start at [`Datasyncher-React-Adapter/k8s/README.md`](Datasyncher-React-Adapter/k8s/README.md). Batch-specific rollout: [`Datasyncher-React-Adapter/k8s/batch-cluster/`](Datasyncher-React-Adapter/k8s/batch-cluster/).
+**Kubernetes:** start at [`syncdatesy-adapter/k8s/README.md`](syncdatesy-adapter/k8s/README.md). Batch-specific rollout: [`syncdatesy-adapter/k8s/batch-cluster/`](syncdatesy-adapter/k8s/batch-cluster/).
 
-**SAP proxy agent:** [`Datasyncher-React-Adapter/docs/operations/proxy-agent/ARCHITECTURE.md`](Datasyncher-React-Adapter/docs/operations/proxy-agent/ARCHITECTURE.md), hub ops [`HUB.md`](Datasyncher-React-Adapter/docs/operations/proxy-agent/HUB.md), DNS/TLS [`DNS-AND-TLS.md`](Datasyncher-React-Adapter/docs/operations/proxy-agent/DNS-AND-TLS.md).
+**SAP proxy agent:** [`syncdatesy-adapter/docs/operations/proxy-agent/ARCHITECTURE.md`](syncdatesy-adapter/docs/operations/proxy-agent/ARCHITECTURE.md), hub ops [`HUB.md`](syncdatesy-adapter/docs/operations/proxy-agent/HUB.md), DNS/TLS [`DNS-AND-TLS.md`](syncdatesy-adapter/docs/operations/proxy-agent/DNS-AND-TLS.md).
 
 ---
 
@@ -74,8 +74,8 @@ This repo is intended to be **safe to publish** (private GitHub still benefits f
 
 ### Restore secrets locally
 
-1. **Batch cluster:** copy [`Datasyncher-React-Adapter/k8s/batch-cluster/secrets/secrets.example.yaml`](Datasyncher-React-Adapter/k8s/batch-cluster/secrets/secrets.example.yaml) → `secrets.local.yaml` (gitignored), fill from your secret manager, then apply per [`k8s/batch-cluster/`](Datasyncher-React-Adapter/k8s/batch-cluster/) docs.
-2. **Django / services:** copy [`Datasyncher-React-Adapter/.env.example`](Datasyncher-React-Adapter/.env.example) → `.env` in the adapter tree.
+1. **Batch cluster:** copy [`syncdatesy-adapter/k8s/batch-cluster/secrets/secrets.example.yaml`](syncdatesy-adapter/k8s/batch-cluster/secrets/secrets.example.yaml) → `secrets.local.yaml` (gitignored), fill from your secret manager, then apply per [`k8s/batch-cluster/`](syncdatesy-adapter/k8s/batch-cluster/) docs.
+2. **Django / services:** copy [`syncdatesy-adapter/.env.example`](syncdatesy-adapter/.env.example) → `.env` in the adapter tree.
 3. **ODATA reference agent:** see [`odata-agent/README.md`](odata-agent/README.md) (`config.example.json` → `config.json`).
 4. **Security overview:** [`docs/security/secrets-and-settings.md`](docs/security/secrets-and-settings.md).
 
@@ -90,8 +90,8 @@ High-level flow for **proxy** SAP OData connections:
 1. **UI / Django** triggers connection test → **migration-function** (`test_sap_odata_connection` with `connection_method=proxy`).
 2. **migration-function** opens mTLS gRPC to **sap-proxy-agent-hub** (`Datasynchor.TestSapConnection`), using env from deployment + mounted `sap-proxy-agent-hub-mtls`.
 3. **Hub** forwards to the **on-premises agent** registered by `proxy_agent` id (`cust_id`). If no agent session: gRPC `UNAVAILABLE` with details like *Agent for customer … is not connected*.
-4. Friendly errors: [`backend/migration-function/services/sap/proxy.py`](Datasyncher-React-Adapter/backend/migration-function/services/sap/proxy.py) (`format_proxy_error_msg`).
-5. TLS peer name: [`backend/sap_proxy_agent/client/channel_factory.py`](Datasyncher-React-Adapter/backend/sap_proxy_agent/client/channel_factory.py) maps in-cluster Service DNS `sap-proxy-agent-hub-svc…` → cert SAN **`sap-proxy-agent-hub`**.
+4. Friendly errors: [`backend/migration-function/services/sap/proxy.py`](syncdatesy-adapter/backend/migration-function/services/sap/proxy.py) (`format_proxy_error_msg`).
+5. TLS peer name: [`backend/sap_proxy_agent/client/channel_factory.py`](syncdatesy-adapter/backend/sap_proxy_agent/client/channel_factory.py) maps in-cluster Service DNS `sap-proxy-agent-hub-svc…` → cert SAN **`sap-proxy-agent-hub`**.
 
 **Batch deployment env (migration-function):**
 
@@ -105,7 +105,7 @@ High-level flow for **proxy** SAP OData connections:
 **Rollout migration-function image (batch):**
 
 ```powershell
-cd Datasyncher-React-Adapter
+cd syncdatesy-adapter
 .\k8s\batch-cluster\rollout-migration-function-batch.ps1 -Build
 ```
 
@@ -123,8 +123,8 @@ Image: `gcr.io/datasyncher-batch/datasyncher-migration-function:batch`
 ### Backend (adapter)
 
 ```powershell
-cd Datasyncher-React-Adapter
-# See Datasyncher-React-Adapter/AGENTS.md for tests:
+cd syncdatesy-adapter
+# See syncdatesy-adapter/AGENTS.md for tests:
 python manage.py test apps.elttool.tests
 cd backend/migration-function; pytest tests/ -q
 ```
@@ -140,7 +140,7 @@ npm run build
 
 ### Security checks (before PR)
 
-- Adapter: `pre-commit run` from `Datasyncher-React-Adapter`
+- Adapter: `pre-commit run` from `syncdatesy-adapter`
 - UI: `npm run audit:deps`
 
 ---
@@ -155,7 +155,7 @@ npm run build
 | `sap-proxy-agent-unary` | `datasyncher-sap-proxy-agent-unary:batch` | Bootstrap token validation |
 | `proxy-agent-gateway` | HTTPS progress fallback | See proxy-agent docs |
 
-Network policies: [`Datasyncher-React-Adapter/k8s/network-policies/`](Datasyncher-React-Adapter/k8s/network-policies/) (e.g. `allow-migration-function-to-sap-proxy-agent-hub`).
+Network policies: [`syncdatesy-adapter/k8s/network-policies/`](syncdatesy-adapter/k8s/network-policies/) (e.g. `allow-migration-function-to-sap-proxy-agent-hub`).
 
 ---
 

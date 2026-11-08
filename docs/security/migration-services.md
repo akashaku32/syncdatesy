@@ -15,7 +15,7 @@ A shared registry reduces that surface.
 
 ## What exists
 
-Under `Datasyncher-React-Adapter/backend/migration-function/services/migration_common/`:
+Under `syncdatesy-adapter/backend/migration-function/services/migration_common/`:
 
 | Piece | Role |
 |-------|------|

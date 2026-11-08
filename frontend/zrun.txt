@@ -1,2 +1,2 @@
-cd Datasyncher-React-Adapter\k8s\batch-cluster
+cd syncdatesy-adapter\k8s\batch-cluster
 .\watch-flow-jobs.ps1 -PipelineRunId 1154

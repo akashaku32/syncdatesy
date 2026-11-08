@@ -6,7 +6,7 @@ These instructions apply to **every** coding agent (Cursor, Claude Code, Copilot
 
 | Path | Role | Agent guide |
 |------|------|-------------|
-| [`Datasyncher-React-Adapter/`](Datasyncher-React-Adapter/) | Django/DRF, FastAPI, migration-function, k8s | [`Datasyncher-React-Adapter/AGENTS.md`](Datasyncher-React-Adapter/AGENTS.md) |
+| [`syncdatesy-adapter/`](syncdatesy-adapter/) | Django/DRF, FastAPI, migration-function, k8s | [`syncdatesy-adapter/AGENTS.md`](syncdatesy-adapter/AGENTS.md) |
 | [`frontend/data-syncher-ui/`](frontend/data-syncher-ui/) | React SPA (Vite) | [`frontend/data-syncher-ui/AGENTS.md`](frontend/data-syncher-ui/AGENTS.md) |
 
 Read the matching repo `AGENTS.md` before editing that tree. If the task spans both, implement API contract in the adapter first, then wire UI hooks in `queryOptions/`.

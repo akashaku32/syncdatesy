@@ -35,7 +35,7 @@ Same module defines role gates such as:
 - `IsBillingOrAdmin`
 - `IsPlatformSuperuser`
 
-These protect human-facing APIs (orthogonal to the internal service key). Broader product RBAC docs live under `Datasyncher-React-Adapter/docs/rbac/`.
+These protect human-facing APIs (orthogonal to the internal service key). Broader product RBAC docs live under `syncdatesy-adapter/docs/rbac/`.
 
 ## FastAPI orchestration
 
@@ -58,7 +58,7 @@ These protect human-facing APIs (orthogonal to the internal service key). Broade
 - **Fallback:** `proxy-agent-gateway` on `agent-api.<domain>` with client mTLS + HMAC → same Django ingest.
 - Django verifies HMAC on HTTPS path; tenant/job binding on both paths.
 - **`INTERNAL_API_KEY` must never appear in agent `config.json`.**
-- [`proxy-agent-progress.md`](./proxy-agent-progress.md) · [README-AGENT.md](../../Datasyncher-React-Adapter/docs/operations/proxy-agent/README-AGENT.md)
+- [`proxy-agent-progress.md`](./proxy-agent-progress.md) · [README-AGENT.md](../../syncdatesy-adapter/docs/operations/proxy-agent/README-AGENT.md)
 
 ## Gaps / policy conflicts
 

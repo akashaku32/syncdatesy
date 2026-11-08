@@ -10,14 +10,14 @@ Canonical rules for **all** agents: root `AGENTS.md`.
 
 | Path | Role |
 |------|------|
-| `Datasyncher-React-Adapter/` | Backend / API adapter, k8s manifests, platform docs |
+| `syncdatesy-adapter/` | Backend / API adapter, k8s manifests, platform docs |
 | `frontend/data-syncher-ui/` | Customer-facing React SPA (Vite) |
 | `odata-agent/` | Reference ODATA on-prem proxy agent (client + server) |
 
 ## Where to work
 
 - **UI** → `frontend/data-syncher-ui/` (`AGENTS.md` + `.cursor/rules/`)
-- **API / migrations / k8s** → `Datasyncher-React-Adapter/` (`AGENTS.md` + `.cursor/rules/`)
+- **API / migrations / k8s** → `syncdatesy-adapter/` (`AGENTS.md` + `.cursor/rules/`)
 
 ```text
 // ❌ DON'T — add REST calls only in the adapter when the task is a UI screen

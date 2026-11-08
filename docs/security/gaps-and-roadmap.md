@@ -16,7 +16,7 @@ Honest backlog relative to the hardening plan and root `AGENTS.md`. Use this for
 
 | Gap | Notes |
 |-----|-------|
-| Proxy agent public DNS / TLS (`agent-api.gcp.datasyncher.com`) | Batch gateway + CA ready; A record + cert-manager still required for public mTLS edge — [DNS-AND-TLS.md](../../Datasyncher-React-Adapter/docs/operations/proxy-agent/DNS-AND-TLS.md) |
+| Proxy agent public DNS / TLS (`agent-api.gcp.datasyncher.com`) | Batch gateway + CA ready; A record + cert-manager still required for public mTLS edge — [DNS-AND-TLS.md](../../syncdatesy-adapter/docs/operations/proxy-agent/DNS-AND-TLS.md) |
 | `scripts/security_checks.ps1` referenced but absent | Wire ruff S / gitleaks / pip-audit as documented in `AGENTS.md` |
 | `apps.utils.http_client` referenced in rules but absent | Shared TLS-verifying requests session (`verify=True`) |
 | Legacy `verify=False` / bare `AllowAny` | Inventory and remove or comment-justify |

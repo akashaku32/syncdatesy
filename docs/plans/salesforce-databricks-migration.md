@@ -2,7 +2,7 @@
 
 ## Goal
 
-Add a full connector path for **Salesforce → Databricks** and **Salesforce Sandbox → Databricks**, structurally matching [`microsoft_dynamics_to_databricks_migration_service.py`](Datasyncher-React-Adapter/backend/migration-function/services/microsoft_dynamics_to_databricks_migration_service.py) while keeping Salesforce extract logic from [`salesforce_service.py`](Datasyncher-React-Adapter/backend/migration-function/services/salesforce_service.py).
+Add a full connector path for **Salesforce → Databricks** and **Salesforce Sandbox → Databricks**, structurally matching [`microsoft_dynamics_to_databricks_migration_service.py`](syncdatesy-adapter/backend/migration-function/services/microsoft_dynamics_to_databricks_migration_service.py) while keeping Salesforce extract logic from [`salesforce_service.py`](syncdatesy-adapter/backend/migration-function/services/salesforce_service.py).
 
 **Confirmed scope:** Production + Sandbox, full parity (deferred MERGE, `staging_table_details`, Celery fan-out, `drop_and_reload`, incremental sync).
 
@@ -40,7 +40,7 @@ flowchart TD
 
 ## New files
 
-### 1. [`backend/migration-function/services/salesforce_to_databricks_migration_service.py`](Datasyncher-React-Adapter/backend/migration-function/services/salesforce_to_databricks_migration_service.py)
+### 1. [`backend/migration-function/services/salesforce_to_databricks_migration_service.py`](syncdatesy-adapter/backend/migration-function/services/salesforce_to_databricks_migration_service.py)
 
 Main orchestrator (async `sync_salesforce_to_databricks(request, environment)` + `migrate()` alias for router parity).
 
@@ -72,11 +72,11 @@ from services.databricks_dynamics_load_helpers import (
 )
 ```
 
-### 2. [`backend/migration-function/services/databricks_salesforce_load_helpers.py`](Datasyncher-React-Adapter/backend/migration-function/services/databricks_salesforce_load_helpers.py)
+### 2. [`backend/migration-function/services/databricks_salesforce_load_helpers.py`](syncdatesy-adapter/backend/migration-function/services/databricks_salesforce_load_helpers.py)
 
 SF-specific destination logic:
 
-- `SALESFORCE_TO_DATABRICKS_TYPE` — map SF describe types to Delta DDL (based on existing `SALESFORCE_TO_SNOWFLAKE_TYPE` in [`salesforce_service.py:4704`](Datasyncher-React-Adapter/backend/migration-function/services/salesforce_service.py))
+- `SALESFORCE_TO_DATABRICKS_TYPE` — map SF describe types to Delta DDL (based on existing `SALESFORCE_TO_SNOWFLAKE_TYPE` in [`salesforce_service.py:4704`](syncdatesy-adapter/backend/migration-function/services/salesforce_service.py))
 - `build_attributes_details_field(describe_meta, fields)` — `{COL: databricks_type}` for `copy_function`
 - `ensure_databricks_table_from_salesforce_describe()` — create/alter base Delta table from SF metadata + `_FIVETRAN_SYNCED` / `_FIVETRAN_DELETED`
 - `transform_salesforce_chunk_to_dataframe(chunk, fields, column_types, is_updated, is_deleted, exclude_deleted_rows)` — pandas coercion (dates, booleans, JSON/complex → STRING)
@@ -88,14 +88,14 @@ SF-specific destination logic:
 
 Prefer **small extension** to `copy_function` with optional `staging_blob_name` to keep one COPY path.
 
-### 3. [`backend/migration-function/routers/databricks_salesforce_migration_router.py`](Datasyncher-React-Adapter/backend/migration-function/routers/databricks_salesforce_migration_router.py)
+### 3. [`backend/migration-function/routers/databricks_salesforce_migration_router.py`](syncdatesy-adapter/backend/migration-function/routers/databricks_salesforce_migration_router.py)
 
-HTTP fallback endpoints (mirror [`databricks_dynamics_migration_router.py`](Datasyncher-React-Adapter/backend/migration-function/routers/databricks_dynamics_migration_router.py)):
+HTTP fallback endpoints (mirror [`databricks_dynamics_migration_router.py`](syncdatesy-adapter/backend/migration-function/routers/databricks_dynamics_migration_router.py)):
 
 - `POST /Databricks-Salesforce-migrate` → `sync_salesforce_to_databricks(..., "production")`
 - `POST /Databricks-SalesforceSandbox-migrate` → `sync_salesforce_to_databricks(..., "sandbox")`
 
-### 4. Model addition in [`backend/migration-function/models/salesforce_models.py`](Datasyncher-React-Adapter/backend/migration-function/models/salesforce_models.py)
+### 4. Model addition in [`backend/migration-function/models/salesforce_models.py`](syncdatesy-adapter/backend/migration-function/models/salesforce_models.py)
 
 Add `SalesforceDatabricksMigration` — same fields as `SalesforceSnowflakeMigration` (lines 107–136) plus `celery_fanout_mode` if needed. Keeps payload contract aligned with Celery/Django.
 
@@ -105,11 +105,11 @@ Add `SalesforceDatabricksMigration` — same fields as `SalesforceSnowflakeMigra
 
 ### Migration-function app
 
-[`backend/migration-function/app.py`](Datasyncher-React-Adapter/backend/migration-function/app.py) — `include_router(databricks_salesforce_migration_router)`.
+[`backend/migration-function/app.py`](syncdatesy-adapter/backend/migration-function/app.py) — `include_router(databricks_salesforce_migration_router)`.
 
 ### FastAPI gateway
 
-[`backend/fast-api/app.py`](Datasyncher-React-Adapter/backend/fast-api/app.py):
+[`backend/fast-api/app.py`](syncdatesy-adapter/backend/fast-api/app.py):
 
 | Addition | Value |
 |----------|-------|
@@ -118,11 +118,11 @@ Add `SalesforceDatabricksMigration` — same fields as `SalesforceSnowflakeMigra
 | `MIGRATION_FUNCTION_PATHS` | Add both paths |
 | `CONNECTOR_TYPE_BY_PATH` | `salesforce_to_databricks`, `salesforce_sandbox_to_databricks` |
 
-Django already builds URLs as `{dest}-{source}-migration-yield` ([`views.py:12841`](Datasyncher-React-Adapter/apps/elttool/v1/views.py)) — no Django URL change required.
+Django already builds URLs as `{dest}-{source}-migration-yield` ([`views.py:12841`](syncdatesy-adapter/apps/elttool/v1/views.py)) — no Django URL change required.
 
 ### Celery dispatch
 
-[`backend/fast-api/celery_worker.py`](Datasyncher-React-Adapter/backend/fast-api/celery_worker.py) — extend `_dispatch_direct_connector()`:
+[`backend/fast-api/celery_worker.py`](syncdatesy-adapter/backend/fast-api/celery_worker.py) — extend `_dispatch_direct_connector()`:
 
 ```python
 if function_path == "/Databricks-Salesforce-migration-yield":
@@ -137,7 +137,7 @@ Fan-out: SF→Databricks uses **flat table names** (same as SF→Snowflake), not
 
 ### Resource profiles
 
-[`backend/fast-api/celery_resource_config.py`](Datasyncher-React-Adapter/backend/fast-api/celery_resource_config.py):
+[`backend/fast-api/celery_resource_config.py`](syncdatesy-adapter/backend/fast-api/celery_resource_config.py):
 
 ```python
 "salesforce_to_databricks": {
@@ -152,11 +152,11 @@ Mirror existing `salesforce_to_snowflake` profile.
 
 ### Chunk limits (DB seed)
 
-Add `source_model.max_count` for `Salesforce` and `SalesforceSandbox` (Bulk API practical batch ceiling, e.g. 150k–200k) via new Django migration, following [`0100_enterprise_chunk_pct_75.py`](Datasyncher-React-Adapter/apps/elttool/migrations/0100_enterprise_chunk_pct_75.py).
+Add `source_model.max_count` for `Salesforce` and `SalesforceSandbox` (Bulk API practical batch ceiling, e.g. 150k–200k) via new Django migration, following [`0100_enterprise_chunk_pct_75.py`](syncdatesy-adapter/apps/elttool/migrations/0100_enterprise_chunk_pct_75.py).
 
 ### Minor helper extension
 
-[`databricks_dynamics_load_helpers.copy_function`](Datasyncher-React-Adapter/backend/migration-function/services/databricks_dynamics_load_helpers.py) — add optional `staging_blob_name: str | None = None` passed through to upload step so SF and Dynamics do not overwrite each other's GCS objects on shared connections.
+[`databricks_dynamics_load_helpers.copy_function`](syncdatesy-adapter/backend/migration-function/services/databricks_dynamics_load_helpers.py) — add optional `staging_blob_name: str | None = None` passed through to upload step so SF and Dynamics do not overwrite each other's GCS objects on shared connections.
 
 ---
 
@@ -165,7 +165,7 @@ Add `source_model.max_count` for `Salesforce` and `SalesforceSandbox` (Bulk API 
 For each selected SF object (e.g. `Account`):
 
 1. **Resume check** — `staging_table_details` lookup; if `load_phase=loading`, reuse staging table name
-2. **Extract** — Bulk API 2.0 query job; stream/chunk results (fix: prefer streaming path for large objects; Bulk 2.0 currently loads all rows in memory in [`get_job_results`](Datasyncher-React-Adapter/backend/migration-function/services/salesforce_service.py) — keep same behavior as SF→Snowflake for v1, note as follow-up)
+2. **Extract** — Bulk API 2.0 query job; stream/chunk results (fix: prefer streaming path for large objects; Bulk 2.0 currently loads all rows in memory in [`get_job_results`](syncdatesy-adapter/backend/migration-function/services/salesforce_service.py) — keep same behavior as SF→Snowflake for v1, note as follow-up)
 3. **Transform chunk** — pandas + SF→Delta type coercion; filter `IsDeleted` on initial load
 4. **Load chunk** — `copy_function()` → CSV to GCS/volume → `COPY INTO` staging Delta; update `staging_records_count` / progress
 5. **End of object** — `merge_into_databricks()` staging → base; `drop_staging_table`; clear `staging_table_details`; update `last_synced`
@@ -181,9 +181,9 @@ Primary key: `Id` (normalized to `ID` in Databricks uppercase convention).
 
 | File | Coverage |
 |------|----------|
-| [`backend/fast-api/tests/test_databricks_salesforce_dispatch.py`](Datasyncher-React-Adapter/backend/fast-api/tests/test_databricks_salesforce_dispatch.py) | Celery direct dispatch + `app.py` URL mapping (mirror [`test_databricks_dynamics_dispatch.py`](Datasyncher-React-Adapter/backend/fast-api/tests/test_databricks_dynamics_dispatch.py)) |
-| [`backend/migration-function/tests/test_databricks_salesforce_load_helpers.py`](Datasyncher-React-Adapter/backend/migration-function/tests/test_databricks_salesforce_load_helpers.py) | Type mapping, transform, blob naming |
-| [`backend/migration-function/tests/test_salesforce_to_databricks_mapping.py`](Datasyncher-React-Adapter/backend/migration-function/tests/test_salesforce_to_databricks_mapping.py) | Mocked Bulk API + copy_function + deferred merge orchestration |
+| [`backend/fast-api/tests/test_databricks_salesforce_dispatch.py`](syncdatesy-adapter/backend/fast-api/tests/test_databricks_salesforce_dispatch.py) | Celery direct dispatch + `app.py` URL mapping (mirror [`test_databricks_dynamics_dispatch.py`](syncdatesy-adapter/backend/fast-api/tests/test_databricks_dynamics_dispatch.py)) |
+| [`backend/migration-function/tests/test_databricks_salesforce_load_helpers.py`](syncdatesy-adapter/backend/migration-function/tests/test_databricks_salesforce_load_helpers.py) | Type mapping, transform, blob naming |
+| [`backend/migration-function/tests/test_salesforce_to_databricks_mapping.py`](syncdatesy-adapter/backend/migration-function/tests/test_salesforce_to_databricks_mapping.py) | Mocked Bulk API + copy_function + deferred merge orchestration |
 
 ---
 

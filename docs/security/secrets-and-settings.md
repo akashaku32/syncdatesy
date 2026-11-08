@@ -14,7 +14,7 @@
 
 | Setting | Behavior | File |
 |---------|----------|------|
-| `SECRET_KEY` | Required from env — no default | `Datasyncher-React-Adapter/datasyncher/settings/base.py` |
+| `SECRET_KEY` | Required from env — no default | `syncdatesy-adapter/datasyncher/settings/base.py` |
 | `INTERNAL_API_KEY` | Required from env — no default | same |
 | `FIELD_ENCRYPTION_KEY` | Optional string (default `""`); encryption path activates when set | same |
 | DB URL | `DATABASE_URL` via env (developer settings) — no embedded password | `datasyncher/settings/developer.py` |
@@ -22,9 +22,9 @@
 
 ### Documentation & templates
 
-- Example env: `Datasyncher-React-Adapter/.env.example` (`SECRET_KEY`, `INTERNAL_API_KEY`, `FIELD_ENCRYPTION_KEY`).
-- Rotation checklist: [`Datasyncher-React-Adapter/docs/operations/SECRET_ROTATION.md`](../../Datasyncher-React-Adapter/docs/operations/SECRET_ROTATION.md).
-- K8s secrets hygiene: [`Datasyncher-React-Adapter/k8s/secrets/README.md`](../../Datasyncher-React-Adapter/k8s/secrets/README.md) (External Secrets / Sealed Secrets / GCP Secret Manager).
+- Example env: `syncdatesy-adapter/.env.example` (`SECRET_KEY`, `INTERNAL_API_KEY`, `FIELD_ENCRYPTION_KEY`).
+- Rotation checklist: [`syncdatesy-adapter/docs/operations/SECRET_ROTATION.md`](../../syncdatesy-adapter/docs/operations/SECRET_ROTATION.md).
+- K8s secrets hygiene: [`syncdatesy-adapter/k8s/secrets/README.md`](../../syncdatesy-adapter/k8s/secrets/README.md) (External Secrets / Sealed Secrets / GCP Secret Manager).
 
 ## Operator checklist
 

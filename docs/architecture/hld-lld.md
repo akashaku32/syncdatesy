@@ -4,7 +4,7 @@ How the product is structured, how one pipeline run moves through the system, an
 
 This is a design note for the whole monorepo: the React SPA, the Django control plane, Celery and FastAPI orchestration, migration workers, and the SAP proxy agent. Operational detail stays in the linked runbooks.
 
-**Scale target:** about 100 customer accounts on the current architecture. See [SCALE_100_ACCOUNTS.md](../../Datasyncher-React-Adapter/docs/operations/SCALE_100_ACCOUNTS.md).
+**Scale target:** about 100 customer accounts on the current architecture. See [SCALE_100_ACCOUNTS.md](../../syncdatesy-adapter/docs/operations/SCALE_100_ACCOUNTS.md).
 
 ## Verdict
 
@@ -59,12 +59,12 @@ flowchart TB
 | Plane | What it owns | Where it lives |
 |-------|----------------|----------------|
 | React SPA | Connections, pipeline canvas, run status. HTTP goes through `src/queryOptions` and one axios client. Live status comes over WebSockets. | `frontend/data-syncher-ui/` |
-| Django / DRF | Companies, users, connections, pipeline graph, run rows, billing, RBAC. Source of truth. | `Datasyncher-React-Adapter/apps/elttool/` |
-| APScheduler | One process. Jobs stored in Postgres. A Redis lock so only one scheduler runs. A pipeline is a job named `pipeline_<id>`. | `apps/elttool/apps.py` — [SCHEDULER_PRODUCTION_SETUP.md](../../Datasyncher-React-Adapter/docs/operations/SCHEDULER_PRODUCTION_SETUP.md) |
+| Django / DRF | Companies, users, connections, pipeline graph, run rows, billing, RBAC. Source of truth. | `syncdatesy-adapter/apps/elttool/` |
+| APScheduler | One process. Jobs stored in Postgres. A Redis lock so only one scheduler runs. A pipeline is a job named `pipeline_<id>`. | `apps/elttool/apps.py` — [SCHEDULER_PRODUCTION_SETUP.md](../../syncdatesy-adapter/docs/operations/SCHEDULER_PRODUCTION_SETUP.md) |
 | Celery + FastAPI | Turns a saved pipeline into work. Pipeline workers stay short. FastAPI enqueues the migration. | `apps/elttool/tasks/pipeline_tasks.py`, `backend/fast-api/` |
 | migration-function | Source-to-destination handlers. Extract, stage, then bulk-load. | `backend/migration-function/` |
 | Job pods | Short-lived `celery-worker-job-*` pods. One fleet per pipeline run, shared by every node in that run. | `backend/fast-api/celery_job_worker_pool.py` |
-| SAP proxy | Sources that cannot be reached from GKE. The agent dials out over mTLS. The hub does not open an inbound hole into the customer network. | [proxy-agent ARCHITECTURE.md](../../Datasyncher-React-Adapter/docs/operations/proxy-agent/ARCHITECTURE.md) |
+| SAP proxy | Sources that cannot be reached from GKE. The agent dials out over mTLS. The hub does not open an inbound hole into the customer network. | [proxy-agent ARCHITECTURE.md](../../syncdatesy-adapter/docs/operations/proxy-agent/ARCHITECTURE.md) |
 | PostgreSQL | Tenants, pipelines, migration status, scheduler job store. | — |
 | Redis | Celery broker, scheduler lock, per-flow job queues. | — |
 
@@ -129,7 +129,7 @@ SAP proxy loads do not extract inside the cluster.
 3. Progress returns through the hub (or the HTTPS gateway fallback) into Django’s internal ingest.
 4. The pipeline worker only watches Postgres for terminal table rows.
 
-Django does not accept agent gRPC. The hub is the only inbound mTLS endpoint for agents. See [proxy-agent ARCHITECTURE.md](../../Datasyncher-React-Adapter/docs/operations/proxy-agent/ARCHITECTURE.md).
+Django does not accept agent gRPC. The hub is the only inbound mTLS endpoint for agents. See [proxy-agent ARCHITECTURE.md](../../syncdatesy-adapter/docs/operations/proxy-agent/ARCHITECTURE.md).
 
 ### Postgres connection budget at the design point
 
@@ -172,9 +172,9 @@ Two structural costs show up in the repo and do not show up in a single COPY:
 
 | Topic | Doc |
 |-------|-----|
-| 100-account caps, jitter, fleet reuse | [SCALE_100_ACCOUNTS.md](../../Datasyncher-React-Adapter/docs/operations/SCALE_100_ACCOUNTS.md) |
-| Scheduler | [SCHEDULER_PRODUCTION_SETUP.md](../../Datasyncher-React-Adapter/docs/operations/SCHEDULER_PRODUCTION_SETUP.md) |
-| SAP proxy pods and RPCs | [ARCHITECTURE.md](../../Datasyncher-React-Adapter/docs/operations/proxy-agent/ARCHITECTURE.md) |
+| 100-account caps, jitter, fleet reuse | [SCALE_100_ACCOUNTS.md](../../syncdatesy-adapter/docs/operations/SCALE_100_ACCOUNTS.md) |
+| Scheduler | [SCHEDULER_PRODUCTION_SETUP.md](../../syncdatesy-adapter/docs/operations/SCHEDULER_PRODUCTION_SETUP.md) |
+| SAP proxy pods and RPCs | [ARCHITECTURE.md](../../syncdatesy-adapter/docs/operations/proxy-agent/ARCHITECTURE.md) |
 | Migration handler registry | [migration-services.md](../security/migration-services.md) |
 | Security layers | [overview.md](../security/overview.md) |
 | Open hardening gaps | [gaps-and-roadmap.md](../security/gaps-and-roadmap.md) |

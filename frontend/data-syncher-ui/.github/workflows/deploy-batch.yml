@@ -5,7 +5,7 @@ name: Deploy Frontend to Batch GKE
 #
 # Requires repo secret: GCP_SA_KEY_BATCH
 #   SA: github-actions-batch-deploy@datasyncher-batch.iam.gserviceaccount.com
-#   (same secret used by Datasyncher-React-Adapter batch deploy)
+#   (same secret used by syncdatesy-adapter batch deploy)
 
 on:
   push:
