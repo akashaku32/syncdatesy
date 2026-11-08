@@ -1,0 +1,11 @@
+---
+description: Kubernetes manifest standards
+globs: k8s/**
+alwaysApply: false
+---
+
+# Kubernetes
+
+- `securityContext` required (runAsNonRoot / drop ALL / no privilege escalation).
+- Pin image tags; readiness + liveness on HTTP services.
+- Never commit real `kind: Secret` values — External Secrets / Sealed Secrets.

@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: celery-beat-django
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: celery-beat-django
+  serviceName: celery-beat-django
+  template:
+    metadata:
+      labels:
+        app: celery-beat-django
+    spec:
+      nodeSelector:
+        pool: app
+      containers:
+        - name: beat
+          image: gcr.io/datasyncher-kubernetes/datasyncher-django-app:qa
+          imagePullPolicy: Always
+          command:
+            - celery
+            - -A
+            - datasyncher.celery_app
+            - beat
+            - --loglevel=info
+            # Must match django-celery-beat DB-backed periodic tasks (see docker-compose celery_beat_django).
+            - --scheduler
+            - django_celery_beat.schedulers:DatabaseScheduler
+          envFrom:
+            - secretRef:
+                name: datasyncher-secrets
+          resources:
+            requests:
+              cpu: 50m
+              memory: 150Mi
+            limits:
+              cpu: 300m
+              memory: 384Mi

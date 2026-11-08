@@ -1,0 +1,8 @@
+# Batch cluster: Workload Identity for Celery GCS uploads (audit logs, table detail logs).
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: celery-gcs
+  namespace: default
+  annotations:
+    iam.gke.io/gcp-service-account: celery-gcs-uploader@datasyncher-batch.iam.gserviceaccount.com

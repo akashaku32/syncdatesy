@@ -1,0 +1,36 @@
+{
+  "spec": {
+    "replicas": 3,
+    "template": {
+      "spec": {
+        "containers": [
+          {
+            "name": "django",
+            "command": [
+              "gunicorn",
+              "datasyncher.asgi:application",
+              "--bind",
+              "0.0.0.0:8000",
+              "-k",
+              "uvicorn.workers.UvicornWorker",
+              "--workers",
+              "4",
+              "--timeout",
+              "259600"
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "300m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "cpu": "1500m",
+                "memory": "1Gi"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

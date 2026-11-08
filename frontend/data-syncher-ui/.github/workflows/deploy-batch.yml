@@ -1,0 +1,93 @@
+name: Deploy Frontend to Batch GKE
+
+# Auto-builds datasyncher-frontend:batch and rolls out deployment/frontend
+# on the datasyncher-batch cluster when this frontend repo changes.
+#
+# Requires repo secret: GCP_SA_KEY_BATCH
+#   SA: github-actions-batch-deploy@datasyncher-batch.iam.gserviceaccount.com
+#   (same secret used by Datasyncher-React-Adapter batch deploy)
+
+on:
+  push:
+    branches:
+      - kubernetes-batch
+      - core/batch_technique
+      - batch
+      - production-batch
+    paths:
+      - "src/**"
+      - "public/**"
+      - "index.html"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.*"
+      - "tsconfig*.json"
+      - "Dockerfile"
+      - "nginx.conf"
+      - "cloudbuild-batch.yaml"
+      - ".env.batch"
+      - ".github/workflows/deploy-batch.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-frontend-batch:
+    runs-on: ubuntu-latest
+    env:
+      GCP_PROJECT: datasyncher-batch
+      GKE_CLUSTER: datasyncher-batch-cluster
+      GKE_REGION: us-central1
+      NAMESPACE: default
+      TAG: batch
+      REGISTRY: gcr.io/datasyncher-batch
+      CLOUDSDK_CORE_PROJECT: datasyncher-batch
+      USE_GKE_GCLOUD_AUTH_PLUGIN: "True"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Require GCP_SA_KEY_BATCH secret
+        env:
+          GCP_SA_KEY_BATCH: ${{ secrets.GCP_SA_KEY_BATCH }}
+        run: |
+          if [ -z "$GCP_SA_KEY_BATCH" ]; then
+            echo "::error::Missing GitHub secret GCP_SA_KEY_BATCH. Use SA github-actions-batch-deploy@datasyncher-batch.iam.gserviceaccount.com."
+            exit 1
+          fi
+
+      - name: Auth to GCP (datasyncher-batch)
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY_BATCH }}
+          project_id: datasyncher-batch
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: datasyncher-batch
+          install_components: gke-gcloud-auth-plugin
+
+      - name: Configure kubectl
+        run: |
+          export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+          gcloud config set project "$GCP_PROJECT"
+          gcloud container clusters get-credentials "$GKE_CLUSTER" --region "$GKE_REGION" --project "$GCP_PROJECT"
+          kubectl config current-context
+          kubectl get ns >/dev/null
+
+      - name: Build frontend image (:batch)
+        run: |
+          gcloud builds submit \
+            --project="$GCP_PROJECT" \
+            --config=cloudbuild-batch.yaml \
+            .
+
+      - name: Rollout frontend
+        run: |
+          IMG="$REGISTRY/datasyncher-frontend:$TAG"
+          kubectl -n "$NAMESPACE" set image deployment/frontend "frontend=$IMG"
+          kubectl -n "$NAMESPACE" rollout restart deployment/frontend
+          kubectl -n "$NAMESPACE" rollout status deployment/frontend --timeout=5m
+          kubectl -n "$NAMESPACE" get pods -l app=frontend -o wide

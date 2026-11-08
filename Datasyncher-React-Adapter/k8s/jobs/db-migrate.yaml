@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migrate
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      restartPolicy: Never
+      nodeSelector:
+        pool: app
+      containers:
+        - name: migrate
+          image: gcr.io/datasyncher-kubernetes/datasyncher-django-app:qa
+          imagePullPolicy: Always
+          command:
+            - python
+            - manage.py
+            - migrate
+            - --noinput
+          envFrom:
+            - secretRef:
+                name: datasyncher-secrets

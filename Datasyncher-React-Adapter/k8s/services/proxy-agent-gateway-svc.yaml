@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxy-agent-gateway-svc
+spec:
+  selector:
+    app: proxy-agent-gateway
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http

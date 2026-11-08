@@ -1,0 +1,110 @@
+
+🧑‍💻 Developer Workflow with Explanations
+✅ 1. One-Time Setup Command
+bash
+Copy
+Edit
+./setup-formatting.sh
+🔍 What it does:
+Sets up a virtual environment (venv/)
+
+Installs Python formatting/linting tools: black, flake8, isort, pylint, etc.
+
+Creates all the necessary configuration files
+
+Configures Git pre-commit hooks (so your code is checked before every commit)
+
+Sets up VS Code settings to auto-format code on save
+
+Creates format.sh, check.sh, and a Makefile with helpful commands
+
+💡 You only run this once when you clone or start a new project.
+
+🎨 2. Format All Python Files
+bash
+Copy
+Edit
+./format.sh
+# OR
+make format
+🔍 What it does:
+Runs black . → formats all .py files to follow consistent spacing, quotes, and style.
+
+Runs isort . → automatically sorts your imports into standard sections (stdlib, third-party, project).
+
+💡 Use this before pushing code to clean up formatting.
+
+🔍 3. Check Code Without Modifying
+bash
+Copy
+Edit
+./check.sh
+# OR
+make check
+🔍 What it does:
+black --check . → checks if code is formatted correctly (no changes made).
+
+isort --check-only . → checks if imports are ordered correctly.
+
+flake8 . → lints the code for common issues and stylistic problems.
+
+💡 Use this in CI/CD or before committing to see if anything fails.
+
+🧪 4. Run Linting Only
+bash
+Copy
+Edit
+make lint
+🔍 What it does:
+Runs only the flake8 linter to check your code for errors, unused variables, bad practices, etc.
+
+💡 Useful for focusing on code quality rather than formatting.
+
+🔁 5. Automatically Run Checks Before Git Commit
+No command needed — this works automatically once setup is done.
+
+🔍 What happens:
+When you run:
+
+bash
+Copy
+Edit
+git add .
+git commit -m "Some message"
+Git will automatically run:
+
+black, isort, flake8, and others via pre-commit
+
+It will block the commit if something fails
+
+💡 Prevents bad or unformatted code from reaching your main branch.
+
+📦 6. Install/Update Formatting Tools Again
+bash
+Copy
+Edit
+make install
+🔍 What it does:
+Installs everything listed in .formatting-requirements.txt
+
+Reinstalls the pre-commit hooks
+
+💡 Use this if you clone the repo or if tools/configs are updated.
+
+🧹 7. Clean Unnecessary Python Files
+bash
+Copy
+Edit
+make clean
+🔍 What it does:
+Removes Python bytecode, cache, and build files:
+
+markdown
+Copy
+Edit
+__pycache__/
+*.pyc
+*.pyo
+build/
+dist/
+💡 Keeps the repo clean, especially before zipping or pushing

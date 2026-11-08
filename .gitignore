@@ -1,0 +1,67 @@
+# Local deploy / rollout output (do not commit)
+*.log
+deploy-*.log
+rollout-*.log
+mock-agent.*
+logs/
+_plan_only.txt
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.jks
+*.pfx
+secrets.yaml
+secrets.local.yaml
+**/k8s/secrets/
+**/secrets.local.yaml
+**/proxy-agent-ca.secret.local.yaml
+spectra-sf-jwt/
+
+# SAP proxy / ODATA agent local configs (certs, tokens, signing secrets)
+**/sap_proxy_agent/dev/config.json
+**/sap_proxy_agent/dev/config.batch.hub.json
+**/odata-agent/**/client/config.json
+**/odata-agent/**/grpc_files/config.json
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+build/
+
+# GCP keys
+gcr-key.json
+gcr-reader-key.json
+**/elt-project-*.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Nested repo metadata (monorepo tracks files directly; do not publish old .git dirs)
+**/.git.nested-backup/
+**/.git.datasyncher-adapter-only/
+Datasyncher-React-Adapter/.git/
+
+# ODATA agent local keys/certs (use examples only)
+odata-agent/**/keys/**/*.crt
+odata-agent/**/keys/**/*.key
+odata-agent/**/keys/**/*.pem
+odata-agent/**/mtls/
+odata-agent/**/grpc_files/config.json
+odata-agent/**/keys/config.json
+odata-agent/**/keys/sr_dtsn_config.json
+
+# Local test artifacts
+odata-agent/**/*.parquet

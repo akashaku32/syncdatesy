@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pipeline-run-82
+  namespace: default
+spec:
+  ttlSecondsAfterFinished: 600
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: run
+          image: gcr.io/datasyncher-batch/datasyncher-django-app:batch
+          command:
+            - python
+            - manage.py
+            - shell
+            - -c
+            - |
+              from apps.elttool.v1.pipeline_views import _execute_pipeline_strict
+              _execute_pipeline_strict(82)
+          envFrom:
+            - secretRef:
+                name: datasyncher-secrets

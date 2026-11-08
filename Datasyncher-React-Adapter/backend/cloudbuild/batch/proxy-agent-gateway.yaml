@@ -1,0 +1,14 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - gcr.io/datasyncher-batch/datasyncher-proxy-agent-gateway:batch
+      - -f
+      - sap_proxy_agent/gateway/Dockerfile
+      - .
+images:
+  - gcr.io/datasyncher-batch/datasyncher-proxy-agent-gateway:batch
+options:
+  machineType: E2_HIGHCPU_8
+timeout: 1200s

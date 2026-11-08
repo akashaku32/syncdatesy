@@ -1,0 +1,66 @@
+# Allow ingress-nginx → HTTP app Services, and in-cluster Redis from app/worker pods.
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-nginx-to-apps
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - frontend
+          - django
+          - fastapi
+          - migration-function
+          - documentation
+          - proxy-agent-gateway
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 8000
+        - protocol: TCP
+          port: 8001
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 9090
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-redis-from-apps
+spec:
+  podSelector:
+    matchLabels:
+      app: redis
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - django
+                  - fastapi
+                  - migration-function
+                  - celery-worker
+                  - celery-worker-django
+                  - celery-worker-django-ops
+                  - celery-worker-control
+                  - celery-worker-control-reconcile
+                  - celery-beat-migration
+      ports:
+        - protocol: TCP
+          port: 6379

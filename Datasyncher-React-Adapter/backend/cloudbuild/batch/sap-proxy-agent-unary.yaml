@@ -1,0 +1,14 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - gcr.io/datasyncher-batch/datasyncher-sap-proxy-agent-unary:batch
+      - -f
+      - backend/sap_proxy_agent/unary/Dockerfile
+      - .
+images:
+  - gcr.io/datasyncher-batch/datasyncher-sap-proxy-agent-unary:batch
+options:
+  machineType: E2_HIGHCPU_8
+timeout: 1800s

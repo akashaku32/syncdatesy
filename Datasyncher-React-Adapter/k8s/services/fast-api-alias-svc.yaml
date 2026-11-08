@@ -1,0 +1,12 @@
+# Legacy docker-compose hostname used by Django (FASTAPI_DOMAIN default: fast-api:9090).
+# Alias to fastapi-svc so in-cluster DNS resolves without per-env overrides.
+apiVersion: v1
+kind: Service
+metadata:
+  name: fast-api
+spec:
+  type: ExternalName
+  externalName: fastapi-svc.default.svc.cluster.local
+  ports:
+    - port: 9090
+      targetPort: 9090

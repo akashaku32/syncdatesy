@@ -1,0 +1,12 @@
+---
+description: Security fail-closed rules for DataSyncher
+alwaysApply: true
+---
+
+# Security
+
+- Secrets only from env / secret store; fail closed when missing.
+- Compare secrets with `hmac.compare_digest`.
+- Never `verify=False`, bare `AllowAny` (justify in comment), `eval`/`exec`/`pickle`/`shell=True`.
+- Never put tokens in URLs or logs.
+- Use `apps.utils.http_client.requests_session` / `internal_api_headers`.

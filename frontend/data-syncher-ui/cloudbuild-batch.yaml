@@ -1,0 +1,20 @@
+# Build frontend image for datasyncher-batch-cluster (Vite mode batch ? gcp.datasyncher.com).
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg
+      - VITE_BUILD_MODE=batch
+      - --build-arg
+      - CACHEBUST=20261030-gzip-chunk-split
+      - -t
+      - gcr.io/datasyncher-batch/datasyncher-frontend:batch
+      - -f
+      - Dockerfile
+      - .
+images:
+  - gcr.io/datasyncher-batch/datasyncher-frontend:batch
+options:
+  machineType: E2_HIGHCPU_8
+  logging: CLOUD_LOGGING_ONLY
+timeout: 1800s

@@ -1,0 +1,21 @@
+http:
+  routers:
+    frontend:
+      rule: "Host(`qa.datasyncher.com`) && PathPrefix(`/`)"
+      entrypoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+      priority: 1
+      service: frontend-service
+
+  services:
+    frontend-service:
+      loadBalancer:
+        servers:
+          - url: "http://10.128.0.8:80"
+        healthCheck:
+          path: "/"
+          interval: "30s"
+          timeout: "10s"
+

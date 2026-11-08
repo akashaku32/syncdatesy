@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: migration-function
+spec:
+  # Serves synchronous HTTP endpoints: connection Authorization, OAuth callbacks,
+  # token refresh, S3 pattern preview, etc. Celery migrations bypass this via
+  # OAuth/auth/listing/connection-test only; migrations run in per-job Celery pods.
+  replicas: 1
+  selector:
+    matchLabels:
+      app: migration-function
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: migration-function
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: celery-gcs
+      nodeSelector:
+        pool: app
+      containers:
+        - name: migration-function
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            capabilities:
+              drop:
+                - ALL
+          image: gcr.io/datasyncher-kubernetes/datasyncher-migration-function:qa
+          imagePullPolicy: Always
+          command:
+            - uvicorn
+            - app:app
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8001"
+            - --workers
+            - "2"
+          ports:
+            - containerPort: 8001
+          envFrom:
+            - secretRef:
+                name: datasyncher-secrets
+            - configMapRef:
+                name: netsuite-odbc-env
+                optional: true
+          env:
+            # SAP proxy hub (gRPC client): in-cluster hub + same mTLS Secret as hub/unary.
+            # Override PROXY_AGENT_SERVER_HOST in Secret when using an external hub LoadBalancer.
+            - name: PROXY_AGENT_SERVER_HOST
+              value: "sap-proxy-agent-hub-svc.default.svc.cluster.local"
+            - name: PROXY_AGENT_SERVER_PORT
+              value: "50051"
+            - name: PROXY_AGENT_HUB_MTLS_DIR
+              value: "/etc/sap-proxy-agent-hub-client/mtls"
+          volumeMounts:
+            - name: sap-proxy-agent-hub-mtls-client
+              mountPath: /etc/sap-proxy-agent-hub-client/mtls
+              readOnly: true
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 8001
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8001
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 15
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 300m
+              memory: 1Gi
+            limits:
+              cpu: "2"
+              memory: 2Gi
+      volumes:
+        - name: sap-proxy-agent-hub-mtls-client
+          secret:
+            secretName: sap-proxy-agent-hub-mtls
+            # Batch/proxy: apply same Secret as sap-proxy-agent-hub. Other envs: create Secret or leave empty (SAP proxy paths return 503 until configured).
+            optional: true

@@ -1,0 +1,14 @@
+[ca]
+default_ca = CA_default
+
+[CA_default]
+database = index.txt
+new_certs_dir = .
+serial = serial
+private_key = ../../ca/ca.key
+certificate = ../../ca/ca.crt
+default_md = sha256
+policy = policy_any
+
+[policy_any]
+commonName = supplied

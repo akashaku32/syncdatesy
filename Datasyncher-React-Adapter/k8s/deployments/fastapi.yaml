@@ -1,0 +1,76 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fastapi
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: fastapi
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      nodeSelector:
+        pool: app
+      containers:
+        - name: fastapi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            capabilities:
+              drop:
+                - ALL
+          image: gcr.io/datasyncher-kubernetes/datasyncher-fast-api:qa
+          imagePullPolicy: Always
+          command:
+            - uvicorn
+            - app:app
+            - --host
+            - 0.0.0.0
+            - --port
+            - "9090"
+            - --workers
+            - "2"
+            - --timeout-keep-alive
+            - "259200"
+          ports:
+            - containerPort: 9090
+              name: metrics
+          env:
+            - name: CELERY_JOB_ISOLATION_MODE
+              value: "per_job"
+            - name: CELERY_MIGRATION_CONTROL_ORCHESTRATE_QUEUE
+              value: "migration-control"
+            - name: CELERY_MIGRATION_CONTROL_RECONCILE_QUEUE
+              value: "migration-control-reconcile"
+            - name: CELERY_MIGRATION_CONTROL_QUEUE
+              value: "migration-control"
+            - name: CELERY_PROMETHEUS_METRICS_ENABLED
+              value: "true"
+          envFrom:
+            - secretRef:
+                name: datasyncher-secrets
+          resources:
+            requests:
+              cpu: 150m
+              memory: 300Mi
+            limits:
+              cpu: 1000m
+              memory: 768Mi

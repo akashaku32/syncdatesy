@@ -1,0 +1,11 @@
+---
+description: FastAPI and Celery service conventions
+globs: backend/fast-api/**,backend/migration-function/**
+alwaysApply: false
+---
+
+# FastAPI / Celery
+
+- Require `X-INTERNAL-KEY`; leave `/healthz` open.
+- Prefer registry dispatch over growing the Celery if-chain.
+- Idempotent tasks; explicit time limits; no request-body credential logging.

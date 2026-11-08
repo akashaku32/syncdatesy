@@ -1,0 +1,151 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Stack 1 of 2. DataSyncher Databricks IAM for account 946784146896 in
+  us-east-2. Create this stack before the bucket stack. Use the same
+  BucketName in both stacks.
+
+Rules:
+  MustBeUsEast2NewAccount:
+    Assertions:
+      - Assert: !Equals [!Ref "AWS::Region", "us-east-2"]
+        AssertDescription: Create this stack in US East (Ohio), us-east-2.
+      - Assert: !Equals [!Ref "AWS::AccountId", "946784146896"]
+        AssertDescription: Create this stack in account 946784146896.
+
+Parameters:
+  BucketName:
+    Type: String
+    Default: datasyncher-dbx-use2
+    AllowedPattern: "^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$"
+    ConstraintDescription: Lowercase letters, numbers, and hyphens; 3-63 characters.
+    Description: Must match BucketName on the bucket stack. The bucket is created there.
+  ExternalId:
+    Type: String
+    Default: "0000"
+    NoEcho: true
+    Description: >-
+      Placeholder until the Databricks storage credential exists. Update this
+      parameter with the credential external ID after the credential is created.
+
+Resources:
+  UcReadPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: DatasyncherDatabricksUcS3Read
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: BucketLocation
+            Effect: Allow
+            Action: s3:GetBucketLocation
+            Resource: !Sub "arn:aws:s3:::${BucketName}"
+          - Sid: ListDynamicsFoPrefix
+            Effect: Allow
+            Action: s3:ListBucket
+            Resource: !Sub "arn:aws:s3:::${BucketName}"
+            Condition:
+              StringLike:
+                s3:prefix:
+                  - dynamics_fo
+                  - dynamics_fo/*
+          - Sid: ReadDynamicsFoObjects
+            Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:GetObjectVersion
+            Resource: !Sub "arn:aws:s3:::${BucketName}/dynamics_fo/*"
+          - Sid: SelfAssume
+            Effect: Allow
+            Action: sts:AssumeRole
+            Resource: !Sub "arn:aws:iam::${AWS::AccountId}:role/databricks-uc-s3-read"
+
+  UcReadRole:
+    Type: AWS::IAM::Role
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      RoleName: databricks-uc-s3-read
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: DatabricksUnityCatalog
+            Effect: Allow
+            Principal:
+              AWS: "arn:aws:iam::414351767826:role/unity-catalog-prod-UCMasterRole-14S5ZJVKOTYTL"
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                sts:ExternalId: !Ref ExternalId
+          - Sid: SelfAssume
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                aws:PrincipalArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/databricks-uc-s3-read"
+                sts:ExternalId: !Ref ExternalId
+      ManagedPolicyArns:
+        - !Ref UcReadPolicy
+
+  WriterPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: DatasyncherBatchS3Writer
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: BucketLocation
+            Effect: Allow
+            Action: s3:GetBucketLocation
+            Resource: !Sub "arn:aws:s3:::${BucketName}"
+          - Sid: ListDynamicsFoPrefix
+            Effect: Allow
+            Action: s3:ListBucket
+            Resource: !Sub "arn:aws:s3:::${BucketName}"
+            Condition:
+              StringLike:
+                s3:prefix:
+                  - dynamics_fo/*
+          - Sid: WriteDynamicsFoObjects
+            Effect: Allow
+            Action:
+              - s3:PutObject
+              - s3:GetObject
+              - s3:DeleteObject
+              - s3:AbortMultipartUpload
+              - s3:ListMultipartUploadParts
+            Resource: !Sub "arn:aws:s3:::${BucketName}/dynamics_fo/*"
+          - Sid: ManageUcReadRole
+            Effect: Allow
+            Action:
+              - iam:GetRole
+              - iam:UpdateAssumeRolePolicy
+              - iam:GetRolePolicy
+              - iam:PutRolePolicy
+            Resource: !GetAtt UcReadRole.Arn
+
+  WriterUser:
+    Type: AWS::IAM::User
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      UserName: datasyncher-batch-s3-writer
+      ManagedPolicyArns:
+        - !Ref WriterPolicy
+
+Outputs:
+  RoleArn:
+    Description: Set DATABRICKS_S3_IAM_ROLE_ARN to this value.
+    Value: !GetAtt UcReadRole.Arn
+  WriterUserName:
+    Description: Create an access key on this user after the stack finishes.
+    Value: !Ref WriterUser
+  BucketName:
+    Description: Pass this same value to the bucket stack.
+    Value: !Ref BucketName
+  Region:
+    Value: !Ref "AWS::Region"
+  AccountId:
+    Value: !Ref "AWS::AccountId"

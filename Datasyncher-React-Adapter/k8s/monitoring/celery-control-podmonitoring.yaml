@@ -1,0 +1,15 @@
+# Google Managed Prometheus (GMP) — scrape control worker /metrics
+apiVersion: monitoring.googleapis.com/v1
+kind: PodMonitoring
+metadata:
+  name: celery-worker-control
+  labels:
+    app: celery-worker-control
+spec:
+  selector:
+    matchLabels:
+      app: celery-worker-control
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s

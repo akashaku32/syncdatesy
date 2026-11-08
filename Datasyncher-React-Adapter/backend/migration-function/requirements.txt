@@ -1,0 +1,80 @@
+
+fastapi==0.104.0
+uvicorn==0.23.2
+requests==2.31.0
+pydantic==1.10.12
+httpx==0.24.0
+
+celery==5.3.0
+redis==5.0.0
+redis-lock<=0.5.0
+flower==1.0.0
+
+prometheus_client>=0.20.0
+psutil>=5.9.0
+
+# --- DB ---
+sqlalchemy==2.0.9
+psycopg2-binary==2.9.5
+
+# --- Azure ---
+azure-core>=1.30.0,<2.0.0
+azure-storage-blob>=12.29.0,<13.0.0
+azure-storage-file-datalake==12.24.0
+azure-identity==1.15.0
+cryptography>=41.0.7,<43.0.0
+
+# --- Data / Cloud / Connectors ---
+pandas==2.2.3
+numpy==2.1.3
+pyarrow==18.1.0
+
+adlfs==2023.1.0
+
+# --- Google Cloud ---
+# Firestore/Storage 2.7.x pins protobuf<5; SAP gRPC stubs need protobuf 5.26+ (runtime_version).
+google-auth==2.26.1
+google-auth-oauthlib==1.2.1
+google-auth-httplib2==0.2.0
+google-cloud-storage>=2.18.0,<3.0.0
+google-cloud-firestore>=2.30.0,<3.0.0
+gcsfs
+
+# --- Snowflake ---
+snowflake-connector-python>=3.12.0,<4.0.0
+snowflake-sqlalchemy==1.6.1
+
+# --- Databricks ---
+databricks-sql-connector>=3.0.0
+databricks-sdk>=0.28.0
+
+# --- Salesforce ---
+simple-salesforce>=1.12.4
+
+# --- AWS ---
+boto3>=1.34.0
+botocore>=1.34.0
+
+# --- Data Formats ---
+fastavro>=1.9.0
+openpyxl>=3.1.2
+xlsxwriter>=3.2.0
+
+# --- SSH / Environment ---
+paramiko>=3.4.0,<4.0.0
+python-dotenv==1.0.0
+
+# --- gRPC (SAP proxy hub) ---
+# service_pb2 gencode 7.35.1 requires matching protobuf runtime (ValidateProtobufRuntimeVersion).
+# service_pb2_grpc.py sets GRPC_GENERATED_VERSION (must match installed grpcio minor line).
+grpcio>=1.85.1,<2.0.0
+protobuf>=7.35.1,<8.0.0
+
+# --- SAP OData ---
+xmltodict>=0.13.0
+
+# --- HTTP Stack Pins ---
+urllib3==1.26.18
+certifi==2024.2.2
+idna==3.6
+

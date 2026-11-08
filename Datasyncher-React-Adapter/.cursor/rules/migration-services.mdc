@@ -1,0 +1,12 @@
+---
+description: Migration-function reuse rules
+globs: backend/migration-function/**
+alwaysApply: false
+---
+
+# Migration services
+
+- New source→dest pairs via `services.migration_common` registry + shared loaders.
+- Use `utils.sql_ident.quote_ident`, shared `MigrationFailureTracker`, shared retry.
+- Connections only via `datasyncher_connections`.
+- Never copy an existing `to_*.py` to start a new pair.

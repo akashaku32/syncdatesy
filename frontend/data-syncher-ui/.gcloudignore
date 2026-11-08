@@ -1,0 +1,15 @@
+# Keep Cloud Build uploads lean and avoid accidental sibling .js shadows of .ts sources.
+.git
+.gitignore
+node_modules
+dist
+build
+*.log
+.env
+.env.*
+**/*.js
+!eslint.config.js
+**/__pycache__
+*.md
+.vscode
+.idea

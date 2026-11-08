@@ -1,0 +1,9 @@
+# Deny all ingress to pods in this namespace unless another NetworkPolicy allows it.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress

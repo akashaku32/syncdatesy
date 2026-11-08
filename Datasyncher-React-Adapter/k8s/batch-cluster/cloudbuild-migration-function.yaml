@@ -1,0 +1,32 @@
+substitutions:
+  _INSTALL_NETSUITE_ODBC: "0"
+  _NETSUITE_ODBC_GCS_URI: ""
+
+steps:
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        if [ "${_INSTALL_NETSUITE_ODBC}" != "1" ]; then
+          echo "Skipping NetSuite ODBC bundle fetch (_INSTALL_NETSUITE_ODBC=${_INSTALL_NETSUITE_ODBC})."
+          exit 0
+        fi
+        if [ -z "${_NETSUITE_ODBC_GCS_URI}" ]; then
+          echo "ERROR: _INSTALL_NETSUITE_ODBC=1 requires _NETSUITE_ODBC_GCS_URI" >&2
+          exit 1
+        fi
+        mkdir -p vendor/netsuite-odbc
+        gsutil -q cp "${_NETSUITE_ODBC_GCS_URI}" vendor/netsuite-odbc/
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg
+      - "INSTALL_NETSUITE_ODBC=${_INSTALL_NETSUITE_ODBC}"
+      - -f
+      - migration-function/Dockerfile
+      - -t
+      - gcr.io/datasyncher-batch/datasyncher-migration-function:batch
+      - .
+images:
+  - gcr.io/datasyncher-batch/datasyncher-migration-function:batch

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: apscheduler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apscheduler
+  serviceName: apscheduler
+  template:
+    metadata:
+      labels:
+        app: apscheduler
+    spec:
+      nodeSelector:
+        pool: app
+      containers:
+        - name: apscheduler
+          image: gcr.io/datasyncher-kubernetes/datasyncher-django-app:qa
+          imagePullPolicy: Always
+          workingDir: /app
+          command:
+            - python
+            - -m
+            - apps.elttool.scheduler_service
+          env:
+            - name: RUN_SCHEDULER
+              value: "true"
+            # Rebuild pipeline_* APScheduler jobs from the pipeline table after pod start.
+            - name: PIPELINE_SCHEDULER_RECONCILE_ON_START
+              value: "true"
+            - name: PYTHONPATH
+              value: /app
+          envFrom:
+            - secretRef:
+                name: datasyncher-secrets
+          resources:
+            requests:
+              cpu: 50m
+              memory: 150Mi
+            limits:
+              cpu: 300m
+              memory: 384Mi

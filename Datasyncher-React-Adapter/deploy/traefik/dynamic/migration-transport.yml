@@ -1,0 +1,6 @@
+http:
+  serversTransports:
+    migration-transport:
+      forwardingTimeouts:
+        dialTimeout: 30s
+        responseHeaderTimeout: 12h

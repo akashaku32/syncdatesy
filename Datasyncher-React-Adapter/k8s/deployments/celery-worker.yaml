@@ -1,0 +1,177 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-worker
+spec:
+  # Deprecated: shared migration pool replaced by per-job celery-worker-job-{hash} pods.
+  # Kept at 0 replicas for rollback only. KEDA scaler is disabled (min/max 0).
+  replicas: 0
+  selector:
+    matchLabels:
+      app: celery-worker
+  template:
+    metadata:
+      labels:
+        app: celery-worker
+    spec:
+      serviceAccountName: celery-gcs
+      nodeSelector:
+        pool: worker
+      tolerations:
+        - key: pool
+          operator: Equal
+          value: worker
+          effect: NoSchedule
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: celery-worker
+                topologyKey: kubernetes.io/hostname
+      # terminationGracePeriodSeconds: enough headroom for the preStop drain window (60 s) so in-flight child tasks
+      # complete before the pod is SIGKILL'd. 120 s is the practical minimum; raise further
+      # if your connector calls regularly exceed 1 minute.
+      terminationGracePeriodSeconds: 120
+      containers:
+        - name: celery
+          image: gcr.io/datasyncher-kubernetes/datasyncher-fast-api:qa
+          imagePullPolicy: Always
+          env:
+            - name: CELERY_CHILD_AUDIT_GCS_ENABLED
+              value: "true"
+            # Per-table migration detail logs (local temp + upload to GCS on process_table close).
+            - name: MIGRATION_TABLE_DETAIL_LOG
+              value: "1"
+            # Explicit: write detail logs to GCS (see migration_table_detail_logs/... in bucket).
+            - name: MIGRATION_TABLE_LOG_BUCKET_WRITE
+              value: "true"
+            - name: CELERY_CHILD_AUDIT_GCS_PREFIX
+              value: celery-child-audit
+            - name: CELERY_CHILD_AUDIT_CSV_ENABLED
+              value: "false"
+            - name: CELERY_MIGRATION_QUEUE
+              value: "migration"
+            # Disabled: false PENDING requeues caused duplicate process_table runs (staging races).
+            # Child task errors still use call_function_child Celery retries (max_retries=1 → 2 attempts total).
+            - name: CELERY_PENDING_CHILD_REQUEUE_ENABLED
+              value: "false"
+            - name: CELERY_PENDING_CHILD_REQUEUE_AFTER_SECONDS
+              value: "45"
+            # How often (seconds) check_job_status reschedules itself while work is active.
+            - name: CELERY_CHECK_JOB_STATUS_INTERVAL
+              value: "20"
+            # Redis broker default visibility is 3600s; must exceed longest child task when acks_late=true.
+            - name: CELERY_BROKER_VISIBILITY_TIMEOUT_SECONDS
+              value: "46800"
+            # One Celery child per table; publish at most 6 per job to control KEDA scale-up.
+            - name: CELERY_ONE_TABLE_PER_CHILD
+              value: "true"
+            - name: CELERY_MAX_INFLIGHT_CHILDREN_PER_JOB
+              value: "6"
+            - name: CELERY_ACTIVE_MIGRATION_COUNT_KEY
+              value: "celery:active-migration-count"
+            - name: CELERY_KEDA_DESIRED_REPLICAS_LIST_KEY
+              value: "celery:keda:desired-replicas"
+            - name: CELERY_KEDA_PODS_PER_JOB
+              value: "2"
+            - name: CELERY_KEDA_ACTIVE_SYNC_MAX_IDS
+              value: "32"
+            - name: CELERY_KEDA_MAX_REPLICAS
+              value: "2"
+            # workload = sum(min(2, ceil(tables/3))) per job; jobs = legacy jobs×2 (rollback without image).
+            - name: CELERY_KEDA_SCALE_MODE
+              value: "workload"
+            - name: CELERY_JOB_ISOLATION_MODE
+              value: "per_job"
+            - name: CELERY_KEDA_MAX_PODS_PER_JOB
+              value: "2"
+            - name: CELERY_WORKER_CONCURRENCY
+              value: "3"
+            - name: CELERY_TASK_TIME_LIMIT_SECONDS
+              value: "0"
+            - name: CELERY_TASK_SOFT_TIME_LIMIT_SECONDS
+              value: "0"
+            # Requeue STARTED children only when assigned worker pod is gone (OOM/eviction).
+            # Does not affect healthy 12h+ runs on a live pod.
+            - name: CELERY_OOM_ORPHAN_REQUEUE_AFTER_SECONDS
+              value: "900"
+            - name: CELERY_WORKER_HEARTBEAT_TTL_SECONDS
+              value: "180"
+            # Refresh Redis heartbeat every 60s during long child migrations (below 180s TTL).
+            - name: CELERY_WORKER_HEARTBEAT_REFRESH_INTERVAL_SECONDS
+              value: "60"
+            # Require K8s pod missing/terminated before orphan requeue (not stale heartbeat alone).
+            - name: CELERY_ORPHAN_REQUEUE_REQUIRE_K8S_CONFIRMATION
+              value: "true"
+            # Auto-requeue STARTED/IN_PROGRESS tasks when assigned worker pod is confirmed gone.
+            - name: CELERY_ORPHAN_AUTO_REQUEUE_ENABLED
+              value: "true"
+            # Query K8s pod status/events when assigned worker dies — logs WORKER_POD_OOMKILLED + error_log_entry.
+            - name: CELERY_K8S_POD_STATUS_ENABLED
+              value: "true"
+            - name: CELERY_K8S_NAMESPACE
+              value: "default"
+            # Scale-down protection: pod-deletion-cost + per-pod active task tracking.
+            # CELERY_KEDA_FLOOR_BY_BUSY_PODS keeps HPA target >= busy pods so only idle pods are removed.
+            - name: CELERY_SCALE_DOWN_PROTECTION_ENABLED
+              value: "true"
+            - name: CELERY_KEDA_FLOOR_BY_BUSY_PODS
+              value: "true"
+            - name: CELERY_POD_DELETION_COST_ENABLED
+              value: "true"
+            - name: CELERY_POD_DELETION_COST_BUSY
+              value: "100"
+            - name: CELERY_POD_DELETION_COST_IDLE
+              value: "0"
+            # Reconcile Redis active_tasks with celery inspect active/reserved every check_job_status tick.
+            - name: CELERY_POD_ACTIVE_TASKS_RECONCILE_ENABLED
+              value: "true"
+            - name: CELERY_POD_ACTIVE_TASKS_RECONCILE_TIMEOUT
+              value: "10"
+            - name: CELERY_TASK_HEARTBEAT_INTERVAL_SECONDS
+              value: "60"
+            - name: CELERY_TASK_HEARTBEAT_STALE_SECONDS
+              value: "1200"
+            # No Celery task time limit — long Dynamics tables run until complete.
+            # STARTED children are only requeued on confirmed worker pod loss (OOM/eviction).
+          command:
+            - celery
+            - -A
+            - celery_worker.celery_app
+            - worker
+            - --loglevel=info
+            # Per-pod worker slots; total parallelism = concurrency * KEDA maxReplicaCount.
+            - --concurrency=3
+            - --pool=prefork
+            - -Q
+            - migration
+            - -Ofair
+            - --without-gossip # Skip gossip handshake overhead so shutdown/startup stays within grace window.
+            - --without-mingle # Skip mingle synchronization overhead to reduce broker churn during rollouts.
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  # Avoid broadcast queue-control in preStop.
+                  # `celery control cancel_consumer migration` can affect *all* workers and
+                  # leave the queue unconsumed (PENDING_NO_PAYLOAD / stuck orchestrators).
+                  # Keep this pod alive briefly so SIGTERM drain completes, but do not
+                  # mutate global consumer state.
+                  - |
+                    sleep 60
+          envFrom:
+            - secretRef:
+                name: datasyncher-secrets
+          resources:
+            # worker-pool: e2-standard-4 (~13Gi allocatable). Limit 12Gi for wide Dynamics tables.
+            requests:
+              cpu: 1000m
+              memory: 4Gi
+            limits:
+              cpu: 4000m
+              memory: 12Gi

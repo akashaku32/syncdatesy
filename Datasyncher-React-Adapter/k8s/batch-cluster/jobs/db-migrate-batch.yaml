@@ -1,0 +1,30 @@
+# Run once per schema change on datasyncher-batch-cluster (secret → DB must match deployed apps).
+# Job name is fixed; delete the previous Job before re-applying:
+#   kubectl delete job db-migrate-batch -n default --ignore-not-found
+#   kubectl apply -f k8s/batch-cluster/jobs/db-migrate-batch.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migrate-batch
+  namespace: default
+spec:
+  ttlSecondsAfterFinished: 86400
+  backoffLimit: 2
+  template:
+    spec:
+      restartPolicy: Never
+      nodeSelector:
+        pool: app
+      containers:
+        - name: migrate
+          image: gcr.io/datasyncher-batch/datasyncher-django-app:batch
+          imagePullPolicy: Always
+          command:
+            - /bin/sh
+            - -c
+            - >-
+              python manage.py migrate --noinput &&
+              python manage.py populate_destination_attributes --only-databricks
+          envFrom:
+            - secretRef:
+                name: datasyncher-secrets

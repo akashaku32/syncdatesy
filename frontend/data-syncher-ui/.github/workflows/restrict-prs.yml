@@ -1,0 +1,48 @@
+name: Restrict PRs to Collaborators
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  restrict-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if PR author is a collaborator
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const author = context.payload.pull_request.user.login;
+
+            try {
+              await github.rest.repos.checkCollaborator({ owner, repo, username: author });
+              core.info(`${author} is a collaborator — PR allowed.`);
+            } catch (err) {
+              core.setFailed(`${author} is NOT a collaborator.`);
+            }
+
+      - name: Close PR if not collaborator
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo, number } = context.issue;
+            const author = context.payload.pull_request.user.login;
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: number,
+              body: `👋 Hi @${author}, thanks for your effort — but this repository only accepts PRs from collaborators.`
+            });
+            await github.rest.pulls.update({
+              owner,
+              repo,
+              pull_number: number,
+              state: "closed"
+            });

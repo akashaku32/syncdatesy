@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: netsuite-odbc-env
+  labels:
+    app: migration-function
+data:
+  NETSUITE_ODBC_DRIVER: "{NetSuite ODBC Drivers}"
+  NETSUITE_ODBC_TRUSTSTORE: "/opt/netsuite/odbcclient/cert/ca4.cer"
+  LD_LIBRARY_PATH: "/opt/netsuite/odbcclient/lib64"

@@ -1,0 +1,20 @@
+# Batch cluster only — mount Proxy Agent CA for config.json cert issuance.
+# Requires Secret proxy-agent-ca (keys: ca.crt, ca.key).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django
+spec:
+  template:
+    spec:
+      volumes:
+        - name: proxy-agent-ca
+          secret:
+            secretName: proxy-agent-ca
+            defaultMode: 0440
+      containers:
+        - name: django
+          volumeMounts:
+            - name: proxy-agent-ca
+              mountPath: /etc/proxy-agent-ca
+              readOnly: true

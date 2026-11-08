@@ -1,0 +1,94 @@
+# SAP proxy agent gRPC hub (loads + ReportProgress). Image bundles agent hub server
+# (ODATA server.py equivalent) plus Django progress relay. mTLS at ingress or LB.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sap-proxy-agent-hub
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sap-proxy-agent-hub
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: sap-proxy-agent-hub
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      nodeSelector:
+        pool: app
+      containers:
+        - name: sap-proxy-agent-hub
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            capabilities:
+              drop:
+                - ALL
+          image: gcr.io/datasyncher-batch/datasyncher-sap-proxy-agent-hub:batch
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 50051
+              name: grpc
+            - containerPort: 50052
+              name: grpc-bootstrap
+            - containerPort: 8081
+              name: http-health
+          env:
+            - name: DJANGO_INTERNAL_BASE_URL
+              value: "http://django-svc:8000"
+            - name: GRPC_HUB_PORT
+              value: "50051"
+            - name: GRPC_BOOTSTRAP_PORT
+              value: "50052"
+            - name: HTTP_HEALTH_PORT
+              value: "8081"
+            - name: HUB_MTLS_DIR
+              value: "/etc/sap-proxy-agent-hub/mtls"
+            # sap-proxy-agent-unary (:50053) or in-cluster Django unary pod — required for Enroll.
+            - name: TOKEN_VALIDATION_GRPC_TARGET
+              value: "sap-proxy-agent-unary-svc:50053"
+          envFrom:
+            - secretRef:
+                name: datasyncher-secrets
+          volumeMounts:
+            - name: hub-mtls
+              mountPath: /etc/sap-proxy-agent-hub/mtls
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+      volumes:
+        - name: hub-mtls
+          secret:
+            secretName: sap-proxy-agent-hub-mtls
+            optional: true

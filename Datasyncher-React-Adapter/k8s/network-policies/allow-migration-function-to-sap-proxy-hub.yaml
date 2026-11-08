@@ -1,0 +1,19 @@
+# migration-function (SAP OData proxy gRPC client) → sap-proxy-agent-hub :50051
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-migration-function-to-sap-proxy-agent-hub
+spec:
+  podSelector:
+    matchLabels:
+      app: sap-proxy-agent-hub
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: migration-function
+      ports:
+        - protocol: TCP
+          port: 50051

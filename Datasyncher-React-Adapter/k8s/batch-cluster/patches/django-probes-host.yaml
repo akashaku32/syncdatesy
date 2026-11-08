@@ -1,0 +1,21 @@
+# Strategic-merge patch for Deployment/django — use in-cluster Host so probes are not 301’d
+# by SECURE_SSL_REDIRECT (public Host gcp.datasyncher.com over plain HTTP triggers redirect).
+spec:
+  template:
+    spec:
+      containers:
+        - name: django
+          readinessProbe:
+            httpGet:
+              path: /health/
+              port: 8000
+              httpHeaders:
+                - name: Host
+                  value: django-svc.default.svc.cluster.local
+          livenessProbe:
+            httpGet:
+              path: /health/
+              port: 8000
+              httpHeaders:
+                - name: Host
+                  value: django-svc.default.svc.cluster.local

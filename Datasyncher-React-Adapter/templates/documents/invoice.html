@@ -1,0 +1,327 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Invoice #{{ invoice.invoice_number }}</title>
+<style>
+    @page {
+        size: A4;
+        margin: 0;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+        color: #333;
+        background: #fff;
+        padding: 15mm;
+    }
+
+    .header {
+        display: table;
+        width: 100%;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #2c5f8d;
+        padding-bottom: 15px;
+    }
+
+    .header-left {
+        display: table-cell;
+        width: 50%;
+        vertical-align: top;
+    }
+
+    .header-right {
+        display: table-cell;
+        width: 50%;
+        text-align: right;
+        vertical-align: top;
+    }
+
+    .logo img {
+        max-width: 180px;
+        height: auto;
+        margin-bottom: 8px;
+    }
+
+    .company-info {
+        font-size: 11px;
+        color: #555;
+        line-height: 1.4;
+    }
+
+    .invoice-title {
+        font-size: 32px;
+        font-weight: bold;
+        color: #2c5f8d;
+        margin-bottom: 5px;
+    }
+
+    .invoice-number {
+        font-size: 13px;
+        font-weight: bold;
+        margin-bottom: 3px;
+    }
+
+    .invoice-date {
+        font-size: 12px;
+        color: #666;
+    }
+
+    .billing-info {
+        display: table;
+        width: 100%;
+        margin: 20px 0;
+    }
+
+    .billing-col {
+        display: table-cell;
+        width: 33.33%;
+        vertical-align: top;
+        padding: 12px;
+        background: #f8f9fa;
+        border: 1px solid #e0e0e0;
+    }
+
+    .billing-col:first-child {
+        border-right: none;
+    }
+
+    .billing-col:last-child {
+        border-left: none;
+    }
+
+    .billing-label {
+        font-weight: 600;
+        font-size: 12px;
+        color: #2c5f8d;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+    }
+
+    .billing-content {
+        font-size: 11px;
+        line-height: 1.5;
+        color: #333;
+    }
+
+    .amount-due {
+        text-align: center;
+        background: #2c5f8d;
+        color: white;
+        padding: 8px 15px;
+        margin: 15px 0;
+        border-radius: 4px;
+    }
+
+    .amount-due-label {
+        font-size: 11px;
+        margin-bottom: 3px;
+    }
+
+    .amount-due-value {
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .billing-col:last-child .billing-label,
+    .billing-col:last-child .billing-content {
+        text-align: right;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 12px;
+    }
+
+    th {
+        background-color: #2c5f8d;
+        color: white;
+        padding: 10px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 12px;
+    }
+
+    td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        background: white;
+    }
+
+    .text-right {
+        text-align: right;
+    }
+
+    .totals-section {
+        display: table;
+        width: 100%;
+        margin-top: 15px;
+    }
+
+    .totals-left {
+        display: table-cell;
+        width: 60%;
+        vertical-align: top;
+    }
+
+    .totals-right {
+        display: table-cell;
+        width: 40%;
+        vertical-align: top;
+    }
+
+    .totals-table {
+        width: 100%;
+        font-size: 12px;
+    }
+
+    .totals-table tr {
+        line-height: 1.8;
+    }
+
+    .totals-table td {
+        border: none;
+        padding: 4px 0;
+    }
+
+    .totals-table .total-row {
+        font-weight: bold;
+        font-size: 14px;
+        border-top: 2px solid #333;
+        padding-top: 8px;
+    }
+
+    .notes {
+        margin-top: 20px;
+        padding: 12px;
+        background: #f8f9fa;
+        border-left: 3px solid #2c5f8d;
+        font-size: 11px;
+    }
+
+    .footer {
+        text-align: center;
+        margin-top: 30px;
+        padding-top: 15px;
+        border-top: 1px solid #ddd;
+        font-size: 10px;
+        color: #999;
+    }
+
+    .footer a {
+        color: #2c5f8d;
+        text-decoration: none;
+    }
+</style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <div class="logo">
+                <img src="{{ logo_url }}" alt="Company Logo">
+            </div>
+            <div class="company-info">
+                {{ company_address1 }}<br>
+                {{ company_address2 }}<br>
+                Email: <a href="mailto:{{ company_email|default:'datasyncher@spectrasoln.com' }}">{{ company_email|default:'datasyncher@spectrasoln.com' }}</a>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="invoice-title">INVOICE</div>
+            <div class="invoice-number">#{{ invoice.invoice_number }}</div>
+            <div class="invoice-date">Date: {{ invoice.created_at|date:"F j, Y" }}</div>
+        </div>
+    </div>
+
+    <div class="billing-info">
+        <div class="billing-col">
+            <div class="billing-label">Billed To</div>
+            <div class="billing-content">
+                {{ billed_to.name }}<br>
+                {{ billed_to.address1 }}{% if billed_to.address2 %}, {{ billed_to.address2 }}{% endif %}<br>
+                {% if billed_to.city %}{{ billed_to.city }}, {% endif %}{{ billed_to.state }} {{ billed_to.zip_code }}<br>
+                {{ billed_to.country }}
+            </div>
+        </div>
+        <div class="billing-col">
+            <div class="billing-label">Ship To</div>
+            <div class="billing-content">
+                {{ ship_to.name }}<br>
+                {{ ship_to.address1 }}{% if ship_to.address2 %}, {{ ship_to.address2 }}{% endif %}<br>
+                {% if ship_to.city %}{{ ship_to.city }}, {% endif %}{{ ship_to.state }} {{ ship_to.zip_code }}<br>
+                {{ ship_to.country }}
+            </div>
+        </div>
+        <div class="billing-col">
+            <div class="billing-label">Due Date</div>
+            <div class="billing-content">
+                <strong>{{ due_date|date:"F j, Y" }}</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="amount-due">
+        <div class="amount-due-label">Total Amount Due</div>
+        <div class="amount-due-value">${{ invoice.total_amount }}</div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Billing Period</th>
+                <th class="text-right">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Data Replication: Enterprise Edition</td>
+                <td>{{ invoice.billing_start_date|date:"M j, Y" }} to {{ invoice.billing_end_date|date:"M j, Y" }}</td>
+                <td class="text-right">${{ invoice.total_amount }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="totals-section">
+        <div class="totals-left">
+            <div class="notes">
+                <strong>Note:</strong> This invoice includes your billing for the enterprise edition.
+                {% if payment_link %}
+                <br><br>
+                <a href="{{ payment_link }}" style="color: #2c5f8d; font-weight: bold;">Click here to pay online</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="totals-right">
+            <table class="totals-table">
+                <tr>
+                    <td>Subtotal:</td>
+                    <td class="text-right">${{ invoice.total_amount }}</td>
+                </tr>
+                <tr>
+                    <td>Tax (0%):</td>
+                    <td class="text-right">$0.00</td>
+                </tr>
+                <tr class="total-row">
+                    <td>Total:</td>
+                    <td class="text-right">${{ invoice.total_amount }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Need help? Contact us at <a href="mailto:{{ company_email|default:'datasyncher@spectrasoln.com' }}">{{ company_email|default:'datasyncher@spectrasoln.com' }}</a></p>
+        <p>© {{ current_year|default:"2025" }} {{ company_name|default:"Datasyncher" }}. All Rights Reserved.</p>
+    </div>
+</body>
+</html>

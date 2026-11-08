@@ -1,0 +1,2228 @@
+{
+  "dtp_id": "DTP_00O2TIIO2L73TN9NY6AZRY2PX",
+  "audit_report": "Audit_Report_DTP_00O2TIIO2L73TN9NY6AZRY2PX.pdf",
+  "transformation": {
+    "type": "NONE",
+    "file": "",
+    "entry_point": ""
+  },
+  "row_filter": {
+    "present": true,
+    "condition": {
+      "type": "IN",
+      "field": "BUKRS",
+      "values": [
+        "IN01",
+        "1710"
+      ]
+    },
+    "description": "DTP-level filter node: Company Code (BUKRS) restricted to IN01 and 1710 (two Include/EQ fixed-value selections in the DTP's filter, confirmed via CL_RSBC_FILTER->GET_ALL's E_T_SELTAB).",
+    "implemented_in": ""
+  },
+  "source": {
+    "objecttype": "RSDS",
+    "objectname": "0FI_GL_4",
+    "objecttext": "0FI_GL_4 extract (RSDS, source system FADCLNT100)",
+    "fields": [
+      {
+        "position": 1,
+        "fieldname": "BUKRS",
+        "datatype": "CHAR",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 2,
+        "fieldname": "FISCPER",
+        "datatype": "NUMC",
+        "length": 7,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 3,
+        "fieldname": "BELNR",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 4,
+        "fieldname": "BUZEI",
+        "datatype": "NUMC",
+        "length": 3,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 5,
+        "fieldname": "STATUSPS",
+        "datatype": "CHAR",
+        "length": 1,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 6,
+        "fieldname": "KTOPL",
+        "datatype": "CHAR",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 7,
+        "fieldname": "HKONT",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 8,
+        "fieldname": "KOART",
+        "datatype": "CHAR",
+        "length": 1,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 9,
+        "fieldname": "UMSKZ",
+        "datatype": "CHAR",
+        "length": 1,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 10,
+        "fieldname": "BLART",
+        "datatype": "CHAR",
+        "length": 2,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 11,
+        "fieldname": "BSCHL",
+        "datatype": "CHAR",
+        "length": 2,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 12,
+        "fieldname": "FISCVAR",
+        "datatype": "CHAR",
+        "length": 2,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 13,
+        "fieldname": "BLDAT",
+        "datatype": "DATS",
+        "length": 8,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 14,
+        "fieldname": "BUDAT",
+        "datatype": "DATS",
+        "length": 8,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 15,
+        "fieldname": "CPUDT",
+        "datatype": "DATS",
+        "length": 8,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 16,
+        "fieldname": "VALUT",
+        "datatype": "DATS",
+        "length": 8,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 17,
+        "fieldname": "AUGDT",
+        "datatype": "DATS",
+        "length": 8,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 18,
+        "fieldname": "AUGBL",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 19,
+        "fieldname": "KOKRS",
+        "datatype": "CHAR",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 20,
+        "fieldname": "KOSTL",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 21,
+        "fieldname": "PRCTR",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 22,
+        "fieldname": "AUFNR",
+        "datatype": "CHAR",
+        "length": 12,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 23,
+        "fieldname": "PROJK",
+        "datatype": "NUMC",
+        "length": 8,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 24,
+        "fieldname": "WERKS",
+        "datatype": "CHAR",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 25,
+        "fieldname": "GSBER",
+        "datatype": "CHAR",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 26,
+        "fieldname": "FKBER",
+        "datatype": "CHAR",
+        "length": 16,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 27,
+        "fieldname": "PPRCT",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 28,
+        "fieldname": "PARGB",
+        "datatype": "CHAR",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 29,
+        "fieldname": "VBUND",
+        "datatype": "CHAR",
+        "length": 6,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 30,
+        "fieldname": "LCURR",
+        "datatype": "CUKY",
+        "length": 5,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 31,
+        "fieldname": "DMSOL",
+        "datatype": "CURR",
+        "length": 23,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 32,
+        "fieldname": "DMHAB",
+        "datatype": "CURR",
+        "length": 23,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 33,
+        "fieldname": "DMSHB",
+        "datatype": "CURR",
+        "length": 23,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 34,
+        "fieldname": "WAERS",
+        "datatype": "CUKY",
+        "length": 5,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 35,
+        "fieldname": "WRSOL",
+        "datatype": "CURR",
+        "length": 23,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 36,
+        "fieldname": "WRHAB",
+        "datatype": "CURR",
+        "length": 23,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 37,
+        "fieldname": "WRSHB",
+        "datatype": "CURR",
+        "length": 23,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 38,
+        "fieldname": "CURT2",
+        "datatype": "CHAR",
+        "length": 2,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 39,
+        "fieldname": "HWAE2",
+        "datatype": "CUKY",
+        "length": 5,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 40,
+        "fieldname": "DMSO2",
+        "datatype": "CURR",
+        "length": 23,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 41,
+        "fieldname": "DMHA2",
+        "datatype": "CURR",
+        "length": 23,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 42,
+        "fieldname": "DMSH2",
+        "datatype": "CURR",
+        "length": 23,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 43,
+        "fieldname": "CURT3",
+        "datatype": "CHAR",
+        "length": 2,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 44,
+        "fieldname": "HWAE3",
+        "datatype": "CUKY",
+        "length": 5,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 45,
+        "fieldname": "DMSO3",
+        "datatype": "CURR",
+        "length": 23,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 46,
+        "fieldname": "DMHA3",
+        "datatype": "CURR",
+        "length": 23,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 47,
+        "fieldname": "DMSH3",
+        "datatype": "CURR",
+        "length": 23,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 48,
+        "fieldname": "XBLNR",
+        "datatype": "CHAR",
+        "length": 16,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 49,
+        "fieldname": "XREF3",
+        "datatype": "CHAR",
+        "length": 20,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 50,
+        "fieldname": "AWREF",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 51,
+        "fieldname": "AWGJA",
+        "datatype": "NUMC",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 52,
+        "fieldname": "AWBUK",
+        "datatype": "CHAR",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 53,
+        "fieldname": "AWKOK",
+        "datatype": "CHAR",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 54,
+        "fieldname": "SGTXT",
+        "datatype": "CHAR",
+        "length": 50,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 55,
+        "fieldname": "XNEGP",
+        "datatype": "CHAR",
+        "length": 1,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 56,
+        "fieldname": "UPDMOD",
+        "datatype": "CHAR",
+        "length": 1,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 57,
+        "fieldname": "PS_POSID",
+        "datatype": "CHAR",
+        "length": 24,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 58,
+        "fieldname": "ZUONR",
+        "datatype": "CHAR",
+        "length": 18,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 59,
+        "fieldname": "STBLG",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 60,
+        "fieldname": "STJAH",
+        "datatype": "NUMC",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 61,
+        "fieldname": "REBZG",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 62,
+        "fieldname": "REBZJ",
+        "datatype": "NUMC",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 63,
+        "fieldname": "REBZT",
+        "datatype": "CHAR",
+        "length": 1,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 64,
+        "fieldname": "BUZID",
+        "datatype": "CHAR",
+        "length": 1,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 65,
+        "fieldname": "MWART",
+        "datatype": "CHAR",
+        "length": 1,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 66,
+        "fieldname": "TXGRP",
+        "datatype": "NUMC",
+        "length": 3,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 67,
+        "fieldname": "ZFBDT",
+        "datatype": "DATS",
+        "length": 8,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 68,
+        "fieldname": "ZBD1T",
+        "datatype": "DEC",
+        "length": 3,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 69,
+        "fieldname": "ZBD2T",
+        "datatype": "DEC",
+        "length": 3,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 70,
+        "fieldname": "ZBD3T",
+        "datatype": "DEC",
+        "length": 3,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 71,
+        "fieldname": "XREVERSAL",
+        "datatype": "CHAR",
+        "length": 1,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 72,
+        "fieldname": "AWTYP",
+        "datatype": "CHAR",
+        "length": 5,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 73,
+        "fieldname": "AWKEY",
+        "datatype": "CHAR",
+        "length": 20,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 74,
+        "fieldname": "BSTAT",
+        "datatype": "CHAR",
+        "length": 1,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 75,
+        "fieldname": "DMBTR",
+        "datatype": "CURR",
+        "length": 23,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 76,
+        "fieldname": "DMBE2",
+        "datatype": "CURR",
+        "length": 23,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 77,
+        "fieldname": "DMBE3",
+        "datatype": "CURR",
+        "length": 23,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 78,
+        "fieldname": "GJAHR",
+        "datatype": "NUMC",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 79,
+        "fieldname": "MANDT",
+        "datatype": "CLNT",
+        "length": 3,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 80,
+        "fieldname": "MONAT",
+        "datatype": "NUMC",
+        "length": 2,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 81,
+        "fieldname": "SHKZG",
+        "datatype": "CHAR",
+        "length": 1,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 82,
+        "fieldname": "WRBTR",
+        "datatype": "CURR",
+        "length": 23,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 83,
+        "fieldname": "BKTXT",
+        "datatype": "CHAR",
+        "length": 25,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 84,
+        "fieldname": "GLVOR",
+        "datatype": "CHAR",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 85,
+        "fieldname": "PERNR",
+        "datatype": "NUMC",
+        "length": 8,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 86,
+        "fieldname": "FISTL",
+        "datatype": "CHAR",
+        "length": 16,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 87,
+        "fieldname": "GEBER",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 88,
+        "fieldname": "KTOSL",
+        "datatype": "CHAR",
+        "length": 3,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 89,
+        "fieldname": "BUDGET_PD",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 90,
+        "fieldname": "MWSKZ",
+        "datatype": "CHAR",
+        "length": 2,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 91,
+        "fieldname": "ODQ_CHANGEMODE",
+        "datatype": "CHAR",
+        "length": 1,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 92,
+        "fieldname": "ODQ_ENTITYCNTR",
+        "datatype": "DEC",
+        "length": 19,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      }
+    ]
+  },
+  "target": {
+    "objecttype": "ADSO",
+    "objectname": "/IMO/CMFIGL04",
+    "objecttext": "CM FI-GL: Line Items (0FI_GL_4)",
+    "fields": [
+      {
+        "position": 1,
+        "fieldname": "BUKRS",
+        "datatype": "CHAR",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 2,
+        "fieldname": "FISCPER",
+        "datatype": "NUMC",
+        "length": 7,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 3,
+        "fieldname": "BELNR",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 4,
+        "fieldname": "BUZEI",
+        "datatype": "NUMC",
+        "length": 3,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 5,
+        "fieldname": "STATUSPS",
+        "datatype": "CHAR",
+        "length": 1,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 6,
+        "fieldname": "KTOPL",
+        "datatype": "CHAR",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 7,
+        "fieldname": "HKONT",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 8,
+        "fieldname": "KOART",
+        "datatype": "CHAR",
+        "length": 1,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 9,
+        "fieldname": "UMSKZ",
+        "datatype": "CHAR",
+        "length": 1,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 10,
+        "fieldname": "BLART",
+        "datatype": "CHAR",
+        "length": 2,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 11,
+        "fieldname": "BSCHL",
+        "datatype": "CHAR",
+        "length": 2,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 12,
+        "fieldname": "FISCVAR",
+        "datatype": "CHAR",
+        "length": 2,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 13,
+        "fieldname": "BLDAT",
+        "datatype": "DATS",
+        "length": 8,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 14,
+        "fieldname": "BUDAT",
+        "datatype": "DATS",
+        "length": 8,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 15,
+        "fieldname": "CPUDT",
+        "datatype": "DATS",
+        "length": 8,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 16,
+        "fieldname": "VALUT",
+        "datatype": "DATS",
+        "length": 8,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 17,
+        "fieldname": "AUGDT",
+        "datatype": "DATS",
+        "length": 8,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 18,
+        "fieldname": "AUGBL",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 19,
+        "fieldname": "KOKRS",
+        "datatype": "CHAR",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 20,
+        "fieldname": "KOSTL",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 21,
+        "fieldname": "PRCTR",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 22,
+        "fieldname": "AUFNR",
+        "datatype": "CHAR",
+        "length": 12,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 23,
+        "fieldname": "PROJK",
+        "datatype": "NUMC",
+        "length": 8,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 24,
+        "fieldname": "WERKS",
+        "datatype": "CHAR",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 25,
+        "fieldname": "GSBER",
+        "datatype": "CHAR",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 26,
+        "fieldname": "FKBER",
+        "datatype": "CHAR",
+        "length": 16,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 27,
+        "fieldname": "PPRCT",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 28,
+        "fieldname": "PARGB",
+        "datatype": "CHAR",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 29,
+        "fieldname": "VBUND",
+        "datatype": "CHAR",
+        "length": 6,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 30,
+        "fieldname": "LCURR",
+        "datatype": "CUKY",
+        "length": 5,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 31,
+        "fieldname": "DMSOL",
+        "datatype": "CURR",
+        "length": 13,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": "LCURR"
+      },
+      {
+        "position": 32,
+        "fieldname": "DMHAB",
+        "datatype": "CURR",
+        "length": 13,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": "LCURR"
+      },
+      {
+        "position": 33,
+        "fieldname": "DMSHB",
+        "datatype": "CURR",
+        "length": 13,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": "LCURR"
+      },
+      {
+        "position": 34,
+        "fieldname": "WAERS",
+        "datatype": "CUKY",
+        "length": 5,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 35,
+        "fieldname": "WRSOL",
+        "datatype": "CURR",
+        "length": 13,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": "WAERS"
+      },
+      {
+        "position": 36,
+        "fieldname": "WRHAB",
+        "datatype": "CURR",
+        "length": 13,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": "WAERS"
+      },
+      {
+        "position": 37,
+        "fieldname": "WRSHB",
+        "datatype": "CURR",
+        "length": 13,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": "WAERS"
+      },
+      {
+        "position": 38,
+        "fieldname": "CURT2",
+        "datatype": "CHAR",
+        "length": 2,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 39,
+        "fieldname": "HWAE2",
+        "datatype": "CUKY",
+        "length": 5,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 40,
+        "fieldname": "DMSO2",
+        "datatype": "CURR",
+        "length": 13,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": "HWAE2"
+      },
+      {
+        "position": 41,
+        "fieldname": "DMHA2",
+        "datatype": "CURR",
+        "length": 13,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": "HWAE2"
+      },
+      {
+        "position": 42,
+        "fieldname": "DMSH2",
+        "datatype": "CURR",
+        "length": 13,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": "HWAE2"
+      },
+      {
+        "position": 43,
+        "fieldname": "CURT3",
+        "datatype": "CHAR",
+        "length": 2,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 44,
+        "fieldname": "HWAE3",
+        "datatype": "CUKY",
+        "length": 5,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 45,
+        "fieldname": "DMSO3",
+        "datatype": "CURR",
+        "length": 13,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": "HWAE3"
+      },
+      {
+        "position": 46,
+        "fieldname": "DMHA3",
+        "datatype": "CURR",
+        "length": 13,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": "HWAE3"
+      },
+      {
+        "position": 47,
+        "fieldname": "DMSH3",
+        "datatype": "CURR",
+        "length": 13,
+        "decimals": 2,
+        "key_flag": " ",
+        "reffield": "HWAE3"
+      },
+      {
+        "position": 48,
+        "fieldname": "XBLNR",
+        "datatype": "CHAR",
+        "length": 16,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 49,
+        "fieldname": "XREF3",
+        "datatype": "CHAR",
+        "length": 20,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 50,
+        "fieldname": "AWREF",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 51,
+        "fieldname": "AWGJA",
+        "datatype": "NUMC",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 52,
+        "fieldname": "AWBUK",
+        "datatype": "CHAR",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 53,
+        "fieldname": "AWKOK",
+        "datatype": "CHAR",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 54,
+        "fieldname": "SGTXT",
+        "datatype": "CHAR",
+        "length": 50,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 55,
+        "fieldname": "UPDMOD",
+        "datatype": "CHAR",
+        "length": 1,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 56,
+        "fieldname": "PS_POSID",
+        "datatype": "CHAR",
+        "length": 24,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 57,
+        "fieldname": "ZUONR",
+        "datatype": "CHAR",
+        "length": 18,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 58,
+        "fieldname": "BKTXT",
+        "datatype": "CHAR",
+        "length": 25,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 59,
+        "fieldname": "GLVOR",
+        "datatype": "CHAR",
+        "length": 4,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 60,
+        "fieldname": "PERNR",
+        "datatype": "NUMC",
+        "length": 8,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 61,
+        "fieldname": "FISTL",
+        "datatype": "CHAR",
+        "length": 16,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 62,
+        "fieldname": "GEBER",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 63,
+        "fieldname": "KTOSL",
+        "datatype": "CHAR",
+        "length": 3,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 64,
+        "fieldname": "BUDGET_PD",
+        "datatype": "CHAR",
+        "length": 10,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 65,
+        "fieldname": "UPD_DATE",
+        "datatype": "DATS",
+        "length": 8,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      },
+      {
+        "position": 66,
+        "fieldname": "GN_R3_SSY",
+        "datatype": "CHAR",
+        "length": 2,
+        "decimals": 0,
+        "key_flag": " ",
+        "reffield": ""
+      }
+    ]
+  },
+  "field_mapping": [
+    {
+      "position": 1,
+      "src_fieldnames": [
+        "BUKRS"
+      ],
+      "tgt_fieldname": "BUKRS",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        1
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 2,
+      "src_fieldnames": [
+        "FISCPER"
+      ],
+      "tgt_fieldname": "FISCPER",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        2
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 3,
+      "src_fieldnames": [
+        "BELNR"
+      ],
+      "tgt_fieldname": "BELNR",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        3
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 4,
+      "src_fieldnames": [
+        "BUZEI"
+      ],
+      "tgt_fieldname": "BUZEI",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        4
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 5,
+      "src_fieldnames": [
+        "STATUSPS"
+      ],
+      "tgt_fieldname": "STATUSPS",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        5
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 6,
+      "src_fieldnames": [
+        "KTOPL"
+      ],
+      "tgt_fieldname": "KTOPL",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        6
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 7,
+      "src_fieldnames": [
+        "HKONT"
+      ],
+      "tgt_fieldname": "HKONT",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        7
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 8,
+      "src_fieldnames": [
+        "KOART"
+      ],
+      "tgt_fieldname": "KOART",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        8
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 9,
+      "src_fieldnames": [
+        "UMSKZ"
+      ],
+      "tgt_fieldname": "UMSKZ",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        9
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 10,
+      "src_fieldnames": [
+        "BLART"
+      ],
+      "tgt_fieldname": "BLART",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        10
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 11,
+      "src_fieldnames": [
+        "BSCHL"
+      ],
+      "tgt_fieldname": "BSCHL",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        11
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 12,
+      "src_fieldnames": [
+        "FISCVAR"
+      ],
+      "tgt_fieldname": "FISCVAR",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        12
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 13,
+      "src_fieldnames": [
+        "BLDAT"
+      ],
+      "tgt_fieldname": "BLDAT",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        13
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 14,
+      "src_fieldnames": [
+        "BUDAT"
+      ],
+      "tgt_fieldname": "BUDAT",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        14
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 15,
+      "src_fieldnames": [
+        "CPUDT"
+      ],
+      "tgt_fieldname": "CPUDT",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        15
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 16,
+      "src_fieldnames": [
+        "VALUT"
+      ],
+      "tgt_fieldname": "VALUT",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        16
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 17,
+      "src_fieldnames": [
+        "AUGDT"
+      ],
+      "tgt_fieldname": "AUGDT",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        17
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 18,
+      "src_fieldnames": [
+        "AUGBL"
+      ],
+      "tgt_fieldname": "AUGBL",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        18
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 19,
+      "src_fieldnames": [
+        "KOKRS"
+      ],
+      "tgt_fieldname": "KOKRS",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        19
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 20,
+      "src_fieldnames": [
+        "KOSTL"
+      ],
+      "tgt_fieldname": "KOSTL",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        20
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 21,
+      "src_fieldnames": [
+        "PRCTR"
+      ],
+      "tgt_fieldname": "PRCTR",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        21
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 22,
+      "src_fieldnames": [
+        "AUFNR"
+      ],
+      "tgt_fieldname": "AUFNR",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        22
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 23,
+      "src_fieldnames": [
+        "PROJK"
+      ],
+      "tgt_fieldname": "PROJK",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        23
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 24,
+      "src_fieldnames": [
+        "WERKS"
+      ],
+      "tgt_fieldname": "WERKS",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        24
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 25,
+      "src_fieldnames": [
+        "GSBER"
+      ],
+      "tgt_fieldname": "GSBER",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        25
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 26,
+      "src_fieldnames": [
+        "FKBER"
+      ],
+      "tgt_fieldname": "FKBER",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        26
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 27,
+      "src_fieldnames": [
+        "PPRCT"
+      ],
+      "tgt_fieldname": "PPRCT",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        27
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 28,
+      "src_fieldnames": [
+        "PARGB"
+      ],
+      "tgt_fieldname": "PARGB",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        28
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 29,
+      "src_fieldnames": [
+        "VBUND"
+      ],
+      "tgt_fieldname": "VBUND",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        29
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 30,
+      "src_fieldnames": [
+        "LCURR"
+      ],
+      "tgt_fieldname": "LCURR",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        30
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 31,
+      "src_fieldnames": [
+        "DMSOL"
+      ],
+      "tgt_fieldname": "DMSOL",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        31
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 32,
+      "src_fieldnames": [
+        "DMHAB"
+      ],
+      "tgt_fieldname": "DMHAB",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        32
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 33,
+      "src_fieldnames": [
+        "DMSHB"
+      ],
+      "tgt_fieldname": "DMSHB",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        33
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 34,
+      "src_fieldnames": [
+        "WAERS"
+      ],
+      "tgt_fieldname": "WAERS",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        34
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 35,
+      "src_fieldnames": [
+        "WRSOL"
+      ],
+      "tgt_fieldname": "WRSOL",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        35
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 36,
+      "src_fieldnames": [
+        "WRHAB"
+      ],
+      "tgt_fieldname": "WRHAB",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        36
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 37,
+      "src_fieldnames": [
+        "WRSHB"
+      ],
+      "tgt_fieldname": "WRSHB",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        37
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 38,
+      "src_fieldnames": [
+        "CURT2"
+      ],
+      "tgt_fieldname": "CURT2",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        38
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 39,
+      "src_fieldnames": [
+        "HWAE2"
+      ],
+      "tgt_fieldname": "HWAE2",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        39
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 40,
+      "src_fieldnames": [
+        "DMSO2"
+      ],
+      "tgt_fieldname": "DMSO2",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        40
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 41,
+      "src_fieldnames": [
+        "DMHA2"
+      ],
+      "tgt_fieldname": "DMHA2",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        41
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 42,
+      "src_fieldnames": [
+        "DMSH2"
+      ],
+      "tgt_fieldname": "DMSH2",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        42
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 43,
+      "src_fieldnames": [
+        "CURT3"
+      ],
+      "tgt_fieldname": "CURT3",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        43
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 44,
+      "src_fieldnames": [
+        "HWAE3"
+      ],
+      "tgt_fieldname": "HWAE3",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        44
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 45,
+      "src_fieldnames": [
+        "DMSO3"
+      ],
+      "tgt_fieldname": "DMSO3",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        45
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 46,
+      "src_fieldnames": [
+        "DMHA3"
+      ],
+      "tgt_fieldname": "DMHA3",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        46
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 47,
+      "src_fieldnames": [
+        "DMSH3"
+      ],
+      "tgt_fieldname": "DMSH3",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        47
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 48,
+      "src_fieldnames": [
+        "XBLNR"
+      ],
+      "tgt_fieldname": "XBLNR",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        48
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 49,
+      "src_fieldnames": [
+        "XREF3"
+      ],
+      "tgt_fieldname": "XREF3",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        49
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 50,
+      "src_fieldnames": [
+        "AWREF"
+      ],
+      "tgt_fieldname": "AWREF",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        50
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 51,
+      "src_fieldnames": [
+        "AWGJA"
+      ],
+      "tgt_fieldname": "AWGJA",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        51
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 52,
+      "src_fieldnames": [
+        "AWBUK"
+      ],
+      "tgt_fieldname": "AWBUK",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        52
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 53,
+      "src_fieldnames": [
+        "AWKOK"
+      ],
+      "tgt_fieldname": "AWKOK",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        53
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 54,
+      "src_fieldnames": [
+        "SGTXT"
+      ],
+      "tgt_fieldname": "SGTXT",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        54
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 55,
+      "src_fieldnames": [
+        "UPDMOD"
+      ],
+      "tgt_fieldname": "UPDMOD",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        55
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 56,
+      "src_fieldnames": [
+        "PS_POSID"
+      ],
+      "tgt_fieldname": "PS_POSID",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        56
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 57,
+      "src_fieldnames": [
+        "ZUONR"
+      ],
+      "tgt_fieldname": "ZUONR",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        57
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 58,
+      "src_fieldnames": [
+        "BKTXT"
+      ],
+      "tgt_fieldname": "BKTXT",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        58
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 59,
+      "src_fieldnames": [
+        "GLVOR"
+      ],
+      "tgt_fieldname": "GLVOR",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        59
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 60,
+      "src_fieldnames": [
+        "PERNR"
+      ],
+      "tgt_fieldname": "PERNR",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        60
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 61,
+      "src_fieldnames": [
+        "FISTL"
+      ],
+      "tgt_fieldname": "FISTL",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        61
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 62,
+      "src_fieldnames": [
+        "GEBER"
+      ],
+      "tgt_fieldname": "GEBER",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        62
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 63,
+      "src_fieldnames": [
+        "KTOSL"
+      ],
+      "tgt_fieldname": "KTOSL",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        63
+      ],
+      "constant_value": null
+    },
+    {
+      "position": 64,
+      "src_fieldnames": [
+        "BUDGET_PD"
+      ],
+      "tgt_fieldname": "BUDGET_PD",
+      "mapping_type": "DIRECT",
+      "rule_id": [
+        64
+      ],
+      "constant_value": null
+    }
+  ]
+}

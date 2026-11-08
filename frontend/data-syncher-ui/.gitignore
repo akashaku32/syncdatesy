@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.DS_Store
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# Stray tsc/js emit alongside TypeScript sources (not part of the app build)
+src/**/*.js
+vite.config.js

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sap-proxy-agent-unary-svc
+  labels:
+    app: sap-proxy-agent-unary
+spec:
+  type: ClusterIP
+  selector:
+    app: sap-proxy-agent-unary
+  ports:
+    - name: grpc
+      port: 50053
+      targetPort: 50053
+      protocol: TCP

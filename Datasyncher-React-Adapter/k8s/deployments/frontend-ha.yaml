@@ -1,0 +1,54 @@
+# Zero-downtime frontend Deployment — apply INSTEAD of frontend.yaml when the
+# app node pool can schedule this footprint:
+#
+#   Steady state: 2 replicas (2 pods).
+#   During rollout: up to maxSurge 1 extra pod → 3 pods briefly, so nodes need
+#   enough free CPU/memory for three frontend pods (or spread across nodes).
+#
+# If rollouts hang with Pending pods, the autoscaler may log "max node group
+# size reached" or "Insufficient cpu". Fix by raising the app pool max size,
+# adding nodes, or lowering this Deployment's cpu requests / other workloads.
+#
+#   kubectl apply -f k8s/deployments/frontend-ha.yaml
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      nodeSelector:
+        pool: app
+      containers:
+        - name: frontend
+          # Pinned digest (manual-20260427f) — keep in sync with frontend.yaml.
+          image: gcr.io/datasyncher-kubernetes/datasyncher-frontend@sha256:a1b18ab83013c9e3f6288676224fdd5fad3d2d3144b26f6c8658a104d6780c25
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi

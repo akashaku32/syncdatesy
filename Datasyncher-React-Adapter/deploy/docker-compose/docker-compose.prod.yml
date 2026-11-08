@@ -1,0 +1,168 @@
+version: '3.8'
+
+services:
+  web:
+    image: gcr.io/${PROJECT_ID:-datasyncher-project}/datasyncher-django-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: gunicorn datasyncher.wsgi:application --bind 0.0.0.0:8000 --timeout 259600 --workers 4
+    volumes:
+      - ./datasyncher:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
+    expose:
+      - "8000"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DJANGO_SETTINGS_MODULE=datasyncher.settings.production
+    env_file:
+      - .env.production
+
+  fast-api:
+    image: gcr.io/${PROJECT_ID:-datasyncher-project}/datasyncher-fast-api
+    build:
+      context: ./backend/fast-api
+      dockerfile: Dockerfile
+    command: uvicorn app:app --host 0.0.0.0 --port 9090 --http "h11" --timeout-keep-alive 259200 --workers 5
+    volumes:
+      - ./backend/fast-api:/app
+    expose:
+      - "9090"
+    env_file:
+      - ./backend/fast-api/.env.production
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+
+  celery:
+    build:
+      context: ./backend/fast-api
+      dockerfile: Dockerfile
+    command: celery -A celery_worker.celery_app worker --loglevel=info --autoscale=20,4 --pool=prefork --uid=nobody
+    volumes:
+      - ./backend/fast-api:/app
+    depends_on:
+      - redis
+
+  celery_beat:
+    build:
+      context: ./backend/fast-api
+      dockerfile: Dockerfile
+    command: celery -A celery_worker.celery_app beat --loglevel=info
+    volumes:
+      - ./backend/fast-api:/app
+    depends_on:
+      - redis
+
+  celery_django:
+    image: gcr.io/${PROJECT_ID:-datasyncher-project}/datasyncher-django-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A datasyncher worker --loglevel=info --autoscale=20,1 --pool=prefork
+    volumes:
+      - ./datasyncher:/app
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env.production
+    depends_on:
+      - redis
+      - web
+
+  celery_beat_django:
+    image: gcr.io/${PROJECT_ID:-datasyncher-project}/datasyncher-django-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A datasyncher beat --loglevel=info -S django
+    volumes:
+      - ./datasyncher:/app
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env.production
+    depends_on:
+      - redis
+      - web
+
+  scheduler_setup:
+    image: gcr.io/${PROJECT_ID:-datasyncher-project}/datasyncher-django-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python manage.py scheduler
+    volumes:
+      - ./datasyncher:/app
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env.production
+    depends_on:
+      - web
+      - redis
+
+  migration-function:
+    image: gcr.io/${PROJECT_ID:-datasyncher-project}/datasyncher-migration-function
+    build:
+      context: ./backend/migration-function
+      dockerfile: Dockerfile
+    command: uvicorn app:app --host 0.0.0.0 --port 8001 --workers 6
+    volumes:
+      - ./backend/migration-function:/app
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./backend/migration-function/.env.production
+    depends_on:
+      - redis
+
+  frontend:
+    image: gcr.io/${PROJECT_ID:-datasyncher-project}/datasyncher-frontend
+    build:
+      context: ./frontend/data-syncher-ui
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend/data-syncher-ui/env.template:/app/.env:ro
+    expose:
+      - "80"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - web
+      - fast-api
+      - migration-function
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx-container
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl_files:/etc/nginx/ssl
+      - static_volume:/app/static
+      - media_volume:/app/media
+      - ./webroot:/usr/share/nginx/html
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - web
+      - fast-api
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./ssl_files:/etc/letsencrypt
+      - ./webroot:/var/www/html
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/html --post-hook \"docker exec nginx-container nginx -s reload\"; sleep 12h & wait $${!}; done;'"
+
+volumes:
+  redis_data:
+  static_volume:
+  media_volume:

@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: django
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: django
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      nodeSelector:
+        pool: app
+      containers:
+        - name: django
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            capabilities:
+              drop:
+                - ALL
+          image: gcr.io/datasyncher-kubernetes/datasyncher-django-app:qa
+          imagePullPolicy: Always
+          command:
+            - gunicorn
+            - datasyncher.asgi:application
+            - --bind
+            - 0.0.0.0:8000
+            - -k
+            - uvicorn.workers.UvicornWorker
+            - --workers
+            - "2"
+            - --timeout
+            - "259600"
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - secretRef:
+                name: datasyncher-secrets
+          resources:
+            requests:
+              cpu: 150m
+              memory: 300Mi
+            limits:
+              cpu: 1000m
+              memory: 768Mi
+          readinessProbe:
+            httpGet:
+              path: /health/
+              port: 8000
+              httpHeaders:
+                - name: Host
+                  value: qa-kubernetes.datasyncher.com
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health/
+              port: 8000
+              httpHeaders:
+                - name: Host
+                  value: qa-kubernetes.datasyncher.com
+            initialDelaySeconds: 40
+            periodSeconds: 30

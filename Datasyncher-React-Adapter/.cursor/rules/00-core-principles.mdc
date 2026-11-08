@@ -1,0 +1,12 @@
+---
+description: Core coding standards for DataSyncher backend
+alwaysApply: true
+---
+
+# Core principles
+
+- Search for an existing helper before writing a new one.
+- No speculative or unused functions, wrappers, or parameters.
+- No `print`; use `logging`.
+- Prefer files under ~800 lines; split rather than grow god modules.
+- Keep diffs minimal; no new dependencies without a stated reason.

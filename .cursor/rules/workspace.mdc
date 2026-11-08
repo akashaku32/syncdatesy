@@ -1,0 +1,27 @@
+---
+description: Monorepo map — adapter backend and React UI
+alwaysApply: true
+---
+
+# Workspace layout
+
+Canonical rules for **all** agents: root `AGENTS.md`.  
+`.cursor/rules/` is Cursor-specific detail; the policy is the same.
+
+| Path | Role |
+|------|------|
+| `Datasyncher-React-Adapter/` | Backend / API adapter, k8s manifests, platform docs |
+| `frontend/data-syncher-ui/` | Customer-facing React SPA (Vite) |
+| `odata-agent/` | Reference ODATA on-prem proxy agent (client + server) |
+
+## Where to work
+
+- **UI** → `frontend/data-syncher-ui/` (`AGENTS.md` + `.cursor/rules/`)
+- **API / migrations / k8s** → `Datasyncher-React-Adapter/` (`AGENTS.md` + `.cursor/rules/`)
+
+```text
+// ❌ DON'T — add REST calls only in the adapter when the task is a UI screen
+// ✅ DO — UI calls go through data-syncher-ui/src/queryOptions; backend changes in the adapter
+```
+
+When a task spans both, implement API contract in the adapter first, then wire hooks in `queryOptions/`.

@@ -1,0 +1,154 @@
+version: '3.8'
+
+services:
+  web:
+    image: gcr.io/${PROJECT_ID:-datasyncher-project}/datasyncher-django-app:qa
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: gunicorn datasyncher.wsgi:application --bind 0.0.0.0:8000 --timeout 259600 --workers 2
+    volumes:
+      - ./datasyncher:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
+    expose:
+      - "8000"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DJANGO_SETTINGS_MODULE=datasyncher.settings.qa
+    env_file:
+      - .env.qa
+
+  fast-api:
+    image: gcr.io/${PROJECT_ID:-datasyncher-project}/datasyncher-fast-api:qa
+    build:
+      context: ./backend/fast-api
+      dockerfile: Dockerfile
+    command: uvicorn app:app --host 0.0.0.0 --port 9090 --http "h11" --timeout-keep-alive 259200 --workers 3
+    volumes:
+      - ./backend/fast-api:/app
+    expose:
+      - "9090"
+    env_file:
+      - ./backend/fast-api/.env.qa
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  celery:
+    build:
+      context: ./backend/fast-api
+      dockerfile: Dockerfile
+    command: celery -A celery_worker.celery_app worker --loglevel=info --autoscale=10,2 --pool=prefork
+    volumes:
+      - ./backend/fast-api:/app
+    depends_on:
+      - redis
+
+  celery_beat:
+    build:
+      context: ./backend/fast-api
+      dockerfile: Dockerfile
+    command: celery -A celery_worker.celery_app beat --loglevel=info
+    volumes:
+      - ./backend/fast-api:/app
+    depends_on:
+      - redis
+
+  celery_django:
+    image: gcr.io/${PROJECT_ID:-datasyncher-project}/datasyncher-django-app:qa
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A datasyncher worker --loglevel=info --autoscale=10,2 --pool=prefork
+    volumes:
+      - ./datasyncher:/app
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env.qa
+    depends_on:
+      - redis
+      - web
+
+  celery_beat_django:
+    image: gcr.io/${PROJECT_ID:-datasyncher-project}/datasyncher-django-app:qa
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A datasyncher beat --loglevel=info -S django
+    volumes:
+      - ./datasyncher:/app
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env.qa
+    depends_on:
+      - redis
+      - web
+
+  scheduler_setup:
+    image: gcr.io/${PROJECT_ID:-datasyncher-project}/datasyncher-django-app:qa
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python manage.py scheduler
+    volumes:
+      - ./datasyncher:/app
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env.qa
+    depends_on:
+      - web
+      - redis
+
+  migration-function:
+    image: gcr.io/${PROJECT_ID:-datasyncher-project}/datasyncher-migration-function:qa
+    build:
+      context: ./backend/migration-function
+      dockerfile: Dockerfile
+    command: uvicorn app:app --host 0.0.0.0 --port 8001 --workers 4
+    volumes:
+      - ./backend/migration-function:/app
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./backend/migration-function/.env.qa
+    depends_on:
+      - redis
+
+  frontend:
+    image: gcr.io/${PROJECT_ID:-datasyncher-project}/datasyncher-frontend:qa
+    build:
+      context: ./frontend/data-syncher-ui
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend/data-syncher-ui/env.template:/app/.env:ro
+    expose:
+      - "80"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - web
+      - fast-api
+      - migration-function
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx-container-qa
+    volumes:
+      - ./nginx.qa.conf:/etc/nginx/nginx.conf:ro
+      - static_volume:/app/static
+      - media_volume:/app/media
+    ports:
+      - "80:80"
+    depends_on:
+      - web
+      - fast-api
+
+volumes:
+  static_volume:
+  media_volume:

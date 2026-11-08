@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # App pool is often CPU-tight and capped at a small max node count. With
+      # maxSurge: 0 the new pod is not created until the old one is removed, so
+      # only one frontend pod must schedule — but there is a short outage.
+      # For zero-downtime rollouts, use frontend-ha.yaml after giving the app
+      # pool enough CPU and raising max nodes to fit 2 steady replicas plus
+      # one surge pod during updates.
+      maxSurge: 0
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      nodeSelector:
+        pool: app
+      containers:
+        - name: frontend
+          # Frontend image is built/pushed from the separate frontend repository.
+          # Pinned digest (manual-20260427f) — matches current GKE rollout.
+          image: gcr.io/datasyncher-kubernetes/datasyncher-frontend@sha256:a1b18ab83013c9e3f6288676224fdd5fad3d2d3144b26f6c8658a104d6780c25
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi

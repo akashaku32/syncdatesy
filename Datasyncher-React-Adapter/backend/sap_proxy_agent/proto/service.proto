@@ -1,0 +1,287 @@
+// Datasyncher SAP proxy agent gRPC contract (loads + legacy status services + progress).
+// Regenerate: scripts/regenerate_sap_proxy_grpc.ps1
+
+syntax = "proto3";
+
+package agent;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
+
+service BootstrapService {
+  rpc Enroll(EnrollRequest) returns (EnrollResponse);
+}
+
+message EnrollRequest {
+  string cust_id = 1;
+  string csr_pem = 2;
+  string bootstrap_token = 3;
+}
+
+message EnrollResponse {
+  string cert_pem = 1;
+  string new_bootstrap_token = 2;
+}
+
+service TokenValidationService {
+  rpc ValidateBootstrapToken(TokenValidationRequest) returns (TokenValidationResponse);
+}
+
+message TokenValidationRequest {
+  string cust_id = 1;
+  string bootstrap_token = 2;
+}
+
+message TokenValidationResponse {
+  string cust_id = 1;
+  bool token_validated = 2;
+  string new_bootstrap_token = 3;
+}
+
+service GCPTokenBrokerService {
+  rpc GetDownscopedToken(google.protobuf.Empty) returns (DownscopedTokenResponse);
+}
+
+message DownscopedTokenResponse {
+  string access_token = 1;
+  int64 expires_in = 2;
+  string error_message = 3;
+}
+
+service TableStatusService {
+  rpc TableStatusUpdate(StatusUpdateRequest) returns (google.protobuf.Empty);
+}
+
+service TableETLStatusService {
+  rpc TableETLStatusUpdate(StatusUpdateRequest) returns (google.protobuf.Empty);
+}
+
+service DataTransferLogsService {
+  rpc DataTransferLogsUpdate(StatusUpdateRequest) returns (google.protobuf.Empty);
+}
+
+service MigrationStatusLogService {
+  rpc MigrationStatusLogUpdate(StatusUpdateRequest) returns (google.protobuf.Empty);
+}
+
+service RecordTableFailureService {
+  rpc RecordTableFailureUpdate(StatusUpdateRequest) returns (google.protobuf.Empty);
+}
+
+message StatusUpdateRequest {
+  google.protobuf.Struct statusdetails = 1;
+}
+
+service AgentService {
+  rpc Connect(stream AgentMessage) returns (stream ServerMessage);
+  rpc RenewCertificate(CertRenewalRequest) returns (CertRenewalResponse);
+}
+
+message CertRenewalRequest {
+  string cust_id = 1;
+  string csr_pem = 2;
+}
+
+message CertRenewalResponse {
+  string cert_pem = 1;
+  string ca_cert_pem = 2;
+}
+
+message AgentMessage {
+  string cust_id = 1;
+  oneof payload {
+    bool register = 2;
+    MetadataPayload metadata_json = 3;
+    AllDataLoad alldata = 4;
+    SourceDetail src_json = 5;
+    string error_msg = 6;
+    ConnectionDetails conn_details = 7;
+  }
+  string request_id = 8;
+}
+
+message ServerMessage {
+  string request_id = 1;
+  string metadata_url = 2;
+  string alldata_url = 3;
+  repeated DataSourceConfig sources = 4;
+  SrcConnConfig src_conf = 5;
+  string destination_type = 6;
+  google.protobuf.Struct destination_config = 7;
+  string service_name = 8;
+  bool test_sap_connection = 9;
+  optional bool load_delta = 10;
+  google.protobuf.Struct details_for_sts_update = 11;
+  string error_message = 12;
+  string src_type = 15;
+  repeated SnowflakeDataSourceConfig snowflake_sources = 16;
+}
+
+message MetadataPayload {
+  string request_id = 1;
+  google.protobuf.Struct metadata_json = 2;
+}
+
+message AllDataLoad {
+  string request_id = 1;
+  google.protobuf.Struct alldata = 2;
+}
+
+message SourceDetail {
+  string request_id = 1;
+  google.protobuf.Struct src_details_json = 2;
+}
+
+message ConnectionDetails {
+  string request_id = 1;
+  google.protobuf.Struct conn_details_json = 2;
+}
+
+service Datasynchor {
+  rpc TestSapConnection(ConnectionRequest) returns (ConnectionResponse);
+  rpc Metadata(MetadataRequest) returns (Metadata_Response);
+  rpc GetSourceDetail(SourceDetailRequest) returns (SourceDetailResponse);
+  rpc StartDataLoad(DataLoadRequest) returns (DataLoadResponse);
+  rpc AllDataSource(AllDataRequest) returns (AllDataResponse);
+  rpc TriggerDelta(TriggerDeltaRequest) returns (TriggerDeltaResponse);
+}
+
+message ConnectionRequest {
+  string cust_id = 1;
+  SrcConnConfig src_conf = 2;
+  string src_type = 3;
+}
+
+message ConnectionResponse {
+  google.protobuf.Struct conn_details_json = 1;
+  string error_msg = 2;
+}
+
+message MetadataRequest {
+  string cust_id = 1;
+  string metadata_url = 2;
+  SrcConnConfig src_conf = 3;
+  string src_type = 4;
+}
+
+message Metadata_Response {
+  google.protobuf.Struct metadata_json = 1;
+  string error_msg = 2;
+}
+
+message SourceDetailRequest {
+  string cust_id = 1;
+  string service_name = 2;
+  SrcConnConfig src_conf = 3;
+  string src_type = 4;
+}
+
+message SourceDetailResponse {
+  google.protobuf.Struct src_details_json = 1;
+  string error_msg = 2;
+}
+
+message DataLoadRequest {
+  string cust_id = 1;
+  repeated DataSourceConfig sources = 2;
+  SrcConnConfig src_conf = 3;
+  string destination_type = 4;
+  google.protobuf.Struct destination_config = 5;
+  google.protobuf.Struct details_for_sts_update = 6;
+  string src_type = 7;
+  repeated SnowflakeDataSourceConfig snowflake_sources = 8;
+}
+
+message DataSourceConfig {
+  string name = 1;
+  optional bool compress = 2;
+  string compress_type = 3;
+  optional string folder_name = 4;
+  string load_method = 5;
+  bool partition_data_by_date = 6;
+  string entity_name = 7;
+  int32 file_rec_count = 8;
+  optional bool delta_enabled = 9;
+  string delta_token = 10;
+  int64 pagination_count = 11;
+  string utc_time = 12;
+}
+
+message SnowflakeDataSourceConfig {
+  string service_name = 1;
+  string entity_name = 2;
+  string load_method = 3;
+  bool initial_completed_flag = 4;
+  bool drop_and_reload = 5;
+  string is_updated = 6;
+  string is_deleted = 7;
+  int64 pagination_count = 8;
+  string filter_expr = 9;
+  string utc_time = 10;
+  string delta_name = 11;
+  string delta_token = 12;
+  google.protobuf.Struct transform_state = 13;
+}
+
+message SrcConnConfig {
+  string host = 1;
+  int32 port = 2;
+  string username = 3;
+  string password = 4;
+}
+
+message DataLoadResponse {
+  bool accepted = 1;
+  string error_msg = 2;
+}
+
+message AllDataRequest {
+  string cust_id = 1;
+  string alldata_url = 2;
+  SrcConnConfig src_conf = 3;
+  string src_type = 4;
+}
+
+message AllDataResponse {
+  google.protobuf.Struct alldata_json = 1;
+  string error_msg = 2;
+}
+
+message TriggerDeltaRequest {
+  string cust_id = 1;
+  repeated DataSourceConfig sources = 2;
+  SrcConnConfig src_conf = 3;
+  string destination_type = 4;
+  google.protobuf.Struct destination_config = 5;
+  google.protobuf.Struct details_for_sts_update = 6;
+  string src_type = 7;
+}
+
+message TriggerDeltaResponse {
+  bool accepted = 1;
+  string error_msg = 2;
+}
+
+// --- Agent → hub progress (primary); hub relays to Django HTTP ingest ---
+
+message ProgressRequest {
+  string cust_id = 1;
+  string event = 2;
+  int64 migration_session_id = 3;
+  string job_name = 4;
+  int64 connection_id = 5;
+  string table_name = 6;
+  google.protobuf.Struct payload = 7;
+  string idempotency_key = 8;
+}
+
+message ProgressAck {
+  bool accepted = 1;
+  string overall_status = 2;
+  int32 tables_remaining = 3;
+  string message = 4;
+}
+
+service DatasynchorProgress {
+  rpc ReportProgress(ProgressRequest) returns (ProgressAck);
+}

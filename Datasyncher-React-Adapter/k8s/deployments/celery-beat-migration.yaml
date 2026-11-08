@@ -1,0 +1,53 @@
+# Dedicated Celery Beat for celery_worker.celery_app (migration queue).
+# Runs celery_worker.conf.beat_schedule (check_job_status watchdog on reconcile queue only).
+# Django's celery-beat-django uses datasyncher.celery_app + DatabaseScheduler — it does not load this app.
+# Replicas must stay 1: two beat processes would duplicate periodic sends.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-beat-migration
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: celery-beat-migration
+  template:
+    metadata:
+      labels:
+        app: celery-beat-migration
+    spec:
+      nodeSelector:
+        pool: app
+      containers:
+        - name: beat
+          image: gcr.io/datasyncher-kubernetes/datasyncher-fast-api:qa
+          imagePullPolicy: Always
+          command:
+            - celery
+            - -A
+            - celery_worker.celery_app
+            - beat
+            - --loglevel=info
+          env:
+            - name: CELERY_MIGRATION_QUEUE
+              value: "migration"
+            - name: CELERY_MIGRATION_CONTROL_QUEUE
+              value: "migration-control"
+            - name: CELERY_MIGRATION_CONTROL_ORCHESTRATE_QUEUE
+              value: "migration-control"
+            - name: CELERY_MIGRATION_CONTROL_RECONCILE_QUEUE
+              value: "migration-control-reconcile"
+            - name: CELERY_CHECK_JOB_STATUS_INTERVAL
+              value: "20"
+          envFrom:
+            - secretRef:
+                name: datasyncher-secrets
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

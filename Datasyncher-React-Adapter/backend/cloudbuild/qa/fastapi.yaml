@@ -1,0 +1,36 @@
+substitutions:
+  _INSTALL_NETSUITE_ODBC: "0"
+  _NETSUITE_ODBC_GCS_URI: ""
+
+steps:
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        if [ "${_INSTALL_NETSUITE_ODBC}" != "1" ]; then
+          echo "Skipping NetSuite ODBC bundle fetch (_INSTALL_NETSUITE_ODBC=${_INSTALL_NETSUITE_ODBC})."
+          exit 0
+        fi
+        if [ -z "${_NETSUITE_ODBC_GCS_URI}" ]; then
+          echo "ERROR: _INSTALL_NETSUITE_ODBC=1 requires _NETSUITE_ODBC_GCS_URI" >&2
+          exit 1
+        fi
+        mkdir -p vendor/netsuite-odbc
+        gsutil -q cp "${_NETSUITE_ODBC_GCS_URI}" vendor/netsuite-odbc/
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg
+      - "INSTALL_NETSUITE_ODBC=${_INSTALL_NETSUITE_ODBC}"
+      - -t
+      - gcr.io/datasyncher-kubernetes/datasyncher-fast-api:qa
+      - -f
+      - fast-api/Dockerfile
+      - .
+images:
+  - gcr.io/datasyncher-kubernetes/datasyncher-fast-api:qa
+options:
+  machineType: E2_HIGHCPU_8
+  logging: CLOUD_LOGGING_ONLY
+timeout: 1800s

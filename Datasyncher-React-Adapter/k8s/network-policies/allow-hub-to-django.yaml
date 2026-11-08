@@ -1,0 +1,19 @@
+# sap-proxy-agent-hub may call django-svc on :8000 for progress relay.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-sap-proxy-agent-hub-to-django
+spec:
+  podSelector:
+    matchLabels:
+      app: django
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: sap-proxy-agent-hub
+      ports:
+        - protocol: TCP
+          port: 8000

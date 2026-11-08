@@ -1,0 +1,667 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Stack 2 of 2. DataSyncher staging bucket, bucket policy, and per-connection
+  S3 notifications for account 946784146896 in us-east-2. Create the IAM stack
+  first. Use the same BucketName.
+
+Rules:
+  MustBeUsEast2NewAccount:
+    Assertions:
+      - Assert: !Equals [!Ref "AWS::Region", "us-east-2"]
+        AssertDescription: Create this stack in US East (Ohio), us-east-2.
+      - Assert: !Equals [!Ref "AWS::AccountId", "946784146896"]
+        AssertDescription: Create this stack in account 946784146896.
+
+Parameters:
+  BucketName:
+    Type: String
+    Default: datasyncher-dbx-use2
+    AllowedPattern: "^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$"
+    ConstraintDescription: Lowercase letters, numbers, and hyphens; 3-63 characters.
+    Description: Must match BucketName on the IAM stack.
+
+Resources:
+  Queue40:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: csms-queue-0fb28778-bfd7-472f-8a38-47ff29fbd7f0
+      SqsManagedSseEnabled: true
+  QueuePolicy40:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref Queue40
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowTopic40
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt Queue40.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:csms-topic-by-path-b9e4935f5bada7675f671054256a359a060ced1e0a0060867f6d171e35f9c96c"
+  Topic40:
+    Type: AWS::SNS::Topic
+    DependsOn: QueuePolicy40
+    Properties:
+      TopicName: csms-topic-by-path-b9e4935f5bada7675f671054256a359a060ced1e0a0060867f6d171e35f9c96c
+      Subscription:
+        - Protocol: sqs
+          Endpoint: !GetAtt Queue40.Arn
+  TopicPolicy40:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref Topic40
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowS3Publish40
+            Effect: Allow
+            Principal:
+              Service: s3.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref Topic40
+            Condition:
+              ArnLike:
+                aws:SourceArn: !Sub "arn:aws:s3:::${BucketName}"
+              StringEquals:
+                aws:SourceAccount: !Ref "AWS::AccountId"
+
+  Queue43:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: csms-queue-b182fc83-a811-46f2-aa65-8b0db65c4152
+      SqsManagedSseEnabled: true
+  QueuePolicy43:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref Queue43
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowTopic43
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt Queue43.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:csms-topic-by-path-1185416d393cbcab4ec4be3ebe15fe725a2893d0546637e25881510ff591a80e"
+  Topic43:
+    Type: AWS::SNS::Topic
+    DependsOn: QueuePolicy43
+    Properties:
+      TopicName: csms-topic-by-path-1185416d393cbcab4ec4be3ebe15fe725a2893d0546637e25881510ff591a80e
+      Subscription:
+        - Protocol: sqs
+          Endpoint: !GetAtt Queue43.Arn
+  TopicPolicy43:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref Topic43
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowS3Publish43
+            Effect: Allow
+            Principal:
+              Service: s3.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref Topic43
+            Condition:
+              ArnLike:
+                aws:SourceArn: !Sub "arn:aws:s3:::${BucketName}"
+              StringEquals:
+                aws:SourceAccount: !Ref "AWS::AccountId"
+
+  Queue46:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: csms-queue-cae54c22-d7c3-4db1-8fc1-d38f750b8830
+      SqsManagedSseEnabled: true
+  QueuePolicy46:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref Queue46
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowTopic46
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt Queue46.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:csms-topic-by-path-42ae1a846149bd1b7cb4514710018cd3ab5cfab33ff11b7649d534948b7aff7d"
+  Topic46:
+    Type: AWS::SNS::Topic
+    DependsOn: QueuePolicy46
+    Properties:
+      TopicName: csms-topic-by-path-42ae1a846149bd1b7cb4514710018cd3ab5cfab33ff11b7649d534948b7aff7d
+      Subscription:
+        - Protocol: sqs
+          Endpoint: !GetAtt Queue46.Arn
+  TopicPolicy46:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref Topic46
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowS3Publish46
+            Effect: Allow
+            Principal:
+              Service: s3.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref Topic46
+            Condition:
+              ArnLike:
+                aws:SourceArn: !Sub "arn:aws:s3:::${BucketName}"
+              StringEquals:
+                aws:SourceAccount: !Ref "AWS::AccountId"
+
+  Queue54:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: csms-queue-3b13dae4-256e-49ac-a88f-2469bfd1eaec
+      SqsManagedSseEnabled: true
+  QueuePolicy54:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref Queue54
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowTopic54
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt Queue54.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:csms-topic-by-path-38bf760b3c457f2999fb166d36d6a70fae91e9fc64419e5a42666cb8efa5a784"
+  Topic54:
+    Type: AWS::SNS::Topic
+    DependsOn: QueuePolicy54
+    Properties:
+      TopicName: csms-topic-by-path-38bf760b3c457f2999fb166d36d6a70fae91e9fc64419e5a42666cb8efa5a784
+      Subscription:
+        - Protocol: sqs
+          Endpoint: !GetAtt Queue54.Arn
+  TopicPolicy54:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref Topic54
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowS3Publish54
+            Effect: Allow
+            Principal:
+              Service: s3.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref Topic54
+            Condition:
+              ArnLike:
+                aws:SourceArn: !Sub "arn:aws:s3:::${BucketName}"
+              StringEquals:
+                aws:SourceAccount: !Ref "AWS::AccountId"
+
+  Queue56:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: csms-queue-990a3d0d-4000-4102-83e8-740bd640af14
+      SqsManagedSseEnabled: true
+  QueuePolicy56:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref Queue56
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowTopic56
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt Queue56.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:csms-topic-by-path-1a2ccd5c585bacfb2bb1b1d09ca4d7a4ea4e49210e2e0e038fc0d42f747aec8d"
+  Topic56:
+    Type: AWS::SNS::Topic
+    DependsOn: QueuePolicy56
+    Properties:
+      TopicName: csms-topic-by-path-1a2ccd5c585bacfb2bb1b1d09ca4d7a4ea4e49210e2e0e038fc0d42f747aec8d
+      Subscription:
+        - Protocol: sqs
+          Endpoint: !GetAtt Queue56.Arn
+  TopicPolicy56:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref Topic56
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowS3Publish56
+            Effect: Allow
+            Principal:
+              Service: s3.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref Topic56
+            Condition:
+              ArnLike:
+                aws:SourceArn: !Sub "arn:aws:s3:::${BucketName}"
+              StringEquals:
+                aws:SourceAccount: !Ref "AWS::AccountId"
+
+  Queue58:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: csms-queue-49a9ee16-55f5-4e96-9692-5e6fb56eb1f1
+      SqsManagedSseEnabled: true
+  QueuePolicy58:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref Queue58
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowTopic58
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt Queue58.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:csms-topic-by-path-6093d9927b22ab8e2f27a13eb6ab837009697dd5d3fed90f264face5838640d6"
+  Topic58:
+    Type: AWS::SNS::Topic
+    DependsOn: QueuePolicy58
+    Properties:
+      TopicName: csms-topic-by-path-6093d9927b22ab8e2f27a13eb6ab837009697dd5d3fed90f264face5838640d6
+      Subscription:
+        - Protocol: sqs
+          Endpoint: !GetAtt Queue58.Arn
+  TopicPolicy58:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref Topic58
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowS3Publish58
+            Effect: Allow
+            Principal:
+              Service: s3.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref Topic58
+            Condition:
+              ArnLike:
+                aws:SourceArn: !Sub "arn:aws:s3:::${BucketName}"
+              StringEquals:
+                aws:SourceAccount: !Ref "AWS::AccountId"
+
+  Queue59:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: csms-queue-448f97da-44d2-4640-b295-97b2aa446b7c
+      SqsManagedSseEnabled: true
+  QueuePolicy59:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref Queue59
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowTopic59
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt Queue59.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:csms-topic-by-path-18226042fea1d90c2345e77b511f8abc12de2f44fb4bb0853b7e43668d1910de"
+  Topic59:
+    Type: AWS::SNS::Topic
+    DependsOn: QueuePolicy59
+    Properties:
+      TopicName: csms-topic-by-path-18226042fea1d90c2345e77b511f8abc12de2f44fb4bb0853b7e43668d1910de
+      Subscription:
+        - Protocol: sqs
+          Endpoint: !GetAtt Queue59.Arn
+  TopicPolicy59:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref Topic59
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowS3Publish59
+            Effect: Allow
+            Principal:
+              Service: s3.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref Topic59
+            Condition:
+              ArnLike:
+                aws:SourceArn: !Sub "arn:aws:s3:::${BucketName}"
+              StringEquals:
+                aws:SourceAccount: !Ref "AWS::AccountId"
+
+  Queue64:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: csms-queue-2deebfd8-3b6d-4073-b406-8a44a80f71e5
+      SqsManagedSseEnabled: true
+  QueuePolicy64:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref Queue64
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowTopic64
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt Queue64.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:csms-topic-by-path-b83c07600435f07ec78f69a3b28b2695d9700ce1a96074e58e7cf7a0af09daf0"
+  Topic64:
+    Type: AWS::SNS::Topic
+    DependsOn: QueuePolicy64
+    Properties:
+      TopicName: csms-topic-by-path-b83c07600435f07ec78f69a3b28b2695d9700ce1a96074e58e7cf7a0af09daf0
+      Subscription:
+        - Protocol: sqs
+          Endpoint: !GetAtt Queue64.Arn
+  TopicPolicy64:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref Topic64
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowS3Publish64
+            Effect: Allow
+            Principal:
+              Service: s3.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref Topic64
+            Condition:
+              ArnLike:
+                aws:SourceArn: !Sub "arn:aws:s3:::${BucketName}"
+              StringEquals:
+                aws:SourceAccount: !Ref "AWS::AccountId"
+
+  Queue73:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: csms-queue-0065a17c-d1b7-4ba8-9c2c-22841833d98b
+      SqsManagedSseEnabled: true
+  QueuePolicy73:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref Queue73
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowTopic73
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt Queue73.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:csms-topic-by-path-b298c2a772cc6fa98f775a99bb429623ab017857e9a164b4dbe57c591c9bca4b"
+  Topic73:
+    Type: AWS::SNS::Topic
+    DependsOn: QueuePolicy73
+    Properties:
+      TopicName: csms-topic-by-path-b298c2a772cc6fa98f775a99bb429623ab017857e9a164b4dbe57c591c9bca4b
+      Subscription:
+        - Protocol: sqs
+          Endpoint: !GetAtt Queue73.Arn
+  TopicPolicy73:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref Topic73
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowS3Publish73
+            Effect: Allow
+            Principal:
+              Service: s3.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref Topic73
+            Condition:
+              ArnLike:
+                aws:SourceArn: !Sub "arn:aws:s3:::${BucketName}"
+              StringEquals:
+                aws:SourceAccount: !Ref "AWS::AccountId"
+
+  Queue78:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: csms-queue-a5330c9a-f90d-4ae8-b257-db0a8b528f1b
+      SqsManagedSseEnabled: true
+  QueuePolicy78:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref Queue78
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowTopic78
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt Queue78.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:csms-topic-by-path-36a73602bd9902efceacb4da15e44dcb67df67028124c0e8042acff2ca47ae0b"
+  Topic78:
+    Type: AWS::SNS::Topic
+    DependsOn: QueuePolicy78
+    Properties:
+      TopicName: csms-topic-by-path-36a73602bd9902efceacb4da15e44dcb67df67028124c0e8042acff2ca47ae0b
+      Subscription:
+        - Protocol: sqs
+          Endpoint: !GetAtt Queue78.Arn
+  TopicPolicy78:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref Topic78
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowS3Publish78
+            Effect: Allow
+            Principal:
+              Service: s3.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref Topic78
+            Condition:
+              ArnLike:
+                aws:SourceArn: !Sub "arn:aws:s3:::${BucketName}"
+              StringEquals:
+                aws:SourceAccount: !Ref "AWS::AccountId"
+
+  StagingBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    DependsOn:
+      - TopicPolicy40
+      - TopicPolicy43
+      - TopicPolicy46
+      - TopicPolicy54
+      - TopicPolicy56
+      - TopicPolicy58
+      - TopicPolicy59
+      - TopicPolicy64
+      - TopicPolicy73
+      - TopicPolicy78
+    Properties:
+      BucketName: !Ref BucketName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      NotificationConfiguration:
+        TopicConfigurations:
+          - Topic: !Ref Topic40
+            Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: dynamics_fo/40/
+          - Topic: !Ref Topic43
+            Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: dynamics_fo/43/
+          - Topic: !Ref Topic46
+            Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: dynamics_fo/46/
+          - Topic: !Ref Topic54
+            Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: dynamics_fo/54/
+          - Topic: !Ref Topic56
+            Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: dynamics_fo/56/
+          - Topic: !Ref Topic58
+            Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: dynamics_fo/58/
+          - Topic: !Ref Topic59
+            Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: dynamics_fo/59/
+          - Topic: !Ref Topic64
+            Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: dynamics_fo/64/
+          - Topic: !Ref Topic73
+            Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: dynamics_fo/73/
+          - Topic: !Ref Topic78
+            Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: dynamics_fo/78/
+
+  StagingBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref StagingBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: UcReadBucketLocation
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:role/databricks-uc-s3-read"
+            Action: s3:GetBucketLocation
+            Resource: !Sub "arn:aws:s3:::${BucketName}"
+          - Sid: UcReadListDynamicsFo
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:role/databricks-uc-s3-read"
+            Action: s3:ListBucket
+            Resource: !Sub "arn:aws:s3:::${BucketName}"
+            Condition:
+              StringLike:
+                s3:prefix:
+                  - dynamics_fo
+                  - dynamics_fo/*
+          - Sid: UcReadDynamicsFoObjects
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:role/databricks-uc-s3-read"
+            Action:
+              - s3:GetObject
+              - s3:GetObjectVersion
+            Resource: !Sub "arn:aws:s3:::${BucketName}/dynamics_fo/*"
+
+Outputs:
+  BucketName:
+    Value: !Ref StagingBucket
+  BucketUrl:
+    Value: !Sub "s3://${StagingBucket}/"
+  Region:
+    Value: !Ref "AWS::Region"
+  AccountId:
+    Value: !Ref "AWS::AccountId"

@@ -1,0 +1,19 @@
+# proxy-agent-gateway may call django-svc on :8000 (internal progress ingest).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-proxy-agent-gateway-to-django
+spec:
+  podSelector:
+    matchLabels:
+      app: django
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: proxy-agent-gateway
+      ports:
+        - protocol: TCP
+          port: 8000

@@ -1,0 +1,55 @@
+{
+    // Python interpreter
+    "python.defaultInterpreterPath": "${workspaceFolder}/venv/bin/python",
+    
+    // Format on save
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": false,
+    "editor.formatOnType": false,
+    
+    // Python specific
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        },
+        "editor.rulers": [88]
+    },
+    
+    // Black formatter settings
+    "black-formatter.args": [
+        "--line-length=88",
+        "--config=${workspaceFolder}/pyproject.toml"
+    ],
+    
+    // isort settings
+    "isort.args": [
+        "--settings-path=${workspaceFolder}/pyproject.toml"
+    ],
+    
+    // Flake8 settings
+    "flake8.args": [
+        "--config=${workspaceFolder}/.flake8"
+    ],
+    
+    // Enable linting
+    "python.linting.enabled": true,
+    "python.linting.lintOnSave": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.pylintEnabled": false,
+    
+    // Files associations
+    "files.associations": {
+        "**/*.html": "html",
+        "**/templates/**/*.html": "django-html",
+        "**/templates/**/*": "django-txt",
+        "**/requirements{/**,*}.{txt,in}": "pip-requirements"
+    },
+    
+    // Editor config
+    "editor.rulers": [88],
+    "editor.wordWrap": "bounded",
+    "editor.wordWrapColumn": 88,
+    "python-envs.defaultEnvManager": "ms-python.python:system"
+}

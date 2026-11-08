@@ -1,0 +1,29 @@
+# Governing service for the apscheduler StatefulSet (headless, stable per-pod DNS).
+# Required when using serviceName: apscheduler on the StatefulSet.
+apiVersion: v1
+kind: Service
+metadata:
+  name: apscheduler
+spec:
+  clusterIP: None
+  selector:
+    app: apscheduler
+  ports:
+    - port: 5000
+      name: http
+      targetPort: 5000
+---
+# ClusterIP for Django / celery to call the scheduler HTTP API.
+# Matches the default in apps/elttool/scheduler_client.py and developer.py:
+#   SCHEDULER_SERVICE_URL=http://scheduler-service:5000
+apiVersion: v1
+kind: Service
+metadata:
+  name: scheduler-service
+spec:
+  selector:
+    app: apscheduler
+  ports:
+    - port: 5000
+      targetPort: 5000
+      name: http

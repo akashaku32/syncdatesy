@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: celery-worker-control-metrics
+  labels:
+    app: celery-worker-control
+    datasyncher.com/metrics: "true"
+spec:
+  type: ClusterIP
+  selector:
+    app: celery-worker-control
+  ports:
+    - name: metrics
+      port: 9100
+      targetPort: metrics
+      protocol: TCP

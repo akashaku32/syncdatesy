@@ -1,0 +1,39 @@
+# Batch cluster only — agent progress API host with mTLS client auth.
+# DNS: agent-api.gcp.datasyncher.com → ingress-nginx LB (same IP as gcp.datasyncher.com).
+# Requires Secret proxy-agent-client-ca (ca.crt) and cert-manager ClusterIssuer letsencrypt-prod.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: agent-api-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
+    nginx.ingress.kubernetes.io/auth-tls-secret: "default/proxy-agent-client-ca"
+    nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
+    # Passes ssl-client-cert PEM upstream; gateway extracts CN (snippets disabled on batch).
+    nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
+spec:
+  tls:
+    - hosts:
+        - agent-api.gcp.datasyncher.com
+      secretName: agent-api-tls
+  rules:
+    - host: agent-api.gcp.datasyncher.com
+      http:
+        paths:
+          - path: /v1
+            pathType: Prefix
+            backend:
+              service:
+                name: proxy-agent-gateway-svc
+                port:
+                  number: 8080
+          - path: /healthz
+            pathType: Exact
+            backend:
+              service:
+                name: proxy-agent-gateway-svc
+                port:
+                  number: 8080

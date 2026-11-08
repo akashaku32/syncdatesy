@@ -1,0 +1,17 @@
+# Prometheus Operator (optional) — scrape via Service
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: celery-worker-control
+  labels:
+    app: celery-worker-control
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: celery-worker-control
+      datasyncher.com/metrics: "true"
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s

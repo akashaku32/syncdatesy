@@ -1,0 +1,19 @@
+# sap-proxy-agent-hub Enroll calls TokenValidationService on unary :50053.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-sap-proxy-agent-hub-to-unary
+spec:
+  podSelector:
+    matchLabels:
+      app: sap-proxy-agent-unary
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: sap-proxy-agent-hub
+      ports:
+        - protocol: TCP
+          port: 50053

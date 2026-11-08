@@ -1,0 +1,5 @@
+data-syncher-ui/node_modules
+data-syncher-ui/dist
+data-syncher-ui/.git
+.git
+**/.DS_Store

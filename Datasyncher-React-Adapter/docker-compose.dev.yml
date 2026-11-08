@@ -1,0 +1,43 @@
+version: '3.8'
+
+# Development override configuration
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  # Frontend with hot-reload for development
+  frontend:
+    build:
+      context: ./frontend/data-syncher-ui
+      dockerfile: Dockerfile.dev
+    volumes:
+      # Mount source code for hot-reload
+      - ./frontend/data-syncher-ui:/app
+      # Prevent node_modules from being overwritten by host
+      - /app/node_modules
+      # Mount environment file
+      - ./frontend/data-syncher-ui/env.template:/app/.env:ro
+    ports:
+      - "5173:5173"  # Expose Vite dev server port
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true  # For file watching in Docker
+    command: npm run dev -- --host 0.0.0.0
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`qa.datasyncher.com`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls=true"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.frontend.priority=1"
+      - "traefik.http.services.frontend.loadbalancer.server.port=5173"
+
+  # Override Django settings for development
+  web:
+    environment:
+      - DEBUG=True
+      - DJANGO_SETTINGS_MODULE=datasyncher.settings.developer
+    volumes:
+      - .:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
+    command: python manage.py runserver 0.0.0.0:8000

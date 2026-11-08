@@ -1,0 +1,24 @@
+<svg width="76" height="80" viewBox="38 38 180 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="bodyClip">
+      <path d="M38 67C38 51.536 89.193 39 128 39C166.807 39 218 51.536 218 67V198C218 214.569 177.706 228 128 228C78.294 228 38 214.569 38 198V67Z"/>
+    </clipPath>
+    <linearGradient id="topGreen" x1="128" y1="32" x2="128" y2="88" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C8EA37"/>
+      <stop offset="1" stop-color="#8AC800"/>
+    </linearGradient>
+  </defs>
+
+  <path d="M38 69C38 52.431 78.294 39 128 39C177.706 39 218 52.431 218 69V198C218 214.569 177.706 228 128 228C78.294 228 38 214.569 38 198V69Z" fill="#3FA0CA"/>
+  <path d="M128 39C177.706 39 218 52.431 218 69V198C218 214.569 177.706 228 128 228V39Z" fill="#5DB6D7"/>
+
+  <g clip-path="url(#bodyClip)">
+    <path d="M38 70H128V159C117.5 159 111.5 147 101.5 147C91.5 147 86.5 159 76 159C58 159 51 150 38 146V70Z" fill="#3E3E3E"/>
+    <path d="M128 70H218V146C205 150 198 159 180 159C169.5 159 164.5 147 154.5 147C144.5 147 138.5 159 128 159V70Z" fill="#A7A9AA"/>
+  </g>
+
+  <path d="M38 68C38 51.431 78.294 38 128 38C177.706 38 218 51.431 218 68V85C218 101.569 177.706 115 128 115C78.294 115 38 101.569 38 85V68Z" fill="white"/>
+  <ellipse cx="128" cy="68" rx="90" ry="30" fill="white"/>
+  <ellipse cx="128" cy="68" rx="73" ry="23" fill="url(#topGreen)"/>
+  <path d="M55 80C67 92 94.125 100 128 100C161.875 100 189 92 201 80V88C201 101.255 168.317 112 128 112C87.683 112 55 101.255 55 88V80Z" fill="#85C600"/>
+</svg>

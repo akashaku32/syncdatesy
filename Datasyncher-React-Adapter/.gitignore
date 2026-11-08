@@ -1,0 +1,65 @@
+# Environment files
+.env
+.env.*
+# Don't ignore the example file
+# This ensures .env.example is committed to Git
+!.env.example
+
+# Private keys / TLS material (never commit)
+*.key
+*.pem
+*.p12
+*.jks
+*.pfx
+backend/sap_proxy_agent/dev/config.json
+backend/sap_proxy_agent/dev/mtls/*.key
+backend/sap_proxy_agent/dev/mtls/*.crt
+backend/sap_proxy_agent/**/__pycache__/
+
+# Python virtual environment — NEVER commit this
+venv/
+env/
+.venv/
+
+# NetSuite ODBC vendor bundle (proprietary; fetch from GCS in Cloud Build)
+backend/vendor/netsuite-odbc/*
+!backend/vendor/netsuite-odbc/.gitkeep
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.pytest_cache/
+
+# =========================
+# Kubernetes
+# =========================
+k8s/secrets/
+k8s/batch-cluster/secrets/secrets.local.yaml
+k8s/batch-cluster/secrets/proxy-agent-ca.secret.local.yaml
+
+# Local ops logs
+nodepool-*.log
+
+# Django
+*.log
+# =========================
+# GCP / registry credentials (never commit)
+# =========================
+gcr-key.json
+gcr-reader-key.json
+backend/migration-function/scripts/source.json
+backend/migration-function/scripts/dest.json
+**/elt-project-*.json
+# Local Databricks smoke test may contain a real PAT — never commit.
+scripts/test_databricks_connection.py
+scripts/databricks_demo.env
+db.sqlite3
+celerybeat-schedule
+celerybeat.pid
+
+# OS
+.DS_Store
+Thumbs.db

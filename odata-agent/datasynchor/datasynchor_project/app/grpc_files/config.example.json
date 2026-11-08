@@ -1,0 +1,7 @@
+{
+  "server_host": "localhost",
+  "server_port": 50053,
+  "trusted_ca_cert": "-----BEGIN CERTIFICATE-----\nREPLACE\n-----END CERTIFICATE-----\n",
+  "server_cert": "-----BEGIN CERTIFICATE-----\nREPLACE\n-----END CERTIFICATE-----\n",
+  "server_key": "-----BEGIN PRIVATE KEY-----\nREPLACE\n-----END PRIVATE KEY-----\n"
+}

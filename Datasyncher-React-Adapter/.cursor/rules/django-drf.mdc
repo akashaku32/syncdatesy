@@ -1,0 +1,15 @@
+---
+description: Django/DRF API conventions (SPA backend)
+globs: apps/**/*.py
+alwaysApply: false
+---
+
+# Django + DRF
+
+This project is a **SPA + DRF API** (overrides any global Django-templates preference).
+
+- Thin views; logic in `services/`; serializers for validation.
+- Tenant-scope via `apps.elttool.services.tenant_scope.get_connection_for_user`.
+- Use `select_related` / `prefetch_related` and `v1/permissions`.
+- Throttle auth endpoints (`throttle_scope = "auth"`).
+- **Never** add new endpoints to monolithic `views.py` — use a feature module.

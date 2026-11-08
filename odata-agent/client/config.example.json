@@ -1,0 +1,10 @@
+{
+  "agent_id": "agent-001",
+  "auth_token": "replace-with-token",
+  "bootstrap_token": "replace-with-bootstrap-token",
+  "server_host": "localhost",
+  "server_port": 50051,
+  "trusted_ca_cert": "-----BEGIN CERTIFICATE-----\nREPLACE\n-----END CERTIFICATE-----\n",
+  "client_svr_cert": "-----BEGIN CERTIFICATE-----\nREPLACE\n-----END CERTIFICATE-----\n",
+  "client_svr_key": "-----BEGIN PRIVATE KEY-----\nREPLACE\n-----END PRIVATE KEY-----\n"
+}

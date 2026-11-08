@@ -1,0 +1,11 @@
+node_modules
+dist
+build
+.git
+.gitignore
+Dockerfile*
+docker-compose*
+*.log
+.env
+# Stale tsc emit of vite.config.ts — must not override the .ts config in the image build
+vite.config.js

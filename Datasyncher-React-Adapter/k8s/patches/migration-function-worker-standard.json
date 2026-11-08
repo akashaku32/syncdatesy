@@ -1,0 +1,4 @@
+[
+  {"op": "replace", "path": "/spec/template/spec/nodeSelector", "value": {"pool": "worker-standard"}},
+  {"op": "replace", "path": "/spec/template/spec/tolerations", "value": []}
+]

@@ -1,0 +1,6 @@
+grpcio>=1.85.1,<2.0.0
+protobuf>=7.35.1
+google-auth>=2.29.0
+# Django ORM + apps: install from repo root:
+#   pip install -r datasyncher/requirements.txt
+#   pip install -e backend/datasyncher_connections

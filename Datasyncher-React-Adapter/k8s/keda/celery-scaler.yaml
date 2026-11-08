@@ -1,0 +1,63 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: celery-worker-scaler
+spec:
+  scaleTargetRef:
+    name: celery-worker
+  # Strict scaling via celery:keda:desired-replicas (Redis LIST, LLEN = desired pod count).
+  # App refreshes LLEN every fan-out + reconcile tick (capped at maxReplicaCount).
+  # jobs mode: LLEN = in_progress_jobs × 2 (1 job -> 2 pods).
+  # workload mode (CELERY_KEDA_SCALE_MODE=workload): LLEN = sum per job of min(2, ceil(tables/3))
+  #   e.g. 1-table reload -> 1 pod; 4+ tables -> 2 pods/job; two 1-table jobs -> 2 pods total.
+  # celery:keda:active is NOT a KEDA trigger (it inflates with task_ids); kept for ops only.
+  # migration broker queue is NOT a KEDA trigger — fan-out can briefly spike LLEN and force 4 pods.
+  # Scale is ONLY from celery:keda:desired-replicas (+ CPU/memory caps).
+  # Shared pool only (CELERY_JOB_ISOLATION_MODE=shared). In per_job mode scale legacy
+  # celery-worker to 0 and use celery-worker-control + ephemeral job Deployments.
+  # Disabled: migrations use per-job celery-worker-job-{hash} pods (CELERY_JOB_ISOLATION_MODE=per_job).
+  minReplicaCount: 0
+  maxReplicaCount: 0
+  # How often KEDA refreshes Redis/HPA metrics. Lower = faster scale-out decisions (more API load).
+  pollingInterval: 5
+  # Delay scale-down long enough to absorb Redis/KEDA metric lag after migrations finish.
+  # Must be > terminationGracePeriodSeconds (120 s) to avoid prematurely killing pods.
+  cooldownPeriod: 600
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleDown:
+          stabilizationWindowSeconds: 600
+          policies:
+            - type: Pods
+              value: 1
+              periodSeconds: 120 # Remove at most one pod every two minutes to prevent aggressive downscale churn.
+        scaleUp:
+          stabilizationWindowSeconds: 0
+          policies:
+            # Burst: add many pods per short window when queue/active-list grows (bounded by maxReplicaCount).
+            - type: Pods
+              value: 8
+              periodSeconds: 5
+            - type: Percent
+              value: 100
+              periodSeconds: 5
+          selectPolicy: Max
+  triggers:
+    # Authoritative: LLEN = desired replicas (app maintains list; listLength 1 => replicas = LLEN).
+    # QA Memorystore (datasyncher-kubernetes). Batch cluster patches this via BATCH_REDIS_IP in apply-manifests.sh.
+    - type: redis
+      metadata:
+        address: "10.16.100.164:6379"
+        listName: celery:keda:desired-replicas
+        listLength: "1"
+    # Adaptive scale-out under memory/CPU pressure (requires resource requests on the pod).
+    # Raised from 75 so one migration (~6 in-flight) is not held at maxReplicaCount=4 by RAM alone.
+    - type: memory
+      metricType: Utilization
+      metadata:
+        value: "85"
+    - type: cpu
+      metricType: Utilization
+      metadata:
+        value: "75"

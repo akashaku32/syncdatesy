@@ -1,0 +1,9 @@
+# Workload Identity: lets Celery pods call GCS with read/write using a dedicated GCP SA.
+# Worker node pools use devstorage.read_only OAuth scopes, so node default creds cannot upload.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: celery-gcs
+  namespace: default
+  annotations:
+    iam.gke.io/gcp-service-account: celery-gcs-uploader@datasyncher-kubernetes.iam.gserviceaccount.com

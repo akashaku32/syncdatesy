@@ -1,0 +1,350 @@
+name: Deploy to Batch GKE (Selective)
+
+# Auto-deploys only the image groups that changed on push to the batch Kubernetes branch.
+# Requires repo secret: GCP_SA_KEY_BATCH
+#   SA: github-actions-batch-deploy@datasyncher-batch.iam.gserviceaccount.com
+#   (do NOT reuse GCP_SA_KEY — that is the QA datasyncher-kubernetes key)
+#
+# Frontend auto-deploys from its own repo (data-syncher-ui) via
+#   .github/workflows/deploy-batch.yml on kubernetes-batch / core/batch_technique.
+# From this repo you can still force a frontend restart with workflow_dispatch
+# force_groups=frontend (image must already be in GCR).
+
+on:
+  push:
+    branches:
+      - core/batch_technique
+      - batch
+      - production-batch
+  workflow_dispatch:
+    inputs:
+      force_groups:
+        description: "Comma-separated groups to force (django,fastapi,migration-function,proxy-agent,frontend). Empty = path detect."
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy-batch:
+    runs-on: ubuntu-latest
+    env:
+      GCP_PROJECT: datasyncher-batch
+      GKE_CLUSTER: datasyncher-batch-cluster
+      GKE_REGION: us-central1
+      NAMESPACE: default
+      TAG: batch
+      REGISTRY: gcr.io/datasyncher-batch
+      CLOUDSDK_CORE_PROJECT: datasyncher-batch
+      USE_GKE_GCLOUD_AUTH_PLUGIN: "True"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Require GCP_SA_KEY_BATCH secret
+        env:
+          GCP_SA_KEY_BATCH: ${{ secrets.GCP_SA_KEY_BATCH }}
+        run: |
+          if [ -z "$GCP_SA_KEY_BATCH" ]; then
+            echo "::error::Missing GitHub secret GCP_SA_KEY_BATCH. Use SA github-actions-batch-deploy@datasyncher-batch.iam.gserviceaccount.com (Cloud Build + GKE on datasyncher-batch)."
+            exit 1
+          fi
+
+      - name: Detect changed paths
+        id: paths
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            django:
+              - 'apps/**'
+              - 'datasyncher/**'
+              - 'deploy/docker/**'
+              - 'k8s/deployments/django.yaml'
+              - 'k8s/deployments/celery-worker-django.yaml'
+              - 'k8s/statefulsets/apscheduler.yaml'
+              - 'k8s/statefulsets/celery-beat-django.yaml'
+            fastapi:
+              - 'backend/fast-api/**'
+              - 'k8s/deployments/fastapi.yaml'
+              - 'k8s/deployments/celery-worker-control.yaml'
+              - 'k8s/deployments/celery-worker-control-reconcile.yaml'
+              - 'k8s/deployments/celery-beat-migration.yaml'
+            migration-function:
+              - 'backend/migration-function/**'
+              - 'backend/sap_proxy_agent/client/**'
+              - 'backend/sap_proxy_agent/generated/**'
+              - 'backend/sap_proxy_agent/proto/**'
+              - 'k8s/deployments/migration-function.yaml'
+            proxy-agent:
+              - 'backend/sap_proxy_agent/**'
+              - 'k8s/deployments/sap-proxy-agent-hub.yaml'
+              - 'k8s/deployments/sap-proxy-agent-unary.yaml'
+              - 'k8s/deployments/proxy-agent-gateway.yaml'
+              - 'k8s/services/sap-proxy-agent-hub-svc.yaml'
+              - 'k8s/services/sap-proxy-agent-unary-svc.yaml'
+              - 'k8s/services/proxy-agent-gateway-svc.yaml'
+              - 'k8s/network-policies/allow-hub-to-django.yaml'
+              - 'k8s/network-policies/allow-hub-to-unary.yaml'
+
+      - name: Resolve deploy groups
+        id: groups
+        run: |
+          FORCE="${{ github.event.inputs.force_groups }}"
+          if [ -n "$FORCE" ]; then
+            echo "Using workflow_dispatch force_groups=$FORCE"
+            echo "django=$(echo "$FORCE" | grep -qi 'django' && echo true || echo false)" >> "$GITHUB_OUTPUT"
+            echo "fastapi=$(echo "$FORCE" | grep -qi 'fastapi' && echo true || echo false)" >> "$GITHUB_OUTPUT"
+            echo "migration_function=$(echo "$FORCE" | grep -qi 'migration-function' && echo true || echo false)" >> "$GITHUB_OUTPUT"
+            echo "proxy_agent=$(echo "$FORCE" | grep -qi 'proxy-agent' && echo true || echo false)" >> "$GITHUB_OUTPUT"
+            echo "frontend=$(echo "$FORCE" | grep -qi 'frontend' && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          else
+            echo "django=${{ steps.paths.outputs.django }}" >> "$GITHUB_OUTPUT"
+            echo "fastapi=${{ steps.paths.outputs.fastapi }}" >> "$GITHUB_OUTPUT"
+            echo "migration_function=${{ steps.paths.outputs.migration-function }}" >> "$GITHUB_OUTPUT"
+            echo "proxy_agent=${{ steps.paths.outputs.proxy-agent }}" >> "$GITHUB_OUTPUT"
+            echo "frontend=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip if nothing to deploy
+        if: >
+          steps.groups.outputs.django != 'true' &&
+          steps.groups.outputs.fastapi != 'true' &&
+          steps.groups.outputs.migration_function != 'true' &&
+          steps.groups.outputs.proxy_agent != 'true' &&
+          steps.groups.outputs.frontend != 'true'
+        run: |
+          echo "No django/fastapi/migration-function/proxy-agent changes detected. Nothing to deploy from this repo."
+          echo "Frontend changes must be deployed from the frontend tree or via workflow_dispatch force_groups=frontend."
+
+      - name: Auth to GCP (datasyncher-batch)
+        if: >
+          steps.groups.outputs.django == 'true' ||
+          steps.groups.outputs.fastapi == 'true' ||
+          steps.groups.outputs.migration_function == 'true' ||
+          steps.groups.outputs.proxy_agent == 'true' ||
+          steps.groups.outputs.frontend == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY_BATCH }}
+          project_id: datasyncher-batch
+
+      - name: Setup gcloud
+        if: >
+          steps.groups.outputs.django == 'true' ||
+          steps.groups.outputs.fastapi == 'true' ||
+          steps.groups.outputs.migration_function == 'true' ||
+          steps.groups.outputs.proxy_agent == 'true' ||
+          steps.groups.outputs.frontend == 'true'
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: datasyncher-batch
+          install_components: gke-gcloud-auth-plugin
+
+      - name: Configure kubectl
+        if: >
+          steps.groups.outputs.django == 'true' ||
+          steps.groups.outputs.fastapi == 'true' ||
+          steps.groups.outputs.migration_function == 'true' ||
+          steps.groups.outputs.proxy_agent == 'true' ||
+          steps.groups.outputs.frontend == 'true'
+        run: |
+          export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+          gcloud config set project "$GCP_PROJECT"
+          gcloud container clusters get-credentials "$GKE_CLUSTER" --region "$GKE_REGION" --project "$GCP_PROJECT"
+          kubectl config current-context
+          kubectl get ns >/dev/null
+
+      - name: Build django image (:batch)
+        if: steps.groups.outputs.django == 'true'
+        run: |
+          gcloud builds submit \
+            --project="$GCP_PROJECT" \
+            --config=deploy/docker/cloudbuild-batch-django.yaml \
+            .
+
+      - name: Build fastapi image (:batch)
+        if: steps.groups.outputs.fastapi == 'true'
+        run: |
+          gcloud builds submit \
+            --project="$GCP_PROJECT" \
+            --config=backend/cloudbuild/batch/fastapi.yaml \
+            backend/
+
+      - name: Build migration-function image (:batch)
+        if: steps.groups.outputs.migration_function == 'true' || steps.groups.outputs.proxy_agent == 'true'
+        run: |
+          gcloud builds submit \
+            --project="$GCP_PROJECT" \
+            --config=backend/cloudbuild/batch/migration-function.yaml \
+            backend/
+
+      - name: Build sap-proxy-agent-unary image (:batch)
+        if: steps.groups.outputs.proxy_agent == 'true'
+        run: |
+          gcloud builds submit \
+            --project="$GCP_PROJECT" \
+            --config=backend/cloudbuild/batch/sap-proxy-agent-unary.yaml \
+            .
+
+      - name: Build sap-proxy-agent-hub image (:batch)
+        if: steps.groups.outputs.proxy_agent == 'true'
+        run: |
+          gcloud builds submit \
+            --project="$GCP_PROJECT" \
+            --config=backend/cloudbuild/batch/sap-proxy-agent-hub.yaml \
+            backend/
+
+      - name: Build proxy-agent-gateway image (:batch)
+        if: steps.groups.outputs.proxy_agent == 'true'
+        run: |
+          gcloud builds submit \
+            --project="$GCP_PROJECT" \
+            --config=backend/cloudbuild/batch/proxy-agent-gateway.yaml \
+            backend/
+
+      - name: Rollout migration-function (safe)
+        if: steps.groups.outputs.migration_function == 'true' || steps.groups.outputs.proxy_agent == 'true'
+        run: |
+          IMG="$REGISTRY/datasyncher-migration-function:$TAG"
+          kubectl -n "$NAMESPACE" set image deployment/migration-function "migration-function=$IMG"
+          kubectl -n "$NAMESPACE" rollout restart deployment/migration-function
+          kubectl -n "$NAMESPACE" rollout status deployment/migration-function --timeout=5m
+
+      - name: Apply proxy-agent manifests (unary + hub + gateway + netpol)
+        if: steps.groups.outputs.proxy_agent == 'true'
+        run: |
+          kubectl -n "$NAMESPACE" apply -f k8s/deployments/sap-proxy-agent-unary.yaml
+          kubectl -n "$NAMESPACE" apply -f k8s/services/sap-proxy-agent-unary-svc.yaml
+          kubectl -n "$NAMESPACE" apply -f k8s/network-policies/allow-hub-to-unary.yaml
+          kubectl -n "$NAMESPACE" apply -f k8s/deployments/sap-proxy-agent-hub.yaml
+          kubectl -n "$NAMESPACE" apply -f k8s/services/sap-proxy-agent-hub-svc.yaml
+          kubectl -n "$NAMESPACE" apply -f k8s/network-policies/allow-hub-to-django.yaml
+          kubectl -n "$NAMESPACE" apply -f k8s/deployments/proxy-agent-gateway.yaml
+          kubectl -n "$NAMESPACE" apply -f k8s/services/proxy-agent-gateway-svc.yaml
+
+      - name: Rollout sap-proxy-agent-unary
+        if: steps.groups.outputs.proxy_agent == 'true'
+        run: |
+          IMG="$REGISTRY/datasyncher-sap-proxy-agent-unary:$TAG"
+          kubectl -n "$NAMESPACE" set image deployment/sap-proxy-agent-unary "sap-proxy-agent-unary=$IMG"
+          kubectl -n "$NAMESPACE" rollout restart deployment/sap-proxy-agent-unary
+          kubectl -n "$NAMESPACE" rollout status deployment/sap-proxy-agent-unary --timeout=10m
+
+      - name: Rollout sap-proxy-agent-hub
+        if: steps.groups.outputs.proxy_agent == 'true'
+        run: |
+          IMG="$REGISTRY/datasyncher-sap-proxy-agent-hub:$TAG"
+          kubectl -n "$NAMESPACE" set image deployment/sap-proxy-agent-hub "sap-proxy-agent-hub=$IMG"
+          kubectl -n "$NAMESPACE" rollout restart deployment/sap-proxy-agent-hub
+          kubectl -n "$NAMESPACE" rollout status deployment/sap-proxy-agent-hub --timeout=5m
+
+      - name: Rollout proxy-agent-gateway
+        if: steps.groups.outputs.proxy_agent == 'true'
+        run: |
+          IMG="$REGISTRY/datasyncher-proxy-agent-gateway:$TAG"
+          kubectl -n "$NAMESPACE" set image deployment/proxy-agent-gateway "proxy-agent-gateway=$IMG"
+          kubectl -n "$NAMESPACE" rollout restart deployment/proxy-agent-gateway
+          kubectl -n "$NAMESPACE" rollout status deployment/proxy-agent-gateway --timeout=5m
+
+      - name: Guard (fastapi rollout)
+        if: steps.groups.outputs.fastapi == 'true'
+        run: |
+          set +e
+          cat <<'PY' | kubectl -n "$NAMESPACE" exec deployment/django -i -- python manage.py shell
+          from datetime import timedelta
+          import sys
+          from django.utils import timezone
+          from apps.elttool.models import PipelineRun, MigrationRecord, Log
+          cutoff = timezone.now() - timedelta(minutes=30)
+          pipes = list(PipelineRun.objects.filter(status='running').values_list('id', flat=True)[:20])
+          mrs = list(MigrationRecord.objects.filter(status__in=['in_progress','pending','queued','running']).values_list('id','migration_session_id','table_name')[:20])
+          logs = list(Log.objects.filter(status='I', time__gte=cutoff).values_list('log_id','session')[:20])
+          print('ACTIVE_PIPELINES', pipes)
+          print('ACTIVE_MIGRATION_RECORDS', mrs)
+          print('ACTIVE_LOGS', logs)
+          sys.exit(1 if (pipes or mrs or logs) else 0)
+          PY
+          rc=$?
+          set -e
+          if [ $rc -ne 0 ]; then
+            echo "::error::Active pipeline/migration work detected. Blocking fastapi rollout. Wait for completion or reconcile_stale_migrations, then re-run."
+            exit 1
+          fi
+
+      - name: Rollout fastapi + migration control group
+        if: steps.groups.outputs.fastapi == 'true'
+        run: |
+          IMG="$REGISTRY/datasyncher-fast-api:$TAG"
+          kubectl -n "$NAMESPACE" set image deployment/fastapi "fastapi=$IMG"
+          kubectl -n "$NAMESPACE" set image deployment/celery-worker-control "celery=$IMG"
+          kubectl -n "$NAMESPACE" set image deployment/celery-worker-control-reconcile "celery=$IMG"
+          kubectl -n "$NAMESPACE" set image deployment/celery-beat-migration "beat=$IMG"
+          kubectl -n "$NAMESPACE" set env deployment/celery-worker-control "CELERY_JOB_WORKER_IMAGE=$IMG"
+          kubectl -n "$NAMESPACE" set env deployment/celery-worker-control-reconcile "CELERY_JOB_WORKER_IMAGE=$IMG"
+
+          kubectl -n "$NAMESPACE" rollout restart deployment/fastapi
+          kubectl -n "$NAMESPACE" rollout restart deployment/celery-worker-control
+          kubectl -n "$NAMESPACE" rollout restart deployment/celery-worker-control-reconcile
+          kubectl -n "$NAMESPACE" rollout restart deployment/celery-beat-migration
+
+          kubectl -n "$NAMESPACE" rollout status deployment/fastapi --timeout=5m
+          kubectl -n "$NAMESPACE" rollout status deployment/celery-worker-control --timeout=5m
+          kubectl -n "$NAMESPACE" rollout status deployment/celery-worker-control-reconcile --timeout=5m
+          kubectl -n "$NAMESPACE" rollout status deployment/celery-beat-migration --timeout=5m
+
+      - name: Guard (django rollout)
+        if: steps.groups.outputs.django == 'true'
+        run: |
+          set +e
+          cat <<'PY' | kubectl -n "$NAMESPACE" exec deployment/django -i -- python manage.py shell
+          from datetime import timedelta
+          import sys
+          from django.utils import timezone
+          from apps.elttool.models import PipelineRun, MigrationRecord, Log
+          cutoff = timezone.now() - timedelta(minutes=30)
+          pipes = list(PipelineRun.objects.filter(status='running').values_list('id', flat=True)[:20])
+          mrs = list(MigrationRecord.objects.filter(status__in=['in_progress','pending','queued','running']).values_list('id','migration_session_id','table_name')[:20])
+          logs = list(Log.objects.filter(status='I', time__gte=cutoff).values_list('log_id','session')[:20])
+          print('ACTIVE_PIPELINES', pipes)
+          print('ACTIVE_MIGRATION_RECORDS', mrs)
+          print('ACTIVE_LOGS', logs)
+          sys.exit(1 if (pipes or mrs or logs) else 0)
+          PY
+          rc=$?
+          set -e
+          if [ $rc -ne 0 ]; then
+            echo "::error::Active pipeline/migration work detected. Blocking django rollout. Wait for completion or reconcile_stale_migrations, then re-run."
+            exit 1
+          fi
+
+      - name: Rollout django + celery-django trio + beat
+        if: steps.groups.outputs.django == 'true'
+        run: |
+          IMG="$REGISTRY/datasyncher-django-app:$TAG"
+          kubectl -n "$NAMESPACE" set image deployment/django "django=$IMG"
+          kubectl -n "$NAMESPACE" set image deployment/celery-worker-django "celery-worker-django=$IMG"
+          kubectl -n "$NAMESPACE" set image statefulset/celery-beat-django "beat=$IMG"
+          kubectl -n "$NAMESPACE" set image statefulset/apscheduler "apscheduler=$IMG"
+
+          kubectl -n "$NAMESPACE" rollout restart deployment/django
+          kubectl -n "$NAMESPACE" rollout restart deployment/celery-worker-django
+          kubectl -n "$NAMESPACE" rollout restart statefulset/celery-beat-django
+          kubectl -n "$NAMESPACE" rollout restart statefulset/apscheduler
+
+          kubectl -n "$NAMESPACE" rollout status deployment/django --timeout=5m
+          kubectl -n "$NAMESPACE" rollout status deployment/celery-worker-django --timeout=5m
+          kubectl -n "$NAMESPACE" rollout status statefulset/celery-beat-django --timeout=5m
+          kubectl -n "$NAMESPACE" rollout status statefulset/apscheduler --timeout=5m
+
+      - name: Rollout frontend (image already in GCR)
+        if: steps.groups.outputs.frontend == 'true'
+        run: |
+          IMG="$REGISTRY/datasyncher-frontend:$TAG"
+          echo "Restarting frontend to pull $IMG (build frontend separately if layers are new)."
+          kubectl -n "$NAMESPACE" set image deployment/frontend "frontend=$IMG"
+          kubectl -n "$NAMESPACE" rollout restart deployment/frontend
+          kubectl -n "$NAMESPACE" rollout status deployment/frontend --timeout=5m

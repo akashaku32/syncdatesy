@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-worker-django
+spec:
+  # Multiple replicas so many organisations can orchestrate at once and one
+  # pod failure does not stop every flow.
+  replicas: 2
+  selector:
+    matchLabels:
+      app: celery-worker-django
+  template:
+    metadata:
+      labels:
+        app: celery-worker-django
+    spec:
+      nodeSelector:
+        pool: app
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: celery-worker-django
+      containers:
+        - name: celery-worker-django
+          image: gcr.io/datasyncher-kubernetes/datasyncher-django-app:qa
+          imagePullPolicy: Always
+          command: ["bash", "-c"]
+          args:
+            - |
+              set -euo pipefail
+              # Flow orchestration only. Ops/default lives in celery-worker-django-ops
+              # so snapshot work never competes with pipeline starts.
+              celery -A datasyncher.celery_app worker \
+                --loglevel=info \
+                --concurrency="${PIPELINE_ORCHESTRATOR_CONCURRENCY:-8}" \
+                --pool=prefork \
+                --prefetch-multiplier=1 \
+                --max-tasks-per-child=50 \
+                -Q pipeline,celery \
+                -n pipeline@%h
+          envFrom:
+            - secretRef:
+                name: datasyncher-secrets
+          env:
+            # Non-blocking polls are short; 1h is enough for redelivery after a pod kill.
+            - name: CELERY_BROKER_VISIBILITY_TIMEOUT_SECONDS
+              value: "3600"
+            - name: PIPELINE_NONBLOCKING_ORCHESTRATION
+              value: "true"
+            - name: PIPELINE_ORCHESTRATOR_CONCURRENCY
+              value: "8"
+            - name: PIPELINE_SCHEDULE_JITTER_SECONDS
+              value: "300"
+            # One fleet per pipeline run — batches share pods; avoids mid-run company_job_cap.
+            - name: PIPELINE_FLOW_FLEET_REUSE_ENABLED
+              value: "true"
+          livenessProbe:
+            exec:
+              command:
+                - bash
+                - -lc
+                - cd /app && PYTHONPATH=/app python /app/scripts/pipeline_worker_healthcheck.py
+            initialDelaySeconds: 120
+            periodSeconds: 60
+            timeoutSeconds: 25
+            failureThreshold: 2
+          resources:
+            requests:
+              cpu: "1"
+              memory: 2Gi
+            limits:
+              cpu: "2"
+              memory: 4Gi

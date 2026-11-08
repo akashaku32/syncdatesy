@@ -1,0 +1,93 @@
+# Example PrometheusRule / GMP rules for RFC-001 §11.3 (adjust namespace/labels for your cluster)
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: datasyncher-job-isolation
+  labels:
+    app: datasyncher
+spec:
+  groups:
+    - name: datasyncher.job_isolation
+      rules:
+        - alert: JobWorkerReadyTimeout
+          expr: increase(datasyncher_job_worker_ready_timeout_total[5m]) > 0
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: Per-job worker provision readiness timed out
+            description: >-
+              job_worker_ready_timeout_total increased in the last 5 minutes.
+              Check control worker logs for JOB_WORKER_READY_TIMEOUT.
+
+        - alert: JobWorkerTeardownFailed
+          expr: increase(datasyncher_job_teardown_total{status="fail"}[5m]) > 0
+          for: 0m
+          labels:
+            severity: warning
+          annotations:
+            summary: Job worker Deployment teardown failed
+            description: >-
+              job_teardown_total{status="fail"} increased. Orphan Deployments may remain.
+
+        - alert: ProvisionQueueBacklog
+          expr: datasyncher_provision_queue_depth > 10
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: Deferred provision queue depth high
+            description: >-
+              provision_queue_depth has been above 10 for 30 minutes.
+
+        - alert: ClusterWorkerPodsNearCap
+          expr: >-
+            datasyncher_cluster_worker_pods_used
+            / on() group_left()
+            scalar(max(254))
+            > 0.9
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: Cluster per-job worker pod usage above 90% of cap
+            description: >-
+              Denominator is CELERY_CLUSTER_MAX_JOB_WORKER_PODS (200).
+              Per-pool caps are standard 100, premium 50, enterprise 50.
+
+        - alert: PipelineRunExecutorless
+          expr: datasyncher_executorless_running_runs > 0
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: A pipeline run is running with no executor
+            description: >-
+              The Django pipeline worker accepted the run but never started it.
+              reap_stuck_pipeline_runs fails these after 15 minutes.
+              Until that metric is scraped, the same alert is logged as
+              PIPELINE_RUN_EXECUTORLESS_ALERT.
+
+        - alert: MigrationWorkerMemoryHigh
+          expr: >-
+            datasyncher_migration_worker_memory_bytes
+            / on(pod, connector) group_left()
+            scalar(4 * 1024 * 1024 * 1024)
+            > 0.85
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: Migration worker RSS above 85% of pod memory limit
+            description: >-
+              Adjust denominator to match plan memory limits per connector/pod.
+
+        - alert: JobWorkerOOMKilled
+          expr: increase(datasyncher_oom_killed_total[5m]) > 0
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: Celery job worker pod OOMKilled
+            description: >-
+              oom_killed_total increased. Review chunk sizing and plan memory limits.

@@ -1,0 +1,11 @@
+---
+description: Testing expectations
+globs: "**/tests/**/*.py"
+alwaysApply: false
+---
+
+# Testing
+
+- Every new service function gets a pytest/TestCase covering success and one failure.
+- Shared fixtures in `tests/conftest.py`.
+- Prefer characterization tests before refactoring monoliths.

@@ -1,0 +1,145 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-worker-control
+  labels:
+    app: celery-worker-control
+    datasyncher.com/role: control
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: celery-worker-control
+  template:
+    metadata:
+      labels:
+        app: celery-worker-control
+        datasyncher.com/role: control
+    spec:
+      serviceAccountName: celery-gcs
+      nodeSelector:
+        pool: control
+      terminationGracePeriodSeconds: 120
+      containers:
+        - name: celery
+          image: gcr.io/datasyncher-batch/datasyncher-fast-api:batch
+          imagePullPolicy: Always
+          env:
+            - name: CELERY_JOB_WORKER_IMAGE
+              value: "gcr.io/datasyncher-batch/datasyncher-fast-api:batch"
+            - name: CELERY_JOB_ISOLATION_MODE
+              value: "per_job"
+            # Keep in sync with celery-worker-django (one fleet per pipeline run).
+            - name: PIPELINE_FLOW_FLEET_REUSE_ENABLED
+              value: "true"
+            - name: CELERY_WORKER_ROLE
+              value: "control"
+            - name: CELERY_MIGRATION_QUEUE
+              value: "migration-control"
+            - name: CELERY_MIGRATION_CONTROL_QUEUE
+              value: "migration-control"
+            - name: CELERY_JOB_WORKER_READY_TIMEOUT
+              value: "420"
+            - name: CELERY_TASK_TIME_LIMIT_SECONDS
+              value: "0"
+            - name: CELERY_TASK_SOFT_TIME_LIMIT_SECONDS
+              value: "0"
+            # Redis default visibility is 3600s; prevents duplicate child delivery on long tables.
+            - name: CELERY_BROKER_VISIBILITY_TIMEOUT_SECONDS
+              value: "2592000"
+            - name: CELERY_STARTED_CHILD_REQUEUE_ENABLED
+              value: "true"
+            # Backstop: fail STARTED children orphaned past this even if requeue can't recover them.
+            - name: CELERY_STARTED_CHILD_HARD_FAIL_AFTER_SECONDS
+              value: "43200"
+            - name: CELERY_STARTED_HARD_FAIL_REQUIRE_DEAD_POD
+              value: "true"
+            - name: CELERY_CLUSTER_MAX_JOB_WORKER_PODS
+              # Sum of the per-pool caps. One plan's pool cannot consume another plan's budget.
+              value: "200"
+            - name: CELERY_CLUSTER_MAX_JOB_WORKER_PODS_PER_POOL
+              # Fallback when a pool-specific cap is not set.
+              value: "100"
+            - name: CELERY_CLUSTER_MAX_JOB_WORKER_PODS_POOL_STANDARD
+              value: "100"
+            - name: CELERY_CLUSTER_MAX_JOB_WORKER_PODS_POOL_PREMIUM
+              value: "50"
+            - name: CELERY_CLUSTER_MAX_JOB_WORKER_PODS_POOL_ENTERPRISE
+              value: "50"
+            - name: CELERY_PROVISION_RATE_PER_MINUTE
+              value: "60"
+            - name: CELERY_COMPANY_PROVISION_RATE_PER_MINUTE
+              value: "6"
+            - name: CELERY_K8S_POD_STATUS_ENABLED
+              value: "true"
+            - name: CELERY_K8S_NAMESPACE
+              value: "default"
+            - name: CELERY_MIGRATION_CONTROL_ORCHESTRATE_QUEUE
+              value: "migration-control"
+            - name: CELERY_MIGRATION_CONTROL_RECONCILE_QUEUE
+              value: "migration-control-reconcile"
+            - name: CELERY_ORCHESTRATE_TASK_PRIORITY
+              value: "0"
+            - name: CELERY_CHECK_JOB_STATUS_PRIORITY
+              value: "9"
+            - name: CELERY_RECONCILE_MAX_SECONDS
+              value: "45"
+            - name: CELERY_CHECK_JOB_STATUS_SOFT_TIME_LIMIT
+              value: "90"
+            - name: CELERY_CHECK_JOB_STATUS_TIME_LIMIT
+              value: "120"
+            - name: CELERY_STALE_TASK_SCAN_MAX_KEYS
+              value: "250"
+            - name: CELERY_FINALIZER_ORPHAN_CHECKS_PER_JOB
+              value: "8"
+            - name: CELERY_CHECK_JOB_STATUS_INTERVAL
+              value: "20"
+            - name: CELERY_ONE_TABLE_PER_CHILD
+              value: "true"
+            - name: CELERY_MAX_INFLIGHT_CHILDREN_PER_JOB
+              value: "6"
+            - name: CELERY_ORCHESTRATE_SOFT_TIME_LIMIT
+              value: "300"
+            - name: CELERY_ORCHESTRATE_TIME_LIMIT
+              value: "360"
+            # Finalizers run on celery-worker-control-reconcile, not this queue.
+            - name: CELERY_FINALIZER_SOFT_TIME_LIMIT_SECONDS
+              value: "120"
+            - name: CELERY_FINALIZER_TIME_LIMIT_SECONDS
+              value: "180"
+            - name: CELERY_FINALIZER_MAX_ATTEMPTS
+              value: "3"
+            - name: CELERY_WORKER_CONCURRENCY
+              value: "6"
+            - name: CELERY_SCALE_DOWN_PROTECTION_ENABLED
+              value: "true"
+            - name: CELERY_PROMETHEUS_METRICS_ENABLED
+              value: "true"
+            - name: CELERY_METRICS_PORT
+              value: "9100"
+          ports:
+            - name: metrics
+              containerPort: 9100
+          command:
+            - celery
+            - -A
+            - celery_worker.celery_app
+            - worker
+            - --loglevel=info
+            - --concurrency=6
+            - --pool=prefork
+            - -Q
+            - migration-control
+            - -Ofair
+            - --without-gossip
+            - --without-mingle
+          envFrom:
+            - secretRef:
+                name: datasyncher-secrets
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
