@@ -82,17 +82,14 @@ const Scheduling = lazy(
   () => import("@/components/dashboard/components/Scheduling/Scheduling"),
 );
 
-// Pages
-//const HomePage = lazy(() => import("@/pages/website/HomePage"));
+const HomePage = lazy(() => import("@/pages/website/HomePage"));
+const WebsiteLayout = lazy(() => import("@/layouts/WebsiteLayout"));
 
 export const router = createBrowserRouter([
-  // Setup Website Routes in the below object
   {
     path: ClientRoutes.HOME,
-    element: (
-      <Navigate to={`${ClientRoutes.AUTH}/${ClientRoutes.LOGIN}`} replace />
-    ),
-    //children: [{ index: true, element: <HomePage /> }],
+    element: <WebsiteLayout />,
+    children: [{ index: true, element: <HomePage /> }],
   },
   {
     path: ClientRoutes.AUTH,

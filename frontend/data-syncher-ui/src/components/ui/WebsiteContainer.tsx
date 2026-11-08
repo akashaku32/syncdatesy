@@ -10,8 +10,9 @@ export default function Container({ children }: { children: ReactNode }) {
       alignItems="center"
       as="main"
       overflowY="auto"
-      paddingInline={{ base: 3, md: 8 }}
-      paddingBlock={{ base: 4, md: 8 }}
+      w="full"
+      paddingInline={0}
+      paddingBlock={0}
     >
       {children}
     </Flex>

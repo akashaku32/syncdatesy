@@ -15,13 +15,13 @@ export default function AuthContainer({
       area="main"
       as="main"
       {...props}
-      p={{ base: 6, md: 8 }}
-      bg="white"
-      justifyContent={"center"}
-      alignItems={"center"}
-      display={"flex"}
-      maxW="600px"
-      overflowY={"auto"}
+      p={{ base: 5, md: 10 }}
+      bg="gray.50"
+      justifyContent="center"
+      alignItems="center"
+      display="flex"
+      overflowY="auto"
+      minH={0}
     >
       {children}
     </GridItem>

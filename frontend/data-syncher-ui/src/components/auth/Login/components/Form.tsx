@@ -6,17 +6,14 @@ import {
   Field,
   Fieldset,
   Flex,
-  Image,
   Input,
   Span,
-  Stack,
-  Text,
 } from "@chakra-ui/react";
 
 import { AxiosError } from "axios";
 import { Link, useLocation, useNavigate } from "react-router";
 
-import Logo from "@/assets/logo.svg";
+import { AuthFormCard } from "@/components/auth/AuthFormCard";
 import { PasswordInput } from "@/components/ui/password-input";
 import { toaster } from "@/components/ui/toaster";
 import ClientRoutes from "@/constants/client-routes";
@@ -169,57 +166,50 @@ export default function Form() {
 
   return (
     <form style={{ width: "100%" }} onSubmit={handleSubmit} autoComplete="off">
-      <Flex justifyContent="center" alignItems="center">
+      <AuthFormCard
+        title="Welcome back"
+        description={
+          <>
+            Don&apos;t have an account?{" "}
+            <Span
+              color="brand.600"
+              fontWeight="semibold"
+              cursor="pointer"
+              onClick={() =>
+                navigate(`${ClientRoutes.AUTH}/${ClientRoutes.REGISTER}`)
+              }
+            >
+              Request trial access
+            </Span>
+          </>
+        }
+      >
         <Fieldset.Root
           size="lg"
           w="100%"
-          justifyContent="center"
           invalid={hasError || !!unverifiedEmail}
+          gap={4}
         >
-          <Stack gap={4} mb={2}>
-            <Image
-              src={Logo}
-              alt="Logo"
-              width="48px"
-              height="48px"
-              aspectRatio={1}
-            />
-            <Fieldset.Legend fontSize={32} fontWeight="semibold">
-              Sign in
-            </Fieldset.Legend>
-            <Text fontSize="sm" color="gray.500">
-              Don't have an account?{" "}
-              <Span
-                color="brand.500"
-                cursor="pointer"
-                onClick={() =>
-                  navigate(`${ClientRoutes.AUTH}/${ClientRoutes.REGISTER}`)
-                }
-              >
-                Request for trial access
-              </Span>
-            </Text>
-          </Stack>
-          <Fieldset.Content>
+          <Fieldset.Content gap={4}>
             <Field.Root required>
-              <Field.Label fontSize="16px">
-                Email Id <Field.RequiredIndicator />
-              </Field.Label>
+              <Field.Label>Work email</Field.Label>
               <Input
                 name="email"
                 type="email"
-                placeholder="Enter your email id"
+                size="lg"
+                borderRadius="lg"
+                placeholder="you@company.com"
                 autoFocus
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </Field.Root>
             <Field.Root required>
-              <Field.Label fontSize="16px">
-                Password <Field.RequiredIndicator />
-              </Field.Label>
+              <Field.Label>Password</Field.Label>
               <PasswordInput
                 name="password"
+                size="lg"
+                borderRadius="lg"
                 placeholder="Enter your password"
                 ref={passwordRef}
               />
@@ -227,46 +217,47 @@ export default function Form() {
           </Fieldset.Content>
           <Fieldset.ErrorText>{errorMessage}</Fieldset.ErrorText>
 
-          {unverifiedEmail && (
+          {unverifiedEmail ? (
             <Button
               variant="outline"
               colorPalette="brand"
               size="sm"
-              mt={2}
               onClick={handleResendOtp}
               loading={isLoading}
             >
-              Resend OTP &amp; Verify
+              Resend OTP &amp; verify
             </Button>
-          )}
-          <Flex justifyContent="space-between" alignItems="center" mb={2}>
+          ) : null}
+
+          <Flex justifyContent="space-between" alignItems="center">
             <Checkbox.Root
               colorPalette="brand"
-              size="md"
+              size="sm"
               checked={rememberMe}
               onCheckedChange={(e) => setRememberMe(!!e.checked)}
             >
               <Checkbox.HiddenInput name="rememberMe" />
               <Checkbox.Control />
-              <Checkbox.Label>Remember me</Checkbox.Label>
+              <Checkbox.Label fontSize="sm">Remember me</Checkbox.Label>
             </Checkbox.Root>
             <Link to={`${ClientRoutes.AUTH}/${ClientRoutes.FORGOT_PASSWORD}`}>
-              <Span color="brand.500" fontSize="14px">
-                Forgot password ?
+              <Span color="brand.600" fontSize="sm" fontWeight="medium">
+                Forgot password?
               </Span>
             </Link>
           </Flex>
           <Button
             type="submit"
-            alignSelf="center"
             colorPalette="brand"
-            w="70%"
+            size="lg"
+            w="full"
+            borderRadius="lg"
             loading={isLoading}
           >
-            Submit
+            Sign in
           </Button>
         </Fieldset.Root>
-      </Flex>
+      </AuthFormCard>
     </form>
   );
 }

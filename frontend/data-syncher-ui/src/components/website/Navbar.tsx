@@ -13,8 +13,11 @@ const Navbar = () => {
   return (
     <Flex
       as="nav"
-      bg="white"
-      boxShadow="md"
+      bg="whiteAlpha.900"
+      backdropFilter="blur(8px)"
+      borderBottomWidth="1px"
+      borderColor="gray.100"
+      boxShadow="sm"
       position="fixed"
       top={0}
       left={0}
@@ -24,15 +27,12 @@ const Navbar = () => {
       alignItems="center"
       padding={4}
     >
-      <AppBrand
-        size="lg"
-        onClick={() => navigate(ClientRoutes.HOME)}
-      />
-      <Box display="flex" gap={4}>
-        <Link to="#home">Home</Link>
-        <Link to="#features">Features</Link>
-        <Link to="#about">About</Link>
-        <Link to="#contact">Contact</Link>
+      <AppBrand size="lg" onClick={() => navigate(ClientRoutes.HOME)} />
+      <Box display={{ base: "none", md: "flex" }} gap={6} fontSize="sm" fontWeight="medium">
+        <Link to="/#home">Home</Link>
+        <Link to="/#features">Features</Link>
+        <Link to="/#about">How it works</Link>
+        <Link to="/#contact">Get started</Link>
       </Box>
       <Flex gap={4}>
         <Button

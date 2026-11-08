@@ -1,4 +1,4 @@
-import { Flex, Image, Text, type FlexProps } from "@chakra-ui/react";
+import { Flex, type FlexProps, Image, Text } from "@chakra-ui/react";
 
 import Logo from "@/assets/logo.svg";
 import { APP_LOGO_ALT, APP_NAME } from "@/constants/branding";

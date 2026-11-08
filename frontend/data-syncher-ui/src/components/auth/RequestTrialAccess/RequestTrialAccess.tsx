@@ -1,21 +1,10 @@
 import { useState } from "react";
 
-import {
-  Button,
-  Field,
-  Fieldset,
-  Flex,
-  Heading,
-  Image,
-  Input,
-  Span,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Button, Field, Input, Span, Stack, Text } from "@chakra-ui/react";
 
 import { useNavigate } from "react-router";
 
-import Logo from "@/assets/logo.svg";
+import { AuthFormCard } from "@/components/auth/AuthFormCard";
 import { toaster } from "@/components/ui/toaster";
 import ClientRoutes from "@/constants/client-routes";
 import ServerRoutes from "@/constants/server-routes";
@@ -182,15 +171,14 @@ const RequestTrialAccess = () => {
 
   if (submissionResult) {
     return (
-      <Flex direction="column" w="100%" h="100%">
-        <Stack gap={5} align="flex-start" role="status" aria-live="polite">
-          <Image src={Logo} alt="Logo" width="48px" height="48px" />
-          <Heading as="h1" fontSize={32} fontWeight="semibold">
-            Request received
-          </Heading>
+      <AuthFormCard title="Request received">
+        <Stack gap={4} role="status" aria-live="polite">
           <Text color="gray.600">{submissionResult.message}</Text>
           <Button
             colorPalette="brand"
+            size="lg"
+            w="full"
+            borderRadius="lg"
             onClick={() =>
               navigate(`${ClientRoutes.AUTH}/${ClientRoutes.LOGIN}`)
             }
@@ -198,58 +186,50 @@ const RequestTrialAccess = () => {
             Back to sign in
           </Button>
         </Stack>
-      </Flex>
+      </AuthFormCard>
     );
   }
 
   return (
-    <Flex direction="column" w="100%" h="100%">
-      <form onSubmit={onSubmit} autoComplete="off" style={{ width: "100%" }}>
-        <Stack gap={2}>
-          <Fieldset.Root size="md" gap={2}>
-            <Stack gap={4} mb={2}>
-              <Image
-                src={Logo}
-                alt="Logo"
-                width="48px"
-                height="48px"
-                aspectRatio={1}
-              />
-              <Fieldset.Legend fontSize={32} fontWeight="semibold">
-                Request Trial Access
-              </Fieldset.Legend>
-              <Text fontSize="sm" color="gray.500">
-                Already have an account?{" "}
-                <Span
-                  color="brand.500"
-                  cursor="pointer"
-                  onClick={() =>
-                    navigate(`${ClientRoutes.AUTH}/${ClientRoutes.LOGIN}`)
-                  }
-                >
-                  Sign in
-                </Span>
-              </Text>
-            </Stack>
-
-            <Field.Root required invalid={!!errors.companyName}>
-              <Field.Label>Company</Field.Label>
-              <Input
-                placeholder="Share your company name"
-                value={form.companyName}
-                autoComplete="organization"
-                onChange={(event) =>
-                  onChange("companyName")(event.target.value)
-                }
-              />
-              <Field.ErrorText>{errors.companyName}</Field.ErrorText>
-            </Field.Root>
-          </Fieldset.Root>
+    <form onSubmit={onSubmit} autoComplete="off" style={{ width: "100%" }}>
+      <AuthFormCard
+        title="Request trial access"
+        description={
+          <>
+            Already have an account?{" "}
+            <Span
+              color="brand.600"
+              fontWeight="semibold"
+              cursor="pointer"
+              onClick={() =>
+                navigate(`${ClientRoutes.AUTH}/${ClientRoutes.LOGIN}`)
+              }
+            >
+              Sign in
+            </Span>
+          </>
+        }
+      >
+        <Stack gap={3}>
+          <Field.Root required invalid={!!errors.companyName}>
+            <Field.Label>Company</Field.Label>
+            <Input
+              size="lg"
+              borderRadius="lg"
+              placeholder="Your organization"
+              value={form.companyName}
+              autoComplete="organization"
+              onChange={(event) => onChange("companyName")(event.target.value)}
+            />
+            <Field.ErrorText>{errors.companyName}</Field.ErrorText>
+          </Field.Root>
 
           <Field.Root required invalid={!!errors.firstName}>
             <Field.Label>First name</Field.Label>
             <Input
-              placeholder="Enter your first name"
+              size="lg"
+              borderRadius="lg"
+              placeholder="First name"
               value={form.firstName}
               autoComplete="given-name"
               onChange={(event) => onChange("firstName")(event.target.value)}
@@ -260,7 +240,9 @@ const RequestTrialAccess = () => {
           <Field.Root required invalid={!!errors.lastName}>
             <Field.Label>Last name</Field.Label>
             <Input
-              placeholder="Enter your last name"
+              size="lg"
+              borderRadius="lg"
+              placeholder="Last name"
               value={form.lastName}
               autoComplete="family-name"
               onChange={(event) => onChange("lastName")(event.target.value)}
@@ -269,10 +251,12 @@ const RequestTrialAccess = () => {
           </Field.Root>
 
           <Field.Root required invalid={!!errors.email}>
-            <Field.Label>Email address</Field.Label>
+            <Field.Label>Work email</Field.Label>
             <Input
               type="email"
-              placeholder="Share your email address"
+              size="lg"
+              borderRadius="lg"
+              placeholder="you@company.com"
               value={form.email}
               autoComplete="email"
               onChange={(event) => onChange("email")(event.target.value)}
@@ -281,11 +265,13 @@ const RequestTrialAccess = () => {
           </Field.Root>
 
           <Field.Root invalid={!!errors.phoneNumber}>
-            <Field.Label>Phone number</Field.Label>
+            <Field.Label>Phone (optional)</Field.Label>
             <Input
               type="tel"
               inputMode="tel"
-              placeholder="Enter your phone number"
+              size="lg"
+              borderRadius="lg"
+              placeholder="+1 555 000 0000"
               value={form.phoneNumber}
               autoComplete="tel"
               maxLength={20}
@@ -298,15 +284,16 @@ const RequestTrialAccess = () => {
             type="submit"
             colorPalette="brand"
             size="lg"
-            mt={2}
+            w="full"
+            borderRadius="lg"
             loading={submitting}
-            mb={4}
+            mt={2}
           >
-            Request for trial access
+            Submit request
           </Button>
         </Stack>
-      </form>
-    </Flex>
+      </AuthFormCard>
+    </form>
   );
 };
 

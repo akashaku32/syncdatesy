@@ -7,7 +7,7 @@ import Navbar from "@/components/website/Navbar";
 
 export default function WebsiteLayout() {
   return (
-    <Grid templateRows="auto 1fr" height="100vh" overflow="hidden">
+    <Grid templateRows="auto 1fr" minH="100vh">
       <Navbar />
       <WebsiteContainer>
         <Outlet />
