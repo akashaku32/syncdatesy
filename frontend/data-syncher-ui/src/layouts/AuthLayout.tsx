@@ -1,6 +1,6 @@
 import { Box, Flex, Grid, GridItem, Link } from "@chakra-ui/react";
 
-import { Link as RouterLink, Navigate, Outlet } from "react-router";
+import { Navigate, Outlet, Link as RouterLink } from "react-router";
 
 import AuthMarketingPanel from "@/components/auth/AuthMarketingPanel";
 import { AppBrand } from "@/components/branding/AppBrand";
@@ -20,7 +20,10 @@ export default function AuthLayout() {
   return (
     <Grid
       templateAreas={{ base: `"header" "main"`, md: `"banner main"` }}
-      templateColumns={{ base: "1fr", md: "minmax(380px, 1.05fr) minmax(400px, 1fr)" }}
+      templateColumns={{
+        base: "1fr",
+        md: "minmax(380px, 1.05fr) minmax(400px, 1fr)",
+      }}
       minH="100dvh"
       bg="bg.canvas"
     >

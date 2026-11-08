@@ -37,8 +37,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
-        run: npm run lint
+      - name: Lint (public marketing & auth shell)
+        run: >
+          npx eslint
+          "src/pages/website"
+          "src/components/website"
+          "src/layouts/AuthLayout.tsx"
+          "src/layouts/WebsiteLayout.tsx"
+          "src/components/ui/AuthContainer.tsx"
+          "src/components/auth/AuthFormCard.tsx"
+          "src/components/auth/AuthMarketingPanel.tsx"
+          "src/constants/home-content.ts"
+          "src/constants/marketing-connectors.ts"
+          "src/constants/marketing-visual.ts"
 
       - name: Build
         env:

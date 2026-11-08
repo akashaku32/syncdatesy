@@ -20,7 +20,8 @@ export default function WebsiteFooter() {
           <Stack gap={3}>
             <AppBrand size="sm" nameColor="white" />
             <Text fontSize="sm" maxW="xs" color="whiteAlpha.700">
-              Syncdatesy keeps pipelines, migrations, and connectors aligned in one workspace.
+              Syncdatesy keeps pipelines, migrations, and connectors aligned in
+              one workspace.
             </Text>
           </Stack>
           <Stack gap={2} fontSize="sm">
@@ -42,7 +43,8 @@ export default function WebsiteFooter() {
           </Stack>
         </Flex>
         <Text mt={10} fontSize="xs" color="whiteAlpha.600" textAlign="center">
-          © {new Date().getFullYear()} Syncdatesy. Built for data teams who care about reliability.
+          © {new Date().getFullYear()} Syncdatesy. Built for data teams who
+          care about reliability.
         </Text>
       </Container>
     </Box>

@@ -2,7 +2,6 @@
  * Curated connector logos for marketing (aligned with dashboard getImage mappings).
  * Sources = operational systems you extract from; destinations = warehouses, lakes, files.
  */
-
 import amazonS3 from "@/assets/images/amazon-s3.svg";
 import azureDataLake from "@/assets/images/azure-data-lake-storage.svg";
 import databricks from "@/assets/images/databricks.svg";

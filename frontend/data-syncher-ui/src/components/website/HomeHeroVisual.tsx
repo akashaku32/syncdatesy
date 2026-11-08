@@ -1,4 +1,13 @@
-import { Badge, Box, Flex, Grid, HStack, Image, Stack, Text } from "@chakra-ui/react";
+import {
+  Badge,
+  Box,
+  Flex,
+  Grid,
+  HStack,
+  Image,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 
 import { FiActivity, FiCheck, FiRefreshCw } from "react-icons/fi";
 
@@ -36,7 +45,12 @@ function ConnectorRow({
         objectFit="contain"
         flexShrink={0}
       />
-      <Text fontSize="xs" color="whiteAlpha.900" fontWeight="medium" lineClamp={1}>
+      <Text
+        fontSize="xs"
+        color="whiteAlpha.900"
+        fontWeight="medium"
+        lineClamp={1}
+      >
         {item.label}
       </Text>
       {showCheck ? (
@@ -59,7 +73,12 @@ function MoreChip({ count, noun }: { count: number; noun: string }) {
 
 export default function HomeHeroVisual() {
   return (
-    <Box position="relative" w="full" maxW="540px" mx={{ base: "auto", lg: "0" }}>
+    <Box
+      position="relative"
+      w="full"
+      maxW="540px"
+      mx={{ base: "auto", lg: "0" }}
+    >
       <Box
         aria-hidden
         position="absolute"
@@ -114,7 +133,13 @@ export default function HomeHeroVisual() {
               <MoreChip count={HERO_MORE_SOURCES} noun="sources" />
             </Stack>
 
-            <Flex direction="column" align="center" justify="center" gap={1} px={1}>
+            <Flex
+              direction="column"
+              align="center"
+              justify="center"
+              gap={1}
+              px={1}
+            >
               <Box color="brand.300">
                 <FiRefreshCw size={20} />
               </Box>

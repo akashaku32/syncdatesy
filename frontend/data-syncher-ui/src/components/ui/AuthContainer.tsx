@@ -37,7 +37,14 @@ export default function AuthContainer({
         opacity={0.5}
         bgGradient="radial(circle at 100% 0%, brand.100, transparent 65%)"
       />
-      <Box position="relative" zIndex={1} w="full" display="flex" flexDirection="column" alignItems="stretch">
+      <Box
+        position="relative"
+        zIndex={1}
+        w="full"
+        display="flex"
+        flexDirection="column"
+        alignItems="stretch"
+      >
         {children}
       </Box>
     </GridItem>

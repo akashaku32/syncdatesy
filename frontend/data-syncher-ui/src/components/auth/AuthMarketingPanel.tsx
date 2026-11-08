@@ -80,7 +80,15 @@ export default function AuthMarketingPanel() {
         <AppBrand size="md" nameColor="white" />
       </Flex>
 
-      <Stack gap={10} position="relative" zIndex={1} maxW="md" flex="1" justify="center" my={8}>
+      <Stack
+        gap={10}
+        position="relative"
+        zIndex={1}
+        maxW="md"
+        flex="1"
+        justify="center"
+        my={8}
+      >
         <Stack gap={4}>
           <Text
             fontSize="xs"
@@ -101,7 +109,12 @@ export default function AuthMarketingPanel() {
             <br />
             Trust always.
           </Heading>
-          <Text fontSize="lg" color="whiteAlpha.900" lineHeight="tall" maxW="sm">
+          <Text
+            fontSize="lg"
+            color="whiteAlpha.900"
+            lineHeight="tall"
+            maxW="sm"
+          >
             {APP_TAGLINE}
           </Text>
         </Stack>
@@ -129,7 +142,12 @@ export default function AuthMarketingPanel() {
                 <Text fontWeight="semibold" fontSize="md">
                   {title}
                 </Text>
-                <Text fontSize="sm" color="whiteAlpha.800" lineHeight="tall" mt={0.5}>
+                <Text
+                  fontSize="sm"
+                  color="whiteAlpha.800"
+                  lineHeight="tall"
+                  mt={0.5}
+                >
                   {body}
                 </Text>
               </Box>

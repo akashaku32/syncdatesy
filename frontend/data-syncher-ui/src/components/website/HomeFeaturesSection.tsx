@@ -14,8 +14,8 @@ import { FiCheck } from "react-icons/fi";
 
 import {
   HOME_FEATURES,
-  PLATFORM_PILLARS,
   type HomeFeature,
+  PLATFORM_PILLARS,
 } from "@/constants/home-content";
 
 const ACCENT_STYLES: Record<
@@ -139,12 +139,7 @@ export default function HomeFeaturesSection() {
           From first connection to production schedules—connectors, migrations,
           scheduling, and security in one product surface.
         </Text>
-        <Flex
-          gap={3}
-          justify="center"
-          flexWrap="wrap"
-          pt={2}
-        >
+        <Flex gap={3} justify="center" flexWrap="wrap" pt={2}>
           {PLATFORM_PILLARS.map(({ icon: PillIcon, label }) => (
             <Flex
               key={label}

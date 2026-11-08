@@ -22,15 +22,9 @@ export default function ConnectorLogoStrip() {
       >
         Sources &amp; destinations we support
       </Text>
-      <Text
-        textAlign="center"
-        fontSize="sm"
-        color="fg.muted"
-        mb={6}
-        px={4}
-      >
-        CRMs and ERPs on one side; Snowflake, Databricks, cloud storage, SharePoint,
-        SFTP, Google Drive, and more on the other.
+      <Text textAlign="center" fontSize="sm" color="fg.muted" mb={6} px={4}>
+        CRMs and ERPs on one side; Snowflake, Databricks, cloud storage,
+        SharePoint, SFTP, Google Drive, and more on the other.
       </Text>
       <Flex
         gap={{ base: 5, md: 8 }}

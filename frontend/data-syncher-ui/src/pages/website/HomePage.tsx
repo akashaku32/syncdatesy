@@ -21,8 +21,8 @@ import HomeFeaturesSection from "@/components/website/HomeFeaturesSection";
 import HomeHeroVisual from "@/components/website/HomeHeroVisual";
 import HomeHowItWorksSection from "@/components/website/HomeHowItWorksSection";
 import { APP_NAME, APP_TAGLINE } from "@/constants/branding";
-import { CTA_GRADIENT, HERO_GRADIENT } from "@/constants/marketing-visual";
 import ClientRoutes from "@/constants/client-routes";
+import { CTA_GRADIENT, HERO_GRADIENT } from "@/constants/marketing-visual";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -43,8 +43,7 @@ export default function HomePage() {
     return () => window.clearTimeout(timer);
   }, [location.hash, location.state]);
 
-  const goLogin = () =>
-    navigate(`${ClientRoutes.AUTH}/${ClientRoutes.LOGIN}`);
+  const goLogin = () => navigate(`${ClientRoutes.AUTH}/${ClientRoutes.LOGIN}`);
   const goRegister = () =>
     navigate(`${ClientRoutes.AUTH}/${ClientRoutes.REGISTER}`);
 
@@ -128,8 +127,8 @@ export default function HomePage() {
                 maxW="xl"
                 lineHeight="tall"
               >
-                {APP_TAGLINE} Orchestrate {APP_NAME} connectors, migrations,
-                and batch jobs from one control plane.
+                {APP_TAGLINE} Orchestrate {APP_NAME} connectors, migrations, and
+                batch jobs from one control plane.
               </Text>
               <Stack direction={{ base: "column", sm: "row" }} gap={3}>
                 <Button
@@ -163,11 +162,7 @@ export default function HomePage() {
 
       <HomeHowItWorksSection />
 
-      <Box
-        id="contact"
-        py={{ base: 14, md: 18 }}
-        scrollMarginTop="5.5rem"
-      >
+      <Box id="contact" py={{ base: 14, md: 18 }} scrollMarginTop="5.5rem">
         <Container maxW="container.lg">
           <Stack
             gap={5}

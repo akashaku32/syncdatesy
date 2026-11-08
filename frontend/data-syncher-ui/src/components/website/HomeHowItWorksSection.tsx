@@ -1,11 +1,4 @@
-import {
-  Box,
-  Container,
-  Flex,
-  Heading,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Container, Flex, Heading, Stack, Text } from "@chakra-ui/react";
 
 import { FiArrowRight } from "react-icons/fi";
 
@@ -34,7 +27,13 @@ export default function HomeHowItWorksSection() {
         opacity={0.4}
       />
       <Container maxW="container.xl" position="relative">
-        <Stack gap={3} textAlign="center" mb={{ base: 10, md: 14 }} maxW="2xl" mx="auto">
+        <Stack
+          gap={3}
+          textAlign="center"
+          mb={{ base: 10, md: 14 }}
+          maxW="2xl"
+          mx="auto"
+        >
           <Text
             fontSize="xs"
             fontWeight="bold"
@@ -52,7 +51,8 @@ export default function HomeHowItWorksSection() {
             From connection to continuous sync
           </Heading>
           <Text color="fg.muted">
-            Three stages your data team already thinks in—wired together in Syncdatesy.
+            Three stages your data team already thinks in—wired together in
+            Syncdatesy.
           </Text>
         </Stack>
 
@@ -60,7 +60,11 @@ export default function HomeHowItWorksSection() {
           {HOME_STEPS.map((s, index) => {
             const Icon = s.icon;
             return (
-              <Box key={s.step} position="relative" pb={index < HOME_STEPS.length - 1 ? 8 : 0}>
+              <Box
+                key={s.step}
+                position="relative"
+                pb={index < HOME_STEPS.length - 1 ? 8 : 0}
+              >
                 {index < HOME_STEPS.length - 1 ? (
                   <Box
                     position="absolute"
@@ -127,12 +131,7 @@ function StepCard({
       }}
     >
       <Flex align="flex-start" gap={4} mb={4}>
-        <Flex
-          direction="column"
-          align="center"
-          gap={2}
-          flexShrink={0}
-        >
+        <Flex direction="column" align="center" gap={2} flexShrink={0}>
           <Flex
             w={14}
             h={14}
